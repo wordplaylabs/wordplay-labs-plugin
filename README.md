@@ -6,7 +6,7 @@ tried before they reach [wordplaylabs.com](https://wordplaylabs.com). For
 the site's own plugin, see the `main` branch.
 
 ```
-claude plugin marketplace add JavierMNieto/wordplay-labs-plugin#test
+claude plugin marketplace add wordplaylabs/wordplay-labs-plugin#test
 claude plugin install wordplay-test@wordplay-test
 ```
 

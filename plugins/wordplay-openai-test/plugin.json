@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "wordplay-test",
-  "version": "2026.1108.30120",
+  "version": "2026.1108.200609",
   "description": "Write and publish wordplays from your own material.",
   "author": {
     "name": "Wordplay Labs",
@@ -9,7 +9,7 @@
     "url": "https://test.wordplaylabs.com"
   },
   "homepage": "https://test.wordplaylabs.com/create/ai?app=chatgpt",
-  "repository": "https://github.com/JavierMNieto/wordplay-labs",
+  "repository": "https://github.com/wordplaylabs/wordplay-labs",
   "license": "Apache-2.0",
   "keywords": [
     "wordplay",

@@ -1,14 +1,14 @@
 {
   "name": "wordplay-test",
   "displayName": "Wordplay (test site)",
-  "version": "2026.1108.30120",
+  "version": "2026.1108.200609",
   "description": "The test site's Wordplay (https://test.wordplaylabs.com), following the repository's test branch: try a change here before production's plugin has it. Write wordplays from your own material as .wplay files in your folder, try them with the tutor and simulated readers on your own Claude plan, and publish them on Wordplay when you say so.",
   "author": {
     "name": "Wordplay Labs",
     "url": "https://wordplaylabs.com"
   },
   "homepage": "https://creator-test.wordplaylabs.com/ai",
-  "repository": "https://github.com/JavierMNieto/wordplay-labs",
+  "repository": "https://github.com/wordplaylabs/wordplay-labs",
   "license": "Apache-2.0",
   "keywords": [
     "wordplay",
@@ -19,6 +19,6 @@
   ],
   "icon": "./logo.png",
   "documentationUrl": "https://creator.wordplaylabs.com/ai",
-  "supportUrl": "https://github.com/JavierMNieto/wordplay-labs/issues",
+  "supportUrl": "https://github.com/wordplaylabs/wordplay-labs/issues",
   "privacyPolicyUrl": "https://wordplaylabs.com/privacy"
 }

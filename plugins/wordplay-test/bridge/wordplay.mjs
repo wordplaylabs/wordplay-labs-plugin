@@ -1675,6 +1675,7 @@ var FOLDER_TYPES = {
   ttf: "font/ttf",
   otf: "font/otf"
 };
+var MAX_FILE_BODY = 4 * 1024 * 1024;
 
 // packages/player/src/bridge/main.ts
 import { fileURLToPath } from "node:url";
@@ -37218,7 +37219,7 @@ function keyReply(settings, turn) {
 
 // packages/player/src/bridge/site.ts
 init_define_WORDPLAY_ENGINE();
-var PREVIEW_BUILD = false ? "source" : "99fa4993c3a1";
+var PREVIEW_BUILD = false ? "source" : "304c04409f3b";
 function modelOf(value) {
   const one = value;
   return one && typeof one.model === "string" && one.model ? { model: one.model, effort: typeof one.effort === "string" ? one.effort : null } : null;
@@ -65289,18 +65290,21 @@ function inFolder(document2, folder) {
 
 // packages/player/src/lib/wordplay-state.ts
 init_define_WORDPLAY_ENGINE();
-var MARKER = /[ \t]*\[\[\s*(SHOW|DO|WRITE|CHECK|SHARE)\s*:\s*((?:[^\]\n]|\](?!\])|\](?=\]\]))*?)\s*\]\](?!\])/gi;
+var MARKER = /[ \t]*\[\[\s*(SHOW|DO|WRITE|CHECK|SHARE|REPORT)\s*:\s*((?:[^\]\n]|\](?!\])|\](?=\]\]))*?)\s*\]\](?!\])/gi;
+var MAX_REPORT = 300;
 function readMarkers(reply) {
   const show = [];
   const actions = [];
   const writes = [];
   const shares = [];
+  const reports = [];
   for (const found of reply.matchAll(MARKER)) {
     const what2 = found[2].trim();
     if (!what2) continue;
     const kind = found[1].toUpperCase();
     if (kind === "CHECK") continue;
     if (kind === "SHOW") show.push(what2);
+    else if (kind === "REPORT") reports.push(what2.slice(0, MAX_REPORT));
     else if (kind === "SHARE") {
       try {
         shares.push(JSON.parse(what2));
@@ -65322,7 +65326,7 @@ function readMarkers(reply) {
     }
   }
   const text3 = reply.replace(MARKER, "").replace(/\n{3,}/g, "\n\n").trim();
-  return { text: text3, show, actions, writes, shares };
+  return { text: text3, show, actions, writes, shares, reports };
 }
 var union2 = (held, more) => [.../* @__PURE__ */ new Set([...held, ...more])];
 function heldAfterReply(wordplay, held, reply) {
