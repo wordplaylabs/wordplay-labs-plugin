@@ -11,7 +11,7 @@ of it. Comments like this one are stripped before the model sees a word.
 It describes what the tutor is given and the markers it writes, and nothing
 about the file: the format is packages/format/SPEC.md, and what is bound
 here is built from it by `tutorEnvelope` (lib/tutor-envelope.ts), exactly
-the spec's "what the tutor is given at any moment".
+the spec's "What the tutor reads at each turn".
 
 WHAT IS BOUND
 
