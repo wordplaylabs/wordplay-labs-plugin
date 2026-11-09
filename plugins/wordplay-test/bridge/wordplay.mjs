@@ -37219,7 +37219,7 @@ function keyReply(settings, turn) {
 
 // packages/player/src/bridge/site.ts
 init_define_WORDPLAY_ENGINE();
-var PREVIEW_BUILD = false ? "source" : "f4be8474b555";
+var PREVIEW_BUILD = false ? "source" : "d12edc683d42";
 function modelOf(value) {
   const one = value;
   return one && typeof one.model === "string" && one.model ? { model: one.model, effort: typeof one.effort === "string" ? one.effort : null } : null;
@@ -66219,6 +66219,7 @@ init_define_WORDPLAY_ENGINE();
 import { createHash } from "node:crypto";
 import { Worker } from "node:worker_threads";
 var RENDER_TIMEOUT_MS = 1e4;
+var LOAD_TIMEOUT_MS = 6e4;
 var WORKER_SOURCE = `
 const { parentPort, workerData } = require("node:worker_threads");
 const { createRequire } = require("node:module");
@@ -66231,6 +66232,7 @@ parentPort.on("message", async (input) => {
   console.log = (...parts) => void log.push(parts.map(String).join(" "));
   try {
     await loaded;
+    parentPort.postMessage({ started: true });
     const dvi = await engine.tex(input, { showConsole: true });
     parentPort.postMessage({ svg: await engine.dvi2svg(dvi) });
   } catch {
@@ -66263,18 +66265,21 @@ function engineInWorker(from, timeoutMs) {
         void current.terminate();
         reject(error62);
       };
-      const timer = setTimeout(
-        () => kill(new Error("That diagram took too long to draw.")),
-        timeoutMs
-      );
+      const tooLong = () => kill(new Error("That diagram took too long to draw."));
+      let timer = setTimeout(tooLong, Math.max(timeoutMs, LOAD_TIMEOUT_MS));
       const onMessage = (reply) => {
+        if (reply.started) {
+          clearTimeout(timer);
+          timer = setTimeout(tooLong, timeoutMs);
+          return;
+        }
         settle2();
         if (typeof reply.svg === "string") resolve4(reply.svg);
         else reject(new Error(texError(reply.log ?? [])));
       };
       const onError = (error62) => kill(new Error(`The diagram engine stopped (${error62.message}).`));
       const onExit = () => kill(new Error("The diagram engine stopped."));
-      current.once("message", onMessage);
+      current.on("message", onMessage);
       current.once("error", onError);
       current.once("exit", onExit);
       current.postMessage(input2);
