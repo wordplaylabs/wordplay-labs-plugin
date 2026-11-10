@@ -141,9 +141,10 @@ Context directly in the `<body>` is about the whole wordplay. The tutor
 reads it from the start, with inline markup kept, so math and code
 survive.
 
-Context anywhere else, or with a condition of its own, is a mistake a host
-may report; the host still strips it and still gives the tutor its text,
-the condition written in front of it as the moment it was for.
+Context anywhere else, on another element, or with a condition of its own,
+is a mistake a host may report; the host still strips it and still gives
+the tutor its text, the condition written in front of it as the moment it
+was for.
 
 ## The tutor
 
@@ -456,26 +457,36 @@ zero counts and `null` for every name.
 
 ### Checks
 
-Wordplay reports, and still reads the file: a `<section>` with a condition
-and no accessible name; an id used twice by reveals, keys or context; a
-chat unnamed, named as another or named for the box rather than its
-subject ("Chat about …"); a key outside a calculator or of an unknown kind; an `<output data-tutor>` unnamed, named as another, named
-with a colon or inside context; context anywhere but directly in the body
-or a chat, with a condition, or holding a control; `data-tutor` on
-anything but an `<output>`; an attribute within two letters of one of these,
-or one no longer read; `document.tutor`, the object's old name, in a script;
+Wordplay reports, and still reads the file, what follows. The file: no
+`data-wordplay` on the body; `data-wordplay` or `data-pages` on anything
+but the body; a declaration with a value. Context: the body marked as
+context; context anywhere but directly in the body or a chat, on anything
+but a `<div>` (a choice's note in an answer apart), with a condition, or
+holding a control. Conditions: a condition on the body; a condition empty
+or over 400 characters; a `<section>` with a condition and no
+accessible name; a condition in a wordplay with no chat anywhere. Chats:
+unnamed, named as another, named for the box ("Chat about …"), or inside
+context; a link to `#chat` with no chat beside the page; an element with
+the id `chat`; an opening line on the body with no chat beside the page,
 `data-opening` on anything but the body or a chat, or over 400
-characters; a declaration with a value, or on anything but the body; an
-opening line on the body with no chat beside the page; a condition in a
-wordplay with no chat anywhere; a link to `#chat` with no chat beside the
-page; an element with the id `chat`; and a shared block it cannot read.
+characters. The tutor's outputs: `data-tutor` on anything but an
+`<output>`; an `<output data-tutor>` unnamed, named as another, named with
+a colon or inside context. Calculators and keys: `data-calculator` on
+anything but an `<input>` or a chat; `data-key` on anything but a `<data>`,
+or of an unknown kind; a key with no text, outside a calculator, or a
+constant with no value; a calculator with more than 12 keys of
+one kind. Containers: `data-container` on anything but a `<div>` or of an
+unknown kind; `data-group` on anything but a `<div>`. Ids and attributes:
+an id used twice by reveals, keys or context; an attribute within two
+letters of one of these, or one no longer read; `document.tutor`, the
+object's old name, in a script. And a shared block it cannot read.
 
 Wordplay refuses to publish: no `data-wordplay`, or an unknown version; a
 file over the limit; an id used twice by reveals, keys or context; a
-shared block it cannot read; and a control with no accessible name on a page where no control has one and
-nothing is live, which the tutor could not see; each `<section>` directly
-in the body without a condition is judged alone, with or without
-`data-pages`, and what is outside them as one more.
+shared block it cannot read; and a control with no accessible name where
+no control is named and nothing is live, which the tutor could not see:
+the whole page, or with `data-pages` each page alone and what is outside
+them as one more.
 
 ## Limits
 

@@ -37219,7 +37219,7 @@ function keyReply(settings, turn) {
 
 // packages/player/src/bridge/site.ts
 init_define_WORDPLAY_ENGINE();
-var PREVIEW_BUILD = false ? "source" : "d12edc683d42";
+var PREVIEW_BUILD = false ? "source" : "6fcfc362d448";
 function modelOf(value) {
   const one = value;
   return one && typeof one.model === "string" && one.model ? { model: one.model, effort: typeof one.effort === "string" ? one.effort : null } : null;
@@ -50209,6 +50209,8 @@ function readableProblems(wordplay) {
       problems.push(`data-container is ${CONTAINER_KINDS.join(", ")}, not "${container}".`);
     if (element.hasAttribute("data-group") && element.tagName.toLowerCase() !== "div")
       problems.push(`data-group goes on a <div>, not on a ${describe3(element)}.`);
+    if (element !== body2 && isContext(element) && element.tagName.toLowerCase() !== "div" && !isAnswerNote(element))
+      problems.push(`data-context goes on a <div>, not on a ${describe3(element)}.`);
     if (chat && BOX_NAME.test(chatName(element)))
       problems.push(
         `The chat "${chatName(element)}" is named for the box, not its subject. Name it for what it is about, in a few words.`
@@ -50364,7 +50366,7 @@ function notesProblems(wordplay) {
   const notes = wordplay.contexts.map((note) => note.element).filter((note) => isContext(note) && !isAnswerNote(note));
   const besideNotes = (note) => note.parentElement === body2 || !!note.parentElement?.hasAttribute("data-chat");
   const astray = notes.find(
-    (note) => !isPlacedNote(note) && !(besideNotes(note) && hasCondition(note))
+    (note) => note.tagName.toLowerCase() === "div" && !isPlacedNote(note) && !(besideNotes(note) && hasCondition(note))
   );
   if (astray) {
     const parent = astray.parentElement;
@@ -50400,11 +50402,13 @@ function notesProblems(wordplay) {
   return problems;
 }
 function regions(wordplay) {
-  const pages = wordplay.pages.map((page2) => page2.element);
+  const declared = new Set(pagesOf(wordplay.body));
+  if (!declared.size) return [{ name: "On the page", element: wordplay.body, skip: [] }];
+  const pages = wordplay.pages.filter((page2) => declared.has(page2.element));
   return [
-    { name: "the page", element: wordplay.body, skip: pages },
-    ...wordplay.pages.map((page2) => ({
-      name: `the page "${page2.name}"`,
+    { name: "Outside the pages", element: wordplay.body, skip: [...declared] },
+    ...pages.map((page2) => ({
+      name: `On the page "${page2.name}"`,
       element: page2.element,
       skip: []
     }))
@@ -50429,7 +50433,7 @@ function unseenControls(region) {
   visit2(region.element);
   if (named || live || !unnamed.length) return [];
   return [
-    `On ${region.name}, ${unnamed.length === 1 ? `a ${describe3(unnamed[0])} has` : `${unnamed.length} controls have`} no accessible name, and nothing there is named or live, so the tutor cannot see what it does. Name it with a label or aria-label, or add a live status line.`
+    `${region.name}, ${unnamed.length === 1 ? `a ${describe3(unnamed[0])} has` : `${unnamed.length} controls have`} no accessible name, and nothing there is named or live, so the tutor cannot see what it does. Name it with a label or aria-label, or add a live status line.`
   ];
 }
 function publishableProblems(wordplay, source) {
