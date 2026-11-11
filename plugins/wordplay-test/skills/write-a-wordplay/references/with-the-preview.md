@@ -789,9 +789,9 @@ How to write for the page, which is a browser's own, in a frame of its own:
 - **Figures** are SVG, inline: one `<svg>` with a `viewBox` and no width or
   height, `role="img"` and an `aria-label` saying what it shows, labels as
   `<text>`. Lines and labels in `currentColor`, the page's ink, and
-  `var(--accent)` for the one thing the figure is about; a color only for
-  what it means in the subject (`var(--success)`, `var(--danger)`,
-  `var(--ink-muted)`). Leave shapes unfilled, or tint them with
+  `var(--logo-front)`, the logo's teal, for the one thing the figure is
+  about; a color only for what it means in the subject (`var(--success)`,
+  `var(--danger)`, `var(--ink-muted)`). Leave shapes unfilled, or tint them with
   `fill-opacity="0.15"`; never a white or pale fill, which hides a label in
   the dark.
 - **Pictures** cannot be drawn: ask the teacher for one and place it with

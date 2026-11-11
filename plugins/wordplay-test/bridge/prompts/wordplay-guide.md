@@ -576,15 +576,15 @@ tags: the-subject first-topic second-topic
 a picture, a thumbnail or a cover, draw one with a block of its own: one
 `<svg>`, `viewBox="0 0 1600 1000"` and no width or height, a background
 filled edge to edge, a few large shapes for what it is about, at most a word
-or two. Give every color: the site's ink `#16171b`, its violet `#8252d6`,
-gold `#a97e37` and navy `#22314a`, on white or a pale tint of one of them.
+or two. Give every color: the site's ink `#16171b`, gold `#a97e37` and navy
+`#22314a`, on white or a pale tint of one of them.
 No `<image>`, no `<script>`, only the fonts `sans-serif` and `serif`, under
 4,000 characters, and after it say in a sentence what it shows:
 
 <cover>
 <svg viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1600" height="1000" fill="#f3eefb"/>
-  <circle cx="800" cy="500" r="260" fill="none" stroke="#8252d6" stroke-width="24"/>
+  <rect width="1600" height="1000" fill="#eef0f4"/>
+  <circle cx="800" cy="500" r="260" fill="none" stroke="#22314a" stroke-width="24"/>
 </svg>
 </cover>
 
