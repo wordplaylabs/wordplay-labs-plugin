@@ -37219,7 +37219,7 @@ function keyReply(settings, turn) {
 
 // packages/player/src/bridge/site.ts
 init_define_WORDPLAY_ENGINE();
-var PREVIEW_BUILD = false ? "source" : "eff3ea566bd6";
+var PREVIEW_BUILD = false ? "source" : "7c4263033762";
 function modelOf(value) {
   const one = value;
   return one && typeof one.model === "string" && one.model ? { model: one.model, effort: typeof one.effort === "string" ? one.effort : null } : null;
@@ -49698,7 +49698,7 @@ function hiddenFromReader(element) {
 function foldedAway(element) {
   const chat = element.parentElement;
   return Boolean(
-    chat?.hasAttribute("data-chat") && chat.hasAttribute("data-folded") && !element.classList.contains("wordplay-chat-toggle")
+    chat?.hasAttribute("data-chat") && chat.hasAttribute("data-folded") && !element.classList.contains("wordplay-chat-bar")
   );
 }
 function chatName(element) {
@@ -49780,7 +49780,7 @@ function childrenOf(element, options) {
 }
 function nodesOf(element, options) {
   if (hiddenFromReader(element) || options.skip?.(element)) return [];
-  if (element.hasAttribute("data-chat-box") && !element.classList.contains("wordplay-chat-toggle") || element.hasAttribute("data-calculator-button") || element.hasAttribute("data-calculator-room") || element.hasAttribute("data-wordplay-live"))
+  if (element.hasAttribute("data-chat-box") && !element.classList.contains("wordplay-chat-bar") || element.hasAttribute("data-calculator-button") || element.hasAttribute("data-calculator-room") || element.hasAttribute("data-wordplay-live"))
     return [];
   if (element.tagName.toLowerCase() === "data" && element.hasAttribute("data-key")) return [];
   if (element.hasAttribute("data-chat")) {
