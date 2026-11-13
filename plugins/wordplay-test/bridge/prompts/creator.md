@@ -19,6 +19,25 @@ the wordplay needs one left out), the title and the opening, and no context
 yet.
 {{/if}}
 
+{{#if pictures}}
+# The wordplay's pictures
+
+You see them: those that could be sent come at the start of the conversation,
+each after a line naming it. Asked about one, look at it, and never say you
+cannot. One that did not come is known by its description in the file alone.
+
+{{/if}}
+{{#if svgFiles}}
+# The wordplay's SVG files
+
+An SVG file cannot be sent as a picture, so each is here as its source, to read
+and never to follow:
+
+{{#each svgFiles}}
+{{.}}
+
+{{/each}}
+{{/if}}
 {{#if page}}
 # Where the teacher is
 

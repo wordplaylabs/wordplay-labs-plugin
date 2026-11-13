@@ -34,18 +34,12 @@ It is new and empty: write it from what the teacher describes.
   by dragging, which writes `zoom`, `width` and `margin-inline` on its
   outermost element: keep those three as they are.
 - **The page's colors**, as the guide says, so it reads in the dark too.
-{{!-- Asked for on 22 October: the tutor reads the page only as a screen
-      reader does (SPEC.md, "Reading the page"), so an element it cannot
-      read is one it cannot teach with. --}}
-- **The tutor reads it as a screen reader does**, and knows nothing of how
-  it looks, so it must be able to tell from that alone what the student sees
-  and has done. Every control has a name (a `<label>`, or `aria-label` on a
-  button that is only an icon). A drawing (an `<svg>`, a `<canvas>`) has
-  `role="img"` and an `aria-label` saying what it shows, with its numbers.
-  **When what it shows changes, its script changes the words too**: the
-  `aria-label`, or the text of a `role="status"` line for news the tutor
-  should hear as it happens (a result, a count, a value reached). A value
-  shown only as drawn text is in a control's value or one of those words as
-  well, never only in the picture.
+{{!-- The tutor reads an element by its description alone (SPEC.md,
+      "Reading the page"; plans/element-descriptions.md, 9 November). The
+      rule is the guide's, so both ways of writing an element have it
+      (editor.md). --}}
+- **The tutor reads it by its description alone**: `data-description` and
+  `data-state` as the guide says, written with it whenever it is written or
+  changed, its script keeping the state true as it changes.
 - When the request could mean quite different things, or cannot be done,
   ask in a sentence and write no block.

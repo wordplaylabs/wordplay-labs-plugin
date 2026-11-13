@@ -101,7 +101,8 @@ requirements.
 
 ## The file
 
-A `.wplay` file is an HTML document. Four attributes make it a wordplay:
+A `.wplay` file is an HTML document. Four attributes make it a wordplay, and
+two describe what the host cannot read itself:
 
 | Attribute | Where | Value | Means |
 |---|---|---|---|
@@ -109,6 +110,8 @@ A `.wplay` file is an HTML document. Four attributes make it a wordplay:
 | `data-context` | A `<div>` directly in the `<body>` | None | The teacher's notes for the tutor. The reader never sees it. |
 | `data-expect` | Any element the reader sees, or a calculator's key | The condition, in prose | The element is given once the condition holds. |
 | `data-tutor` | An `<output>` | None | The tutor writes it. |
+| `data-description` | The outermost element of a block the host cannot read itself: an element of the teacher's own, a drawing, a game, a control with a script | What it is and how it can change, by the reader, its script or the tutor, in prose | All the tutor reads of the element. At most 300 characters. |
+| `data-state` | The same element | What it shows now, in prose | Its script rewrites it whenever that changes; the file's value is where it starts. At most 150 characters. |
 
 Everything else is HTML, shown as HTML, written so that a screen reader
 can read it: every control has an accessible name, and what changes while
@@ -172,25 +175,31 @@ was for.
 
 ## The tutor
 
-**Reading the page.** The tutor is given the page as a screen reader
-reads it: the accessibility tree (role, name, state) of what is given, and
-what the page's live regions have announced. Nothing about how the page is
-drawn reaches it.
+**Reading the page.** The tutor is given the page as its blocks, in order,
+a line each, what holds one under it: a paragraph, a heading, a list or a
+quotation as its text, a formula as its source, a picture as its `alt`, an
+answer as its question, its options and what the reader gave, a chat and a
+page by name; an element of the teacher's own as its `data-description`
+and its `data-state`; and under each, its commands, the controls in it by
+accessible name, a field with its value. Then what its live regions have
+announced. Nothing about how the page is drawn reaches it, and nothing is
+cut midway: a description or a state over its limit is a mistake the
+checks say, and a state a script writes over it is not sent.
 
-**Acting on the page.** Anything a reader could do with a keyboard, the
-tutor can do by accessible name: press a button, set a field, choose an
-option.
+**Acting on the page.** Anything a block's commands list, the tutor can do
+by its accessible name: press a button, set a field, choose an option.
 
 **Writing on the page.** The tutor writes only in an `<output>` marked
 `data-tutor`, by its accessible name, when its notes tell it to. What it
 writes becomes the element's text, plain, replacing what was there, at
 most 400 characters. How it is drawn is the teacher's.
 
-**What the tutor reads at each turn.** The tree of what is given and its
+**What the tutor reads at each turn.** The blocks of what is given and its
 announcements; what the page told it since its last turn (`tell`); what
 the reader worked out on a calculator, where the page has one
 (`data-calculator`, under What Wordplay adds); the context; and each
-waiting reveal and calculator key, by id and condition. Where a reader is
+waiting reveal and calculator key, by id and condition, a reveal with its
+blocks, so the tutor knows what it holds back. Where a reader is
 in the wordplay is never in the file: it follows from the conversation.
 With no conversation, where there is no tutor to give anything, a host
 gives every reveal.
@@ -274,7 +283,10 @@ Page 2 of *The game from Marienbad*:
   player who takes the last match wins. You go first. Play a few games, look
   for a pattern, and tell your tutor your idea.</p>
 
-  <div class="matches" role="group" aria-label="21 matches. Take 1, 2 or 3.">…</div>
+  <div class="matches" role="group" aria-label="21 matches. Take 1, 2 or 3."
+    data-description="A row of matches. The reader clicks a match to take it and the
+    ones after it, 1 to 3, then the computer takes its turn, playing perfectly."
+    data-state="21 matches left, the reader's turn">…</div>
   <p aria-live="polite">Your move.</p>
   <button>Start again</button>
 
@@ -282,7 +294,7 @@ Page 2 of *The game from Marienbad*:
     <p>Try a smaller game first: who wins with 4 matches on your turn?</p>
   </aside>
   <script>
-    // The game calls gameOver at the end of each game.
+    // The game writes its state as it plays, and calls gameOver at the end of each game.
     let lost = 0;
     function gameOver(won) {
       lost = won ? 0 : lost + 1;
@@ -300,7 +312,9 @@ Page 2 of *The game from Marienbad*:
     goes first, and the player who takes the last stick <strong>loses</strong>.
     What is the strategy now? Can the candidate win at all?</p>
 
-    <div class="matches" role="group" aria-label="21 sticks. Take 1, 2 or 3. The last stick loses.">…</div>
+    <div class="matches" role="group" aria-label="21 sticks. Take 1, 2 or 3. The last stick loses."
+      data-description="The same game, where taking the last stick loses."
+      data-state="21 sticks left, the reader's turn">…</div>
     <p aria-live="polite">Your move.</p>
 
     <section aria-label="Fort Boyard solved"
@@ -503,7 +517,9 @@ one kind. Containers: `data-container` on anything but a `<div>` or of an
 unknown kind; `data-group` on anything but a `<div>`. Ids and attributes:
 an id used twice by reveals, keys or context; an attribute within two
 letters of one of these, or one no longer read; `document.tutor`, the
-object's old name, in a script. And a shared block it cannot read.
+object's old name, in a script. Elements of the teacher's own: one with no
+`data-description`, or whose code never writes its `data-state`; a
+description or a state over its limit. And a shared block it cannot read.
 
 Wordplay refuses to publish: no `data-wordplay`, or an unknown version; a
 file over the limit; an id used twice by reveals, keys or context; a
@@ -518,6 +534,8 @@ them as one more.
 |---|---|
 | The file | 400,000 characters |
 | A condition | 400 characters |
+| A description (`data-description`) | 300 characters |
+| A state (`data-state`) | 150 characters |
 | One live announcement, or one `tell` | 200 characters |
 | One line the tutor writes | 400 characters |
 | One `say` | 2,000 characters |
@@ -787,8 +805,8 @@ How to write for the page, which is a browser's own, in a frame of its own:
   `aligned`, `pmatrix` and `cases` work; no theorem environments, `\label`
   or `\ref`. Never inside `<code>`, which shows it as written.
 - **Figures** are SVG, inline: one `<svg>` with a `viewBox` and no width or
-  height, `role="img"` and an `aria-label` saying what it shows, labels as
-  `<text>`. Lines and labels in `currentColor`, the page's ink, and
+  height, a `data-description` saying what it shows, with its numbers
+  (below), labels as `<text>`. Lines and labels in `currentColor`, the page's ink, and
   `var(--logo-front)`, the logo's teal, for the one thing the figure is
   about; a color only for what it means in the subject (`var(--success)`,
   `var(--danger)`, `var(--ink-muted)`). Leave shapes unfilled, or tint them with
@@ -796,6 +814,15 @@ How to write for the page, which is a browser's own, in a frame of its own:
   the dark.
 - **Pictures** cannot be drawn: ask the teacher for one and place it with
   `<figure><img src="address" alt="what it shows"><figcaption>…</figcaption></figure>`.
+- **Every element you build carries its description**: the tutor never sees
+  its HTML, only the `data-description` on its outermost element, what it is
+  and how it can change (by the student, its script or the tutor), at most
+  300 characters. **One that can change has a `data-state`**,
+  what it shows now in at most 150 characters, which its script
+  rewrites the moment that changes (`element.dataset.state = "2 of 3 hints
+  shown"`). Never the answer in either. Name each control: the tutor presses
+  it by its name. Text, a picture, an answer and a button need none;
+  decoration has `aria-hidden="true"`.
 - **Scripts** are inline, or from `cdn.jsdelivr.net/npm/`; the page reaches
   no network, posts no form, and keeps nothing between visits of its own;
   what it hands `document.wordplay.keep` comes back ("Scripts"). What you

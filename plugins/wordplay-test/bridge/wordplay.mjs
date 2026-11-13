@@ -32,9 +32,9 @@ var __export = (target, all) => {
 };
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
-    for (let key2 of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key2) && key2 !== except)
-        __defProp(to, key2, { get: () => from[key2], enumerable: !(desc = __getOwnPropDesc(from, key2)) || desc.enumerable });
+    for (let key3 of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key3) && key3 !== except)
+        __defProp(to, key3, { get: () => from[key3], enumerable: !(desc = __getOwnPropDesc(from, key3)) || desc.enumerable });
   }
   return to;
 };
@@ -1638,6 +1638,8 @@ import { dirname as dirname5, join as join10 } from "node:path";
 init_define_WORDPLAY_ENGINE();
 var MAX_FILE = 4e5;
 var MAX_CONDITION = 400;
+var MAX_ELEMENT_DESCRIPTION = 300;
+var MAX_STATE = 150;
 var MAX_ANNOUNCEMENT = 200;
 var MAX_WRITTEN = 400;
 var MAX_SAID = 2e3;
@@ -1713,12 +1715,12 @@ var __exportAll = (all, symbols2) => {
 };
 var __copyProps2 = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
-    for (var keys2 = __getOwnPropNames2(from), i2 = 0, n = keys2.length, key2; i2 < n; i2++) {
-      key2 = keys2[i2];
-      if (!__hasOwnProp2.call(to, key2) && key2 !== except) {
-        __defProp2(to, key2, {
-          get: ((k) => from[k]).bind(null, key2),
-          enumerable: !(desc = __getOwnPropDesc2(from, key2)) || desc.enumerable
+    for (var keys2 = __getOwnPropNames2(from), i2 = 0, n = keys2.length, key3; i2 < n; i2++) {
+      key3 = keys2[i2];
+      if (!__hasOwnProp2.call(to, key3) && key3 !== except) {
+        __defProp2(to, key3, {
+          get: ((k) => from[k]).bind(null, key3),
+          enumerable: !(desc = __getOwnPropDesc2(from, key3)) || desc.enumerable
         });
       }
     }
@@ -2482,9 +2484,9 @@ function floatSafeRemainder(val, step) {
   return ratio - roundedRatio;
 }
 var EVALUATING = /* @__PURE__ */ Symbol("evaluating");
-function defineLazy(object2, key2, getter) {
+function defineLazy(object2, key3, getter) {
   let value = void 0;
-  Object.defineProperty(object2, key2, {
+  Object.defineProperty(object2, key3, {
     get() {
       if (value === EVALUATING) {
         return void 0;
@@ -2496,7 +2498,7 @@ function defineLazy(object2, key2, getter) {
       return value;
     },
     set(v) {
-      Object.defineProperty(object2, key2, {
+      Object.defineProperty(object2, key3, {
         value: v
         // configurable: true,
       });
@@ -2522,47 +2524,47 @@ function rawShape(def) {
 function sourceShape(schema) {
   return rawShape(schema._zod.def) ?? schema._zod.def.shape;
 }
-function deferProp(target, key2, getter) {
-  Object.defineProperty(target, key2, {
+function deferProp(target, key3, getter) {
+  Object.defineProperty(target, key3, {
     get() {
       const value = getter();
-      assignProp(this, key2, value);
+      assignProp(this, key3, value);
       return value;
     },
     enumerable: true,
     configurable: true
   });
 }
-function putProp(target, key2, value) {
-  if (key2 in target)
-    assignProp(target, key2, value);
+function putProp(target, key3, value) {
+  if (key3 in target)
+    assignProp(target, key3, value);
   else
-    target[key2] = value;
+    target[key3] = value;
 }
 function mirrorShape(target, source, keys2, wrap) {
   const raw = sourceShape(source);
-  for (const key2 of keys2) {
-    const desc = Object.getOwnPropertyDescriptor(raw, key2);
+  for (const key3 of keys2) {
+    const desc = Object.getOwnPropertyDescriptor(raw, key3);
     if (!desc.enumerable)
       continue;
     if (desc.get) {
-      deferProp(target, key2, () => {
-        const value = source._zod.def.shape[key2];
-        return wrap ? wrap(value, key2) : value;
+      deferProp(target, key3, () => {
+        const value = source._zod.def.shape[key3];
+        return wrap ? wrap(value, key3) : value;
       });
     } else
-      putProp(target, key2, wrap ? wrap(desc.value, key2) : desc.value);
+      putProp(target, key3, wrap ? wrap(desc.value, key3) : desc.value);
   }
 }
 function mirrorProps(target, source) {
-  for (const key2 of Reflect.ownKeys(source)) {
-    const desc = Object.getOwnPropertyDescriptor(source, key2);
+  for (const key3 of Reflect.ownKeys(source)) {
+    const desc = Object.getOwnPropertyDescriptor(source, key3);
     if (!desc.enumerable)
       continue;
     if (desc.get)
-      deferProp(target, key2, () => source[key2]);
+      deferProp(target, key3, () => source[key3]);
     else
-      putProp(target, key2, desc.value);
+      putProp(target, key3, desc.value);
   }
 }
 function mergeDefs(...defs) {
@@ -2579,11 +2581,11 @@ function cloneDef(schema) {
 function getElementAtPath(obj, path2) {
   if (!path2)
     return obj;
-  return path2.reduce((acc, key2) => acc?.[key2], obj);
+  return path2.reduce((acc, key3) => acc?.[key3], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys2 = Object.keys(promisesObj);
-  const promises = keys2.map((key2) => promisesObj[key2]);
+  const promises = keys2.map((key3) => promisesObj[key3]);
   return Promise.all(promises).then((results) => {
     const resolvedObj = {};
     for (let i2 = 0; i2 < keys2.length; i2++) {
@@ -2655,8 +2657,8 @@ function shallowClone(o) {
 }
 function numKeys(data) {
   let keyCount = 0;
-  for (const key2 in data) {
-    if (Object.prototype.hasOwnProperty.call(data, key2)) {
+  for (const key3 in data) {
+    if (Object.prototype.hasOwnProperty.call(data, key3)) {
       keyCount++;
     }
   }
@@ -2810,12 +2812,12 @@ function pick(schema, mask) {
 function maskedKeys(schema, mask) {
   const raw = sourceShape(schema);
   const keys2 = [];
-  for (const key2 of Reflect.ownKeys(mask)) {
-    if (!Object.getOwnPropertyDescriptor(raw, key2)?.enumerable) {
-      throw new Error(`Unrecognized key: "${String(key2)}"`);
+  for (const key3 of Reflect.ownKeys(mask)) {
+    if (!Object.getOwnPropertyDescriptor(raw, key3)?.enumerable) {
+      throw new Error(`Unrecognized key: "${String(key3)}"`);
     }
-    if (mask[key2])
-      keys2.push(key2);
+    if (mask[key3])
+      keys2.push(key3);
   }
   return keys2;
 }
@@ -2828,7 +2830,7 @@ function omit(schema, mask) {
   }
   const omitted = new Set(maskedKeys(schema, mask));
   const newShape = {};
-  mirrorShape(newShape, schema, Reflect.ownKeys(sourceShape(schema)).filter((key2) => !omitted.has(key2)));
+  mirrorShape(newShape, schema, Reflect.ownKeys(sourceShape(schema)).filter((key3) => !omitted.has(key3)));
   return clone(schema, mergeDefs(currDef, { shape: newShape, checks: [] }));
 }
 function extend(schema, shape) {
@@ -2839,8 +2841,8 @@ function extend(schema, shape) {
   const hasChecks = checks && checks.length > 0;
   if (hasChecks) {
     const existingShape = sourceShape(schema);
-    for (const key2 of Reflect.ownKeys(shape)) {
-      if (Object.getOwnPropertyDescriptor(existingShape, key2) !== void 0) {
+    for (const key3 of Reflect.ownKeys(shape)) {
+      if (Object.getOwnPropertyDescriptor(existingShape, key3) !== void 0) {
         throw new Error("Cannot overwrite keys on object schemas containing refinements. Use `.safeExtend()` instead.");
       }
     }
@@ -2887,15 +2889,15 @@ function partial(Class2, schema, mask, name = "partial") {
   }
   const selected = mask ? new Set(maskedKeys(schema, mask)) : void 0;
   const newShape = {};
-  mirrorShape(newShape, schema, Reflect.ownKeys(sourceShape(schema)), Class2 && ((value, key2) => selected && !selected.has(key2) ? value : new Class2({ type: "optional", innerType: value })));
+  mirrorShape(newShape, schema, Reflect.ownKeys(sourceShape(schema)), Class2 && ((value, key3) => selected && !selected.has(key3) ? value : new Class2({ type: "optional", innerType: value })));
   return clone(schema, mergeDefs(schema._zod.def, { shape: newShape, checks: [] }));
 }
 function required(Class2, schema, mask) {
   const selected = mask ? new Set(maskedKeys(schema, mask)) : void 0;
   const newShape = {};
-  mirrorShape(newShape, schema, Reflect.ownKeys(sourceShape(schema)), (value, key2) => (
+  mirrorShape(newShape, schema, Reflect.ownKeys(sourceShape(schema)), (value, key3) => (
     // overwrite with non-optional
-    selected && !selected.has(key2) ? value : new Class2({ type: "nonoptional", innerType: value })
+    selected && !selected.has(key3) ? value : new Class2({ type: "nonoptional", innerType: value })
   ));
   return clone(schema, mergeDefs(schema._zod.def, { shape: newShape }));
 }
@@ -3070,46 +3072,46 @@ var Class = class {
   }
 };
 function members(proto, table) {
-  for (const key2 in table) {
-    const desc = Object.getOwnPropertyDescriptor(table, key2);
+  for (const key3 in table) {
+    const desc = Object.getOwnPropertyDescriptor(table, key3);
     if (desc.get)
-      Object.defineProperty(proto, key2, { ...desc, enumerable: false });
+      Object.defineProperty(proto, key3, { ...desc, enumerable: false });
     else
-      defineBound(proto, key2, desc.value);
+      defineBound(proto, key3, desc.value);
   }
 }
-function own(inst, key2, value, enumerable = true) {
-  Object.defineProperty(inst, key2, { configurable: true, writable: true, enumerable, value });
+function own(inst, key3, value, enumerable = true) {
+  Object.defineProperty(inst, key3, { configurable: true, writable: true, enumerable, value });
   return value;
 }
-function hide(inst, key2, value) {
-  return own(inst, key2, value, false);
+function hide(inst, key3, value) {
+  return own(inst, key3, value, false);
 }
 // @__NO_SIDE_EFFECTS__
 function derived(computes, table) {
-  for (const key2 in computes) {
-    const compute = computes[key2];
-    Object.defineProperty(table, key2, {
+  for (const key3 in computes) {
+    const compute = computes[key3];
+    Object.defineProperty(table, key3, {
       configurable: true,
       enumerable: true,
       get() {
-        return own(this, key2, compute(this));
+        return own(this, key3, compute(this));
       },
       set(value) {
-        own(this, key2, value);
+        own(this, key3, value);
       }
     });
   }
   return table;
 }
-function defineBound(proto, key2, fn) {
-  Object.defineProperty(proto, key2, {
+function defineBound(proto, key3, fn) {
+  Object.defineProperty(proto, key3, {
     configurable: true,
     get() {
-      return this == null ? fn : own(this, key2, fn.bind(this));
+      return this == null ? fn : own(this, key3, fn.bind(this));
     },
     set(value) {
-      own(this, key2, value);
+      own(this, key3, value);
     }
   });
 }
@@ -3126,53 +3128,53 @@ var breaker = {
     return void 0;
   }
 };
-function defineLazyInternal(inst, key2, compute) {
+function defineLazyInternal(inst, key3, compute) {
   const proto = Object.getPrototypeOf(inst._zod);
-  if (key2 in proto && installing !== inst._zod) {
+  if (key3 in proto && installing !== inst._zod) {
     installing = void 0;
     return;
   }
   installing = inst._zod;
-  Object.defineProperty(proto, key2, {
+  Object.defineProperty(proto, key3, {
     configurable: true,
     get() {
-      Object.defineProperty(this, key2, breaker);
+      Object.defineProperty(this, key3, breaker);
       const outer = broke;
       broke = false;
       try {
         const value = compute(this);
         if (broke)
-          delete this[key2];
+          delete this[key3];
         else
-          Object.defineProperty(this, key2, { configurable: true, writable: true, value });
+          Object.defineProperty(this, key3, { configurable: true, writable: true, value });
         broke = broke || outer;
         return value;
       } catch (err) {
-        delete this[key2];
+        delete this[key3];
         broke = broke || outer;
         throw err;
       }
     },
     set(value) {
-      Object.defineProperty(this, key2, { configurable: true, writable: true, value });
+      Object.defineProperty(this, key3, { configurable: true, writable: true, value });
     }
   });
 }
-function installLazyProp(inst, key2, make, enumerable) {
-  const proto = claim(inst, key2);
+function installLazyProp(inst, key3, make, enumerable) {
+  const proto = claim(inst, key3);
   if (!proto)
     return;
-  Object.defineProperty(proto, key2, {
+  Object.defineProperty(proto, key3, {
     configurable: true,
     get() {
       const desc = { configurable: true, writable: true, enumerable, value: void 0 };
-      Object.defineProperty(this, key2, desc);
+      Object.defineProperty(this, key3, desc);
       desc.value = make(this);
-      Object.defineProperty(this, key2, desc);
+      Object.defineProperty(this, key3, desc);
       return desc.value;
     },
     set(value) {
-      Object.defineProperty(this, key2, { configurable: true, writable: true, enumerable, value });
+      Object.defineProperty(this, key3, { configurable: true, writable: true, enumerable, value });
     }
   });
 }
@@ -3353,15 +3355,15 @@ var $ZodError = $constructor("$ZodError", initializer);
 var $ZodRealError = $constructor("$ZodError", initializer, void 0, {
   Parent: Error
 });
-function node(obj, key2, make) {
-  if (!Object.prototype.hasOwnProperty.call(obj, key2)) {
-    if (key2 === "__proto__") {
-      Object.defineProperty(obj, key2, { value: make(), writable: true, enumerable: true, configurable: true });
+function node(obj, key3, make) {
+  if (!Object.prototype.hasOwnProperty.call(obj, key3)) {
+    if (key3 === "__proto__") {
+      Object.defineProperty(obj, key3, { value: make(), writable: true, enumerable: true, configurable: true });
     } else {
-      obj[key2] = make();
+      obj[key3] = make();
     }
   }
-  return obj[key2];
+  return obj[key3];
 }
 function flattenError(error62, mapper = (issue2) => issue2.message) {
   const fieldErrors = {};
@@ -4277,16 +4279,16 @@ var $ZodCheckProperties = /* @__PURE__ */ $constructor("$ZodCheckProperties", (i
       payload.issues.push({ expected: "object", code: "invalid_type", input: payload.value, inst });
       return void 0;
     }
-    entries2 ?? (entries2 = Reflect.ownKeys(def.shape).map((key2) => [key2, def.shape[key2]]));
+    entries2 ?? (entries2 = Reflect.ownKeys(def.shape).map((key3) => [key3, def.shape[key3]]));
     const input2 = payload.value;
     let proms;
-    for (const [key2, schema] of entries2) {
-      const result = schema._zod.run({ value: input2[key2], issues: [] }, {});
+    for (const [key3, schema] of entries2) {
+      const result = schema._zod.run({ value: input2[key3], issues: [] }, {});
       if (result instanceof Promise) {
         proms ?? (proms = []);
-        proms.push(result.then((result2) => handleCheckPropertyResult(result2, payload, key2)));
+        proms.push(result.then((result2) => handleCheckPropertyResult(result2, payload, key3)));
       } else {
-        handleCheckPropertyResult(result, payload, key2);
+        handleCheckPropertyResult(result, payload, key3);
       }
     }
     if (proms)
@@ -5163,8 +5165,8 @@ var $ZodArray = /* @__PURE__ */ $constructor("$ZodArray", (inst, def) => {
     return payload;
   };
 });
-function handlePropertyResult(result, final, key2, input2, optin, optout) {
-  const isPresent = key2 in input2;
+function handlePropertyResult(result, final, key3, input2, optin, optout) {
+  const isPresent = key3 in input2;
   const isOptionalOut = optout === "optional";
   if (!isPresent && isOptionalOut && optin === "optional") {
     return;
@@ -5173,7 +5175,7 @@ function handlePropertyResult(result, final, key2, input2, optin, optout) {
     if (optin !== void 0 && isOptionalOut && !isPresent) {
       return;
     }
-    final.issues.push(...prefixIssues(key2, result.issues));
+    final.issues.push(...prefixIssues(key3, result.issues));
   }
   if (!isPresent && optin === void 0) {
     if (!result.issues.length) {
@@ -5181,17 +5183,17 @@ function handlePropertyResult(result, final, key2, input2, optin, optout) {
         code: "invalid_type",
         expected: "nonoptional",
         input: void 0,
-        path: [key2]
+        path: [key3]
       });
     }
     return;
   }
   if (result.value === void 0) {
     if (isPresent || optin === "defaulted" && !isOptionalOut) {
-      final.value[key2] = void 0;
+      final.value[key3] = void 0;
     }
   } else {
-    final.value[key2] = result.value;
+    final.value[key3] = result.value;
   }
 }
 var NO_SYMBOL_KEYS = [];
@@ -5224,28 +5226,28 @@ function handleCatchall(proms, input2, payload, ctx, def, inst, abortEarly) {
   const optin = _catchall.optin;
   const optout = _catchall.optout;
   let seen = 0;
-  for (const key2 in input2) {
+  for (const key3 in input2) {
     if (abortEarly && payload.issues.length !== seen) {
       if (aborted(payload, seen))
         break;
       seen = payload.issues.length;
     }
-    if (keySet.has(key2))
+    if (keySet.has(key3))
       continue;
-    if (key2 === "__proto__") {
+    if (key3 === "__proto__") {
       if (t === "never")
-        unrecognized.push(key2);
+        unrecognized.push(key3);
       continue;
     }
     if (t === "never") {
-      unrecognized.push(key2);
+      unrecognized.push(key3);
       continue;
     }
-    const r = _catchall.run({ value: input2[key2], issues: [] }, ctx);
+    const r = _catchall.run({ value: input2[key3], issues: [] }, ctx);
     if (r instanceof Promise) {
-      proms.push(r.then((r2) => handlePropertyResult(r2, payload, key2, input2, optin, optout)));
+      proms.push(r.then((r2) => handlePropertyResult(r2, payload, key3, input2, optin, optout)));
     } else {
-      handlePropertyResult(r, payload, key2, input2, optin, optout);
+      handlePropertyResult(r, payload, key3, input2, optin, optout);
     }
   }
   if (unrecognized.length) {
@@ -5282,16 +5284,16 @@ var $ZodObject = /* @__PURE__ */ $constructor("$ZodObject", (inst, def) => {
   defineLazyInternal(inst, "propValues", (zod) => {
     const shape = zod.def.shape;
     const propValues = {};
-    for (const key2 in shape) {
-      const field = shape[key2]._zod;
+    for (const key3 in shape) {
+      const field = shape[key3]._zod;
       if (field.values) {
-        if (!Object.prototype.hasOwnProperty.call(propValues, key2)) {
-          assignProp(propValues, key2, /* @__PURE__ */ new Set());
+        if (!Object.prototype.hasOwnProperty.call(propValues, key3)) {
+          assignProp(propValues, key3, /* @__PURE__ */ new Set());
         }
         for (const v of field.values)
-          propValues[key2].add(v);
+          propValues[key3].add(v);
         if (field.optin !== void 0)
-          propValues[key2].add(void 0);
+          propValues[key3].add(void 0);
       }
     }
     return propValues;
@@ -5318,22 +5320,22 @@ var $ZodObject = /* @__PURE__ */ $constructor("$ZodObject", (inst, def) => {
     const shape = value.shape;
     const abortEarly = ctx?.abortEarly;
     let seen = payload.issues.length;
-    for (const key2 of value.allKeys) {
+    for (const key3 of value.allKeys) {
       if (abortEarly && payload.issues.length !== seen) {
         if (aborted(payload, seen))
           break;
         seen = payload.issues.length;
       }
-      if (key2 === "__proto__")
+      if (key3 === "__proto__")
         continue;
-      const el = shape[key2];
+      const el = shape[key3];
       const optin = el._zod.optin;
       const optout = el._zod.optout;
-      const r = el._zod.run({ value: input2[key2], issues: [] }, ctx);
+      const r = el._zod.run({ value: input2[key3], issues: [] }, ctx);
       if (r instanceof Promise) {
-        proms.push(r.then((r2) => handlePropertyResult(r2, payload, key2, input2, optin, optout)));
+        proms.push(r.then((r2) => handlePropertyResult(r2, payload, key3, input2, optin, optout)));
       } else {
-        handlePropertyResult(r, payload, key2, input2, optin, optout);
+        handlePropertyResult(r, payload, key3, input2, optin, optout);
       }
     }
     if (!catchall) {
@@ -5367,17 +5369,17 @@ var $ZodObjectJIT = /* @__PURE__ */ $constructor("$ZodObjectJIT", (inst, def) =>
     doc.write(`const input = payload.value;`);
     const ids = /* @__PURE__ */ Object.create(null);
     let counter = 0;
-    for (const key2 of normalized.allKeys) {
-      ids[key2] = `key_${counter++}`;
+    for (const key3 of normalized.allKeys) {
+      ids[key3] = `key_${counter++}`;
     }
     doc.write(memo3 ? `const newResult = memo.alloc(inst, payload, {}, ctx);` : `const newResult = {};`);
-    for (const key2 of normalized.allKeys) {
-      if (key2 === "__proto__")
+    for (const key3 of normalized.allKeys) {
+      if (key3 === "__proto__")
         continue;
-      const id = ids[key2];
-      const k = typeof key2 === "symbol" ? `syms[${syms.indexOf(key2)}]` : esc(key2);
+      const id = ids[key3];
+      const k = typeof key3 === "symbol" ? `syms[${syms.indexOf(key3)}]` : esc(key3);
       const isPresent = `${k} in input`;
-      const schema = shape[key2];
+      const schema = shape[key3];
       const optin = schema?._zod?.optin;
       const isOptionalIn = optin !== void 0;
       const isOptionalOut = schema?._zod?.optout === "optional";
@@ -5711,21 +5713,21 @@ function mergeValues(a, b) {
   }
   if (isPlainObject(a) && isPlainObject(b)) {
     const bKeys = Object.keys(b);
-    const sharedKeys = Object.keys(a).filter((key2) => bKeys.indexOf(key2) !== -1);
+    const sharedKeys = Object.keys(a).filter((key3) => bKeys.indexOf(key3) !== -1);
     const newObj = { ...a, ...b };
     if (Object.prototype.hasOwnProperty.call(newObj, "__proto__"))
       delete newObj.__proto__;
-    for (const key2 of sharedKeys) {
-      if (key2 === "__proto__")
+    for (const key3 of sharedKeys) {
+      if (key3 === "__proto__")
         continue;
-      const sharedValue = mergeValues(a[key2], b[key2]);
+      const sharedValue = mergeValues(a[key3], b[key3]);
       if (!sharedValue.valid) {
         return {
           valid: false,
-          mergeErrorPath: [key2, ...sharedValue.mergeErrorPath]
+          mergeErrorPath: [key3, ...sharedValue.mergeErrorPath]
         };
       }
-      newObj[key2] = sharedValue.data;
+      newObj[key3] = sharedValue.data;
     }
     return { valid: true, data: newObj };
   }
@@ -5884,9 +5886,9 @@ var $ZodTuple = /* @__PURE__ */ $constructor("$ZodTuple", (inst, def) => {
     return handleTupleResults(itemResults, payload, items, input2, optoutStart);
   };
 });
-function getTupleOptStart(items, key2) {
+function getTupleOptStart(items, key3) {
   for (let i2 = items.length - 1; i2 >= 0; i2--) {
-    const omittable = key2 === "optin" ? items[i2]._zod.optin !== void 0 : items[i2]._zod.optout === "optional";
+    const omittable = key3 === "optin" ? items[i2]._zod.optin !== void 0 : items[i2]._zod.optout === "optional";
     if (!omittable)
       return i2 + 1;
   }
@@ -5944,12 +5946,12 @@ var $ZodRecord = /* @__PURE__ */ $constructor("$ZodRecord", (inst, def) => {
     if (values && !def.partial) {
       payload.value = memo3 ? memo3.alloc(inst, payload, {}, ctx) : {};
       const recordKeys = /* @__PURE__ */ new Set();
-      for (const key2 of values) {
-        if (typeof key2 === "string" || typeof key2 === "number" || typeof key2 === "symbol") {
-          recordKeys.add(typeof key2 === "number" ? key2.toString() : key2);
-          if (key2 === "__proto__")
+      for (const key3 of values) {
+        if (typeof key3 === "string" || typeof key3 === "number" || typeof key3 === "symbol") {
+          recordKeys.add(typeof key3 === "number" ? key3.toString() : key3);
+          if (key3 === "__proto__")
             continue;
-          const keyResult = def.keyType._zod.run({ value: key2, issues: [] }, ctx);
+          const keyResult = def.keyType._zod.run({ value: key3, issues: [] }, ctx);
           if (keyResult instanceof Promise) {
             throw new Error("Async schemas not supported in object keys currently");
           }
@@ -5958,8 +5960,8 @@ var $ZodRecord = /* @__PURE__ */ $constructor("$ZodRecord", (inst, def) => {
               code: "invalid_key",
               origin: "record",
               issues: keyResult.issues.map((iss) => finalizeIssue(iss, ctx, config())),
-              input: key2,
-              path: [key2],
+              input: key3,
+              path: [key3],
               inst
             });
             continue;
@@ -5967,32 +5969,32 @@ var $ZodRecord = /* @__PURE__ */ $constructor("$ZodRecord", (inst, def) => {
           const outKey = keyResult.value;
           if (outKey === "__proto__")
             continue;
-          const result = def.valueType._zod.run({ value: input2[key2], issues: [] }, ctx);
+          const result = def.valueType._zod.run({ value: input2[key3], issues: [] }, ctx);
           if (result instanceof Promise) {
             proms.push(result.then((result2) => {
               if (result2.issues.length) {
-                payload.issues.push(...prefixIssues(key2, result2.issues));
+                payload.issues.push(...prefixIssues(key3, result2.issues));
               }
               payload.value[outKey] = result2.value;
             }));
           } else {
             if (result.issues.length) {
-              payload.issues.push(...prefixIssues(key2, result.issues));
+              payload.issues.push(...prefixIssues(key3, result.issues));
             }
             payload.value[outKey] = result.value;
           }
         }
       }
       let unrecognized;
-      for (const key2 in input2) {
-        if (!recordKeys.has(key2)) {
+      for (const key3 in input2) {
+        if (!recordKeys.has(key3)) {
           if (def.mode === "loose") {
-            if (key2 === "__proto__")
+            if (key3 === "__proto__")
               continue;
-            payload.value[key2] = input2[key2];
+            payload.value[key3] = input2[key3];
           } else {
             unrecognized = unrecognized ?? [];
-            unrecognized.push(key2);
+            unrecognized.push(key3);
           }
         }
       }
@@ -6008,18 +6010,18 @@ var $ZodRecord = /* @__PURE__ */ $constructor("$ZodRecord", (inst, def) => {
     } else {
       payload.value = memo3 ? memo3.alloc(inst, payload, {}, ctx) : {};
       let unrecognized;
-      for (const key2 of Reflect.ownKeys(input2)) {
-        if (key2 === "__proto__")
+      for (const key3 of Reflect.ownKeys(input2)) {
+        if (key3 === "__proto__")
           continue;
-        if (!Object.prototype.propertyIsEnumerable.call(input2, key2))
+        if (!Object.prototype.propertyIsEnumerable.call(input2, key3))
           continue;
-        let keyResult = def.keyType._zod.run({ value: key2, issues: [] }, ctx);
+        let keyResult = def.keyType._zod.run({ value: key3, issues: [] }, ctx);
         if (keyResult instanceof Promise) {
           throw new Error("Async schemas not supported in object keys currently");
         }
-        const checkNumericKey = typeof key2 === "string" && number.test(key2) && keyResult.issues.length;
+        const checkNumericKey = typeof key3 === "string" && number.test(key3) && keyResult.issues.length;
         if (checkNumericKey) {
-          const retryResult = def.keyType._zod.run({ value: Number(key2), issues: [] }, ctx);
+          const retryResult = def.keyType._zod.run({ value: Number(key3), issues: [] }, ctx);
           if (retryResult instanceof Promise) {
             throw new Error("Async schemas not supported in object keys currently");
           }
@@ -6029,17 +6031,17 @@ var $ZodRecord = /* @__PURE__ */ $constructor("$ZodRecord", (inst, def) => {
         }
         if (keyResult.issues.length) {
           if (def.mode === "loose") {
-            payload.value[key2] = input2[key2];
+            payload.value[key3] = input2[key3];
           } else if (values) {
             unrecognized = unrecognized ?? [];
-            unrecognized.push(key2);
+            unrecognized.push(key3);
           } else {
             payload.issues.push({
               code: "invalid_key",
               origin: "record",
               issues: keyResult.issues.map((iss) => finalizeIssue(iss, ctx, config())),
-              input: key2,
-              path: [key2],
+              input: key3,
+              path: [key3],
               inst
             });
           }
@@ -6048,17 +6050,17 @@ var $ZodRecord = /* @__PURE__ */ $constructor("$ZodRecord", (inst, def) => {
         const outKey = keyResult.value;
         if (outKey === "__proto__")
           continue;
-        const result = def.valueType._zod.run({ value: input2[key2], issues: [] }, ctx);
+        const result = def.valueType._zod.run({ value: input2[key3], issues: [] }, ctx);
         if (result instanceof Promise) {
           proms.push(result.then((result2) => {
             if (result2.issues.length) {
-              payload.issues.push(...prefixIssues(key2, result2.issues));
+              payload.issues.push(...prefixIssues(key3, result2.issues));
             }
             payload.value[outKey] = result2.value;
           }));
         } else {
           if (result.issues.length) {
-            payload.issues.push(...prefixIssues(key2, result.issues));
+            payload.issues.push(...prefixIssues(key3, result.issues));
           }
           payload.value[outKey] = result.value;
         }
@@ -6098,20 +6100,20 @@ var $ZodMap = /* @__PURE__ */ $constructor("$ZodMap", (inst, def) => {
     payload.value = memo3 ? memo3.alloc(inst, payload, /* @__PURE__ */ new Map(), ctx) : /* @__PURE__ */ new Map();
     const abortEarly = ctx?.abortEarly;
     let seen = payload.issues.length;
-    for (const [key2, value] of input2) {
+    for (const [key3, value] of input2) {
       if (abortEarly && payload.issues.length !== seen) {
         if (aborted(payload, seen))
           break;
         seen = payload.issues.length;
       }
-      const keyResult = def.keyType._zod.run({ value: key2, issues: [] }, ctx);
+      const keyResult = def.keyType._zod.run({ value: key3, issues: [] }, ctx);
       const valueResult = def.valueType._zod.run({ value, issues: [] }, ctx);
       if (keyResult instanceof Promise || valueResult instanceof Promise) {
         proms.push(Promise.all([keyResult, valueResult]).then(([keyResult2, valueResult2]) => {
-          handleMapResult(keyResult2, valueResult2, payload, key2, input2, inst, ctx);
+          handleMapResult(keyResult2, valueResult2, payload, key3, input2, inst, ctx);
         }));
       } else {
-        handleMapResult(keyResult, valueResult, payload, key2, input2, inst, ctx);
+        handleMapResult(keyResult, valueResult, payload, key3, input2, inst, ctx);
       }
     }
     if (proms.length)
@@ -6119,10 +6121,10 @@ var $ZodMap = /* @__PURE__ */ $constructor("$ZodMap", (inst, def) => {
     return payload;
   };
 });
-function handleMapResult(keyResult, valueResult, final, key2, input2, inst, ctx) {
+function handleMapResult(keyResult, valueResult, final, key3, input2, inst, ctx) {
   if (keyResult.issues.length) {
-    if (propertyKeyTypes.has(typeof key2)) {
-      final.issues.push(...prefixIssues(key2, keyResult.issues));
+    if (propertyKeyTypes.has(typeof key3)) {
+      final.issues.push(...prefixIssues(key3, keyResult.issues));
     } else {
       final.issues.push({
         code: "invalid_key",
@@ -6134,15 +6136,15 @@ function handleMapResult(keyResult, valueResult, final, key2, input2, inst, ctx)
     }
   }
   if (valueResult.issues.length) {
-    if (propertyKeyTypes.has(typeof key2)) {
-      final.issues.push(...prefixIssues(key2, valueResult.issues));
+    if (propertyKeyTypes.has(typeof key3)) {
+      final.issues.push(...prefixIssues(key3, valueResult.issues));
     } else {
       final.issues.push({
         origin: "map",
         code: "invalid_element",
         input: input2,
         inst,
-        key: key2,
+        key: key3,
         issues: valueResult.issues.map((iss) => finalizeIssue(iss, ctx, config()))
       });
     }
@@ -6817,8 +6819,8 @@ function isRecursive(inst, stack, resolve4) {
   };
   const shape = (sh, spread) => {
     let answer = NONE;
-    for (const key2 of Reflect.ownKeys(sh)) {
-      const desc = Object.getOwnPropertyDescriptor(sh, key2);
+    for (const key3 of Reflect.ownKeys(sh)) {
+      const desc = Object.getOwnPropertyDescriptor(sh, key3);
       if (spread && !desc.enumerable)
         continue;
       const child = desc.get ? ASSUMED : desc.value?._zod ? isRecursive(desc.value, stack, resolve4) : NONE;
@@ -6914,8 +6916,8 @@ function isRecursive(inst, stack, resolve4) {
       break;
     default: {
       kind;
-      for (const key2 in def) {
-        const desc = Object.getOwnPropertyDescriptor(def, key2);
+      for (const key3 in def) {
+        const desc = Object.getOwnPropertyDescriptor(def, key3);
         if (!desc || desc.get)
           continue;
         const value = desc.value;
@@ -15118,11 +15120,11 @@ function generatePropertiesChecks(doc, ctx, def, accessor) {
   }
   doc.write(`if (${accessor} == null) return INVALID;`);
   const shape = def.shape;
-  for (const key2 of Reflect.ownKeys(shape)) {
-    const keyExpr = typeof key2 === "symbol" ? addConstant(ctx, key2) : esc(key2);
+  for (const key3 of Reflect.ownKeys(shape)) {
+    const keyExpr = typeof key3 === "symbol" ? addConstant(ctx, key3) : esc(key3);
     const inputVar = newVar(ctx);
     doc.write(`const ${inputVar} = ${accessor}[${keyExpr}];`);
-    compileChild(doc, ctx, shape[key2], inputVar, false);
+    compileChild(doc, ctx, shape[key3], inputVar, false);
   }
 }
 function generatePropertyCheck(doc, ctx, def, accessor) {
@@ -15515,9 +15517,9 @@ function generateObjectCheck(doc, ctx, schema, accessor, buildsValue = true) {
     throw new ZodCompileUnsupportedError('object shape key "__proto__"');
   }
   const propOutputs = /* @__PURE__ */ new Map();
-  for (const key2 of allKeys) {
-    const propSchema = propShape[key2];
-    const kx = keyExpr(key2);
+  for (const key3 of allKeys) {
+    const propSchema = propShape[key3];
+    const kx = keyExpr(key3);
     const inputVar = newVar(ctx);
     doc.write(`const ${inputVar} = ${accessor}[${kx}];`);
     if (propSchema._zod.optin !== void 0) {
@@ -15538,14 +15540,14 @@ function generateObjectCheck(doc, ctx, schema, accessor, buildsValue = true) {
       } else {
         doc.write(`if (${outputVar2} === INVALID) return INVALID;`);
       }
-      propOutputs.set(key2, outputVar2);
+      propOutputs.set(key3, outputVar2);
     } else {
       if (requiresPresenceCheck(propSchema)) {
         doc.write(`if (!(${kx} in ${accessor})) return INVALID;`);
       }
       const outputAccessor = compileChild(doc, ctx, propSchema, inputVar, buildsValue);
       if (outputAccessor !== null)
-        propOutputs.set(key2, outputAccessor);
+        propOutputs.set(key3, outputAccessor);
     }
   }
   const catchall = def.catchall;
@@ -15960,9 +15962,9 @@ function generateTupleCheck(doc, ctx, schema, accessor) {
   }
   return outputVar;
 }
-function getTupleOptStart2(items, key2) {
+function getTupleOptStart2(items, key3) {
   for (let i2 = items.length - 1; i2 >= 0; i2--) {
-    const omittable = key2 === "optin" ? items[i2]._zod.optin !== void 0 : items[i2]._zod.optout === "optional";
+    const omittable = key3 === "optin" ? items[i2]._zod.optin !== void 0 : items[i2]._zod.optout === "optional";
     if (!omittable)
       return i2 + 1;
   }
@@ -16092,16 +16094,16 @@ function generateRecordCheck(doc, ctx, schema, accessor) {
   const keyValues = recordDef.partial ? void 0 : def.keyType._zod.values;
   if (keyValues) {
     const inputKeys = [];
-    for (const key2 of keyValues) {
-      if (!(typeof key2 === "string" || typeof key2 === "number" || typeof key2 === "symbol")) {
-        throw new ZodCompileUnsupportedError(`record key value ${String(key2)}`);
+    for (const key3 of keyValues) {
+      if (!(typeof key3 === "string" || typeof key3 === "number" || typeof key3 === "symbol")) {
+        throw new ZodCompileUnsupportedError(`record key value ${String(key3)}`);
       }
-      const inputKey = typeof key2 === "number" ? key2.toString() : key2;
+      const inputKey = typeof key3 === "number" ? key3.toString() : key3;
       if (inputKey === "__proto__") {
         throw new ZodCompileUnsupportedError('record key "__proto__"');
       }
       inputKeys.push(inputKey);
-      const keyConst = addConstant(ctx, key2);
+      const keyConst = addConstant(ctx, key3);
       const outKey = generateCheck(doc, ctx, def.keyType, keyConst);
       const valueVar = newVar(ctx);
       doc.write(`const ${valueVar} = ${accessor}[${literalPropertyKey(ctx, inputKey)}];`);
@@ -16179,10 +16181,10 @@ function emitOwnKeys(doc, ctx, accessor, kVar, body2, onSymbol) {
   });
   doc.write(`}`);
 }
-function literalPropertyKey(ctx, key2) {
-  if (typeof key2 === "string")
-    return esc(key2);
-  return addConstant(ctx, key2);
+function literalPropertyKey(ctx, key3) {
+  if (typeof key3 === "string")
+    return esc(key3);
+  return addConstant(ctx, key3);
 }
 function generateMapCheck(doc, ctx, schema, accessor) {
   const def = schema._zod.def;
@@ -17411,9 +17413,9 @@ function _stringFormat(Class2, format, fnOrRegex, _params = {}) {
 init_define_WORDPLAY_ENGINE();
 function assignProps(target, ...sources) {
   for (const source of sources) {
-    for (const key2 of Reflect.ownKeys(source)) {
-      if (Object.prototype.propertyIsEnumerable.call(source, key2)) {
-        assignProp(target, key2, source[key2]);
+    for (const key3 of Reflect.ownKeys(source)) {
+      if (Object.prototype.propertyIsEnumerable.call(source, key3)) {
+        assignProp(target, key3, source[key3]);
       }
     }
   }
@@ -17559,8 +17561,8 @@ function extractDefs(ctx, schema) {
     if (defId)
       seen.defId = defId;
     const schema2 = seen.schema;
-    for (const key2 in schema2) {
-      delete schema2[key2];
+    for (const key3 in schema2) {
+      delete schema2[key3];
     }
     schema2.$ref = ref;
   };
@@ -17641,8 +17643,8 @@ function foldObjects(members2) {
   for (const member of members2) {
     if (typeof member !== "object" || member.type !== "object")
       return null;
-    for (const key2 in member) {
-      if (!FOLDABLE_KEYS.has(key2))
+    for (const key3 in member) {
+      if (!FOLDABLE_KEYS.has(key3))
         return null;
     }
     objects.push(member);
@@ -17650,22 +17652,22 @@ function foldObjects(members2) {
   const properties = {};
   const required2 = /* @__PURE__ */ new Set();
   for (const object2 of objects) {
-    for (const key2 in object2.properties) {
-      if (Object.prototype.hasOwnProperty.call(properties, key2))
+    for (const key3 in object2.properties) {
+      if (Object.prototype.hasOwnProperty.call(properties, key3))
         continue;
       const parts = [];
       for (const other of objects) {
-        const part = other.properties?.[key2] ?? undeclaredConstraint(other);
+        const part = other.properties?.[key3] ?? undeclaredConstraint(other);
         if (part === null || part === void 0)
           continue;
         if (!parts.some((seen) => JSON.stringify(seen) === JSON.stringify(part)))
           parts.push(part);
       }
       const merged = parts.length === 1 ? parts[0] : foldObjects(parts) ?? { allOf: parts };
-      assignProp(properties, key2, merged);
+      assignProp(properties, key3, merged);
     }
-    for (const key2 of object2.required ?? [])
-      required2.add(key2);
+    for (const key3 of object2.required ?? [])
+      required2.add(key3);
   }
   const folded = { type: "object", properties };
   if (required2.size)
@@ -17690,8 +17692,8 @@ function foldIntersection(json4) {
   const allOf = json4.allOf;
   if (!Array.isArray(allOf) || allOf.length < 2)
     return;
-  for (const key2 of FOLDABLE_KEYS)
-    if (key2 in json4)
+  for (const key3 of FOLDABLE_KEYS)
+    if (key3 in json4)
       return;
   const unions = allOf.filter((m) => UNION_KEYS.some((k) => Array.isArray(m[k])));
   let folded = null;
@@ -17738,20 +17740,20 @@ function finalize(ctx, schema) {
       assignProps(schema2, _cached);
       const isParentRef = zodSchema._zod.parent === ref;
       if (isParentRef) {
-        for (const key2 in schema2) {
-          if (key2 === "$ref" || key2 === "allOf")
+        for (const key3 in schema2) {
+          if (key3 === "$ref" || key3 === "allOf")
             continue;
-          if (!(key2 in _cached)) {
-            delete schema2[key2];
+          if (!(key3 in _cached)) {
+            delete schema2[key3];
           }
         }
       }
       if (refSchema.$ref && refSeen.def) {
-        for (const key2 in schema2) {
-          if (key2 === "$ref" || key2 === "allOf")
+        for (const key3 in schema2) {
+          if (key3 === "$ref" || key3 === "allOf")
             continue;
-          if (key2 in refSeen.def && JSON.stringify(schema2[key2]) === JSON.stringify(refSeen.def[key2])) {
-            delete schema2[key2];
+          if (key3 in refSeen.def && JSON.stringify(schema2[key3]) === JSON.stringify(refSeen.def[key3])) {
+            delete schema2[key3];
           }
         }
       }
@@ -17763,11 +17765,11 @@ function finalize(ctx, schema) {
       if (parentSeen?.schema.$ref) {
         schema2.$ref = parentSeen.schema.$ref;
         if (parentSeen.def) {
-          for (const key2 in schema2) {
-            if (key2 === "$ref" || key2 === "allOf")
+          for (const key3 in schema2) {
+            if (key3 === "$ref" || key3 === "allOf")
               continue;
-            if (key2 in parentSeen.def && JSON.stringify(schema2[key2]) === JSON.stringify(parentSeen.def[key2])) {
-              delete schema2[key2];
+            if (key3 in parentSeen.def && JSON.stringify(schema2[key3]) === JSON.stringify(parentSeen.def[key3])) {
+              delete schema2[key3];
             }
           }
         }
@@ -17900,8 +17902,8 @@ function isTransforming(_schema, _ctx) {
     return isTransforming(def.in, ctx) || isTransforming(def.out, ctx);
   }
   if (def.type === "object") {
-    for (const key2 in def.shape) {
-      if (isTransforming(def.shape[key2], ctx))
+    for (const key3 in def.shape) {
+      if (isTransforming(def.shape[key3], ctx))
         return true;
     }
     return false;
@@ -17940,13 +17942,13 @@ var createStandardJSONSchemaMethod = (schema, io, processors = {}) => (params) =
 
 // node_modules/zod/v4/core/json-schema-processors.js
 init_define_WORDPLAY_ENGINE();
-var narrowMin = (agg, key2, value) => {
-  if (agg[key2] === void 0 || value > agg[key2])
-    agg[key2] = value;
+var narrowMin = (agg, key3, value) => {
+  if (agg[key3] === void 0 || value > agg[key3])
+    agg[key3] = value;
 };
-var narrowMax = (agg, key2, value) => {
-  if (agg[key2] === void 0 || value < agg[key2])
-    agg[key2] = value;
+var narrowMax = (agg, key3, value) => {
+  if (agg[key3] === void 0 || value < agg[key3])
+    agg[key3] = value;
 };
 var narrowBoth = (agg, value) => {
   narrowMin(agg, "minimum", value);
@@ -18284,17 +18286,17 @@ var objectProcessor = (schema, ctx, _json, params) => {
   }
   json4.type = "object";
   json4.properties = {};
-  for (const key2 in shape) {
-    assignProp(json4.properties, key2, processSchema(shape[key2], ctx, {
+  for (const key3 in shape) {
+    assignProp(json4.properties, key3, processSchema(shape[key3], ctx, {
       ...params,
-      path: [...params.path, "properties", key2]
+      path: [...params.path, "properties", key3]
     }));
   }
   const requiredKeys = [];
-  for (const key2 of Object.keys(shape)) {
-    const field = def.shape[key2];
+  for (const key3 of Object.keys(shape)) {
+    const field = def.shape[key3];
     if (ctx.io === "input" ? inputOptin(field) === void 0 : field._zod.optout === void 0) {
-      requiredKeys.push(key2);
+      requiredKeys.push(key3);
     }
   }
   if (requiredKeys.length > 0) {
@@ -18669,9 +18671,9 @@ function toJSONSchema(input2, params) {
     };
     ctx2.external = external;
     for (const entry of registry2._idmap.entries()) {
-      const [key2, schema] = entry;
+      const [key3, schema] = entry;
       extractDefs(ctx2, schema);
-      assignProp(schemas, key2, finalize(ctx2, schema));
+      assignProp(schemas, key3, finalize(ctx2, schema));
     }
     if (Object.keys(defs).length > 0) {
       const defsSegment = ctx2.target === "draft-2020-12" ? "$defs" : "definitions";
@@ -18994,17 +18996,17 @@ init_define_WORDPLAY_ENGINE();
 // node_modules/zod/v4/classic/errors.js
 init_define_WORDPLAY_ENGINE();
 var _installedErrorProtos = /* @__PURE__ */ new WeakSet([Object.prototype, Error.prototype]);
-function _lazyMethod(proto, key2, make) {
-  Object.defineProperty(proto, key2, {
+function _lazyMethod(proto, key3, make) {
+  Object.defineProperty(proto, key3, {
     configurable: true,
     enumerable: false,
     get() {
       const value = make(this);
-      Object.defineProperty(this, key2, { value, configurable: true, writable: true });
+      Object.defineProperty(this, key3, { value, configurable: true, writable: true });
       return value;
     },
     set(value) {
-      Object.defineProperty(this, key2, { value, configurable: true, writable: true });
+      Object.defineProperty(this, key3, { value, configurable: true, writable: true });
     }
   });
 }
@@ -20679,11 +20681,11 @@ function resolveRef(ref, ctx) {
   }
   const defsKey = ctx.version === "draft-2020-12" ? "$defs" : "definitions";
   if (path2[0] === defsKey) {
-    const key2 = path2[1] === void 0 ? void 0 : decodeJSONPointerSegment(path2[1]);
-    if (!key2 || !ctx.defs[key2]) {
+    const key3 = path2[1] === void 0 ? void 0 : decodeJSONPointerSegment(path2[1]);
+    if (!key3 || !ctx.defs[key3]) {
       throw new Error(`Reference not found: ${ref}`);
     }
-    return ctx.defs[key2];
+    return ctx.defs[key3];
   }
   throw new Error(`Reference not found: ${ref}`);
 }
@@ -20718,16 +20720,16 @@ function checkObjectGuards(objectSchema, guards) {
       });
     }
     if (guards.keySchema) {
-      for (const key2 of keys2) {
-        const result = guards.keySchema.safeParse(key2);
+      for (const key3 of keys2) {
+        const result = guards.keySchema.safeParse(key3);
         if (result.success)
           continue;
         payload.issues.push({
           code: "invalid_key",
           origin: "record",
           issues: result.error.issues,
-          input: key2,
-          path: [key2],
+          input: key3,
+          path: [key3],
           continue: true
         });
       }
@@ -20752,20 +20754,20 @@ function canonicalKey(value, seen) {
     if (Array.isArray(value)) {
       const parts2 = [];
       for (const item of value) {
-        const key2 = canonicalKey(item, seen);
-        if (key2 === null)
+        const key3 = canonicalKey(item, seen);
+        if (key3 === null)
           return null;
-        parts2.push(key2);
+        parts2.push(key3);
       }
       return `a${parts2.length}:[${parts2.join(",")}]`;
     }
     const keys2 = Object.keys(value).sort();
     const parts = [];
     for (const k of keys2) {
-      const key2 = canonicalKey(value[k], seen);
-      if (key2 === null)
+      const key3 = canonicalKey(value[k], seen);
+      if (key3 === null)
         return null;
-      parts.push(`${k.length}:${k}=${key2}`);
+      parts.push(`${k.length}:${k}=${key3}`);
     }
     return `o${parts.length}:{${parts.join(",")}}`;
   } finally {
@@ -20805,10 +20807,10 @@ function containsRef(value) {
     return value.some(containsRef);
   if (typeof value.$ref === "string")
     return true;
-  return Object.entries(value).some(([key2, sub2]) => {
-    if (SCHEMA_KEYWORDS.has(key2))
+  return Object.entries(value).some(([key3, sub2]) => {
+    if (SCHEMA_KEYWORDS.has(key3))
       return containsRef(sub2);
-    if (!SCHEMA_MAP_KEYWORDS.has(key2) || typeof sub2 !== "object" || sub2 === null)
+    if (!SCHEMA_MAP_KEYWORDS.has(key3) || typeof sub2 !== "object" || sub2 === null)
       return false;
     return Object.values(sub2).some(containsRef);
   });
@@ -20824,12 +20826,12 @@ function checkArrayGuards(arraySchema, guards) {
     if (guards.uniqueItems === true) {
       const firstSeen = /* @__PURE__ */ new Map();
       for (let i2 = 0; i2 < items.length; i2++) {
-        const key2 = canonicalKey(items[i2], /* @__PURE__ */ new Set());
-        if (key2 === null)
+        const key3 = canonicalKey(items[i2], /* @__PURE__ */ new Set());
+        if (key3 === null)
           continue;
-        const first = firstSeen.get(key2);
+        const first = firstSeen.get(key3);
         if (first === void 0) {
-          firstSeen.set(key2, i2);
+          firstSeen.set(key3, i2);
           continue;
         }
         payload.issues.push({
@@ -21068,9 +21070,9 @@ function convertBaseSchema(schema, ctx) {
       const properties = schema.properties || {};
       const requiredSet = new Set(schema.required || []);
       const additionalSchema = typeof schema.additionalProperties === "object" ? convertSchema(schema.additionalProperties, ctx) : void 0;
-      for (const [key2, propSchema] of Object.entries(properties)) {
+      for (const [key3, propSchema] of Object.entries(properties)) {
         const propZodSchema = convertSchema(propSchema, ctx);
-        assignProp(shape, key2, requiredSet.has(key2) ? propZodSchema : propZodSchema.optional());
+        assignProp(shape, key3, requiredSet.has(key3) ? propZodSchema : propZodSchema.optional());
       }
       if (schema.patternProperties) {
         const patternProps = schema.patternProperties;
@@ -21105,12 +21107,12 @@ function convertBaseSchema(schema, ctx) {
             if (!isPlainObject(payload.value))
               return;
             const unrecognized = [];
-            for (const key2 of Object.keys(payload.value)) {
-              if (propertyKeys.includes(key2))
+            for (const key3 of Object.keys(payload.value)) {
+              if (propertyKeys.includes(key3))
                 continue;
-              if (patterns.some((regex) => regex.test(key2)))
+              if (patterns.some((regex) => regex.test(key3)))
                 continue;
-              unrecognized.push(key2);
+              unrecognized.push(key3);
             }
             if (unrecognized.length) {
               payload.issues.push({
@@ -21241,38 +21243,38 @@ function convertSchema(schema, ctx) {
   }
   const extraMeta = {};
   const coreMetadataKeys = ["$id", "id", "$comment", "$anchor", "$vocabulary", "$dynamicRef", "$dynamicAnchor"];
-  for (const key2 of coreMetadataKeys) {
-    if (key2 in schema) {
-      extraMeta[key2] = schema[key2];
+  for (const key3 of coreMetadataKeys) {
+    if (key3 in schema) {
+      extraMeta[key3] = schema[key3];
     }
   }
   const contentMetadataKeys = ["contentEncoding", "contentMediaType", "contentSchema"];
-  for (const key2 of contentMetadataKeys) {
-    if (key2 in schema) {
-      extraMeta[key2] = schema[key2];
+  for (const key3 of contentMetadataKeys) {
+    if (key3 in schema) {
+      extraMeta[key3] = schema[key3];
     }
   }
   if (schema.type === "object" && schema.$ref === void 0) {
     if (schema.propertyNames !== void 0 && !containsRef(schema.propertyNames)) {
       extraMeta.propertyNames = schema.propertyNames;
     }
-    for (const key2 of ["minProperties", "maxProperties"]) {
-      if (schema[key2] !== void 0)
-        extraMeta[key2] = schema[key2];
+    for (const key3 of ["minProperties", "maxProperties"]) {
+      if (schema[key3] !== void 0)
+        extraMeta[key3] = schema[key3];
     }
   }
   if (schema.type === "array" && schema.$ref === void 0) {
     if (schema.contains !== void 0 && !containsRef(schema.contains)) {
       extraMeta.contains = schema.contains;
     }
-    for (const key2 of ["uniqueItems", "minContains", "maxContains"]) {
-      if (schema[key2] !== void 0)
-        extraMeta[key2] = schema[key2];
+    for (const key3 of ["uniqueItems", "minContains", "maxContains"]) {
+      if (schema[key3] !== void 0)
+        extraMeta[key3] = schema[key3];
     }
   }
-  for (const key2 of Object.keys(schema)) {
-    if (!RECOGNIZED_KEYS.has(key2)) {
-      assignProp(extraMeta, key2, schema[key2]);
+  for (const key3 of Object.keys(schema)) {
+    if (!RECOGNIZED_KEYS.has(key3)) {
+      assignProp(extraMeta, key3, schema[key3]);
     }
   }
   if (Object.keys(extraMeta).length > 0) {
@@ -22697,7 +22699,7 @@ var TOOL_RESULT_FOREIGN_FAMILY_KEYS = [
   "requestState"
 ];
 function normalizeContentlessToolResult(value) {
-  if (value === null || typeof value !== "object" || Array.isArray(value) || value.content !== void 0 || TOOL_RESULT_FOREIGN_FAMILY_KEYS.some((key2) => key2 in value)) return value;
+  if (value === null || typeof value !== "object" || Array.isArray(value) || value.content !== void 0 || TOOL_RESULT_FOREIGN_FAMILY_KEYS.some((key3) => key3 in value)) return value;
   return {
     ...value,
     content: []
@@ -23567,10 +23569,10 @@ function build$1() {
     ]),
     CallToolResultWireSchema: unknown().superRefine((value, ctx) => {
       if (typeof value !== "object" || value === null || Array.isArray(value) || value.content !== void 0) return;
-      for (const key2 of TOOL_RESULT_FOREIGN_FAMILY_KEYS) if (key2 in value) {
+      for (const key3 of TOOL_RESULT_FOREIGN_FAMILY_KEYS) if (key3 in value) {
         ctx.addIssue({
           code: "custom",
-          message: `content is required when the body carries '${key2}' \u2014 another result family cannot default into an empty tools/call success`
+          message: `content is required when the body carries '${key3}' \u2014 another result family cannot default into an empty tools/call success`
         });
         return;
       }
@@ -25108,17 +25110,17 @@ var rev2026Codec = {
   },
   validateEnvelopeMeta(meta4) {
     const issues = [];
-    for (const key2 of REQUIRED_ENVELOPE_KEYS) if (!(key2 in meta4)) issues.push({
-      key: key2,
+    for (const key3 of REQUIRED_ENVELOPE_KEYS) if (!(key3 in meta4)) issues.push({
+      key: key3,
       problem: "missing"
     });
     const parsed = buildSchemas2026().RequestMetaEnvelopeSchema.safeParse(meta4);
     if (!parsed.success) for (const issue2 of parsed.error.issues) {
       const path2 = issue2.path.map(String);
-      const key2 = path2.length > 0 ? path2.join(".") : "_meta";
-      if (path2.length === 1 && issues.some((existing) => existing.key === key2 && existing.problem === "missing")) continue;
+      const key3 = path2.length > 0 ? path2.join(".") : "_meta";
+      if (path2.length === 1 && issues.some((existing) => existing.key === key3 && existing.problem === "missing")) continue;
       issues.push({
-        key: key2,
+        key: key3,
         problem: issue2.message
       });
     }
@@ -25449,8 +25451,8 @@ function scanXMcpHeaderDeclarations(inputSchema) {
       });
     }
     const properties = schema.properties;
-    if (properties !== null && typeof properties === "object") for (const [key2, child] of Object.entries(properties)) {
-      const fault$1 = visit2(child, [...path2, key2], reachable);
+    if (properties !== null && typeof properties === "object") for (const [key3, child] of Object.entries(properties)) {
+      const fault$1 = visit2(child, [...path2, key3], reachable);
       if (fault$1 !== void 0) return fault$1;
     }
     for (const k of NON_REACHABLE_SUBSCHEMA_KEYWORDS) {
@@ -25641,12 +25643,12 @@ function isProvablyObjectShapedRoot(schema, root = schema) {
   if ("properties" in schema || "patternProperties" in schema || "additionalProperties" in schema || "required" in schema) return true;
   const ref = typeof schema.$ref === "string" && LOCAL_DEFINITION_REF.exec(schema.$ref);
   if (ref && root[ref[1]]?.[ref[2]]?.type === "object") return true;
-  for (const key2 of [
+  for (const key3 of [
     "oneOf",
     "anyOf",
     "allOf"
   ]) {
-    const members2 = schema[key2];
+    const members2 = schema[key3];
     if (Array.isArray(members2) && members2.length > 0) return members2.every((m) => m !== null && typeof m === "object" && (m.type === "object" || isProvablyObjectShapedRoot(m, "$id" in m ? {} : root)));
   }
   return false;
@@ -25740,8 +25742,8 @@ var ANNOTATION_ONLY_JSON_SCHEMA_KEYWORDS = /* @__PURE__ */ new Set([
   "title",
   "writeOnly"
 ]);
-function isAnnotationOnlyJsonSchemaKeyword(key2) {
-  return ANNOTATION_ONLY_JSON_SCHEMA_KEYWORDS.has(key2) || key2.startsWith("x-");
+function isAnnotationOnlyJsonSchemaKeyword(key3) {
+  return ANNOTATION_ONLY_JSON_SCHEMA_KEYWORDS.has(key3) || key3.startsWith("x-");
 }
 var ROOT_KEYS = /* @__PURE__ */ new Set(["$schema", ...Object.keys(ElicitRequestFormParamsSchema.shape.requestedSchema.shape)]);
 var PROPERTY_KEYS_BY_TYPE = {
@@ -25762,19 +25764,19 @@ function walkProperty(node2, path2, vendor, unsupported) {
   const allowedKeys = typeof node2.type === "string" && Object.hasOwn(PROPERTY_KEYS_BY_TYPE, node2.type) ? PROPERTY_KEYS_BY_TYPE[node2.type] : void 0;
   if (allowedKeys === void 0) return node2;
   const pruned = {};
-  for (const [key2, value] of Object.entries(node2)) if (allowedKeys.has(key2) || isAnnotationOnlyJsonSchemaKeyword(key2)) pruned[key2] = value;
-  else if (key2 === "pattern" && node2.type === "string" && typeof node2.format === "string") {
-    if (!SUPPORTED_STRING_FORMATS.has(node2.format)) pruned[key2] = value;
-    else if (typeof value !== "string" || !isLibraryFormatPattern(node2.format, value, vendor)) unsupported.push(`${path2}.${key2}`);
-  } else unsupported.push(`${path2}.${key2}`);
+  for (const [key3, value] of Object.entries(node2)) if (allowedKeys.has(key3) || isAnnotationOnlyJsonSchemaKeyword(key3)) pruned[key3] = value;
+  else if (key3 === "pattern" && node2.type === "string" && typeof node2.format === "string") {
+    if (!SUPPORTED_STRING_FORMATS.has(node2.format)) pruned[key3] = value;
+    else if (typeof value !== "string" || !isLibraryFormatPattern(node2.format, value, vendor)) unsupported.push(`${path2}.${key3}`);
+  } else unsupported.push(`${path2}.${key3}`);
   return pruned;
 }
 function walkRequestedSchema(converted, vendor) {
   const pruned = {};
   const unsupported = [];
-  for (const [key2, value] of Object.entries(converted)) if (key2 === "properties" && isJsonObject(value)) pruned[key2] = Object.fromEntries(Object.entries(value).map(([name, node2]) => [name, walkProperty(node2, `properties.${name}`, vendor, unsupported)]));
-  else if (ROOT_KEYS.has(key2)) pruned[key2] = value;
-  else if (!isAnnotationOnlyJsonSchemaKeyword(key2)) unsupported.push(key2);
+  for (const [key3, value] of Object.entries(converted)) if (key3 === "properties" && isJsonObject(value)) pruned[key3] = Object.fromEntries(Object.entries(value).map(([name, node2]) => [name, walkProperty(node2, `properties.${name}`, vendor, unsupported)]));
+  else if (ROOT_KEYS.has(key3)) pruned[key3] = value;
+  else if (!isAnnotationOnlyJsonSchemaKeyword(key3)) unsupported.push(key3);
   if (unsupported.length > 0) throw new ProtocolError(ProtocolErrorCode.InvalidParams, `Elicitation requestedSchema contains unsupported JSON Schema constraint(s) after Standard Schema conversion: ${unsupported.join(", ")}`);
   return pruned;
 }
@@ -25786,10 +25788,10 @@ function describeUnsupportedProperties(pruned, fallback) {
 function findDroppedConstraintPaths(original, parsed, path2 = "") {
   if (Array.isArray(original) && Array.isArray(parsed)) return original.flatMap((item, index) => findDroppedConstraintPaths(item, parsed[index], `${path2}[${index}]`));
   if (!isJsonObject(original) || !isJsonObject(parsed)) return [];
-  return Object.entries(original).flatMap(([key2, value]) => {
-    const childPath = path2 ? `${path2}.${key2}` : key2;
-    if (!Object.prototype.hasOwnProperty.call(parsed, key2)) return isAnnotationOnlyJsonSchemaKeyword(key2) ? [] : [childPath];
-    return findDroppedConstraintPaths(value, parsed[key2], childPath);
+  return Object.entries(original).flatMap(([key3, value]) => {
+    const childPath = path2 ? `${path2}.${key3}` : key3;
+    if (!Object.prototype.hasOwnProperty.call(parsed, key3)) return isAnnotationOnlyJsonSchemaKeyword(key3) ? [] : [childPath];
+    return findDroppedConstraintPaths(value, parsed[key3], childPath);
   });
 }
 function normalizeElicitInputParams(input2) {
@@ -25804,7 +25806,7 @@ function normalizeElicitInputParams(input2) {
   if (!parsed.success) throw new ProtocolError(ProtocolErrorCode.InvalidParams, `Elicitation requestedSchema only supports flat primitive properties (string, number, integer, boolean, and string enums): ${describeUnsupportedProperties(pruned, parsed.error.message)}`);
   const droppedConstraints = findDroppedConstraintPaths(pruned, parsed.data);
   if (droppedConstraints.length > 0) throw new ProtocolError(ProtocolErrorCode.InvalidParams, `Elicitation requestedSchema contains unsupported JSON Schema constraint(s) after Standard Schema conversion: ${droppedConstraints.join(", ")}`);
-  const danglingRequired = (parsed.data.required ?? []).filter((key2) => !Object.prototype.hasOwnProperty.call(parsed.data.properties, key2));
+  const danglingRequired = (parsed.data.required ?? []).filter((key3) => !Object.prototype.hasOwnProperty.call(parsed.data.properties, key3));
   if (danglingRequired.length > 0) throw new ProtocolError(ProtocolErrorCode.InvalidParams, `Elicitation requestedSchema lists required properties that are not defined in properties: ${danglingRequired.join(", ")}`);
   return {
     ...input2,
@@ -26063,13 +26065,13 @@ var authSchemas = {
 };
 var _specTypeSchemas = {};
 var _isSpecType = {};
-function register(key2, schema) {
-  const name = key2.slice(0, -6);
+function register(key3, schema) {
+  const name = key3.slice(0, -6);
   _specTypeSchemas[name] = schema;
   _isSpecType[name] = (v) => schema.safeParse(v).success;
 }
-for (const key2 of SPEC_SCHEMA_KEYS) register(key2, schemas_exports3[key2]);
-for (const [key2, schema] of Object.entries(authSchemas)) register(key2, schema);
+for (const key3 of SPEC_SCHEMA_KEYS) register(key3, schemas_exports3[key3]);
+for (const [key3, schema] of Object.entries(authSchemas)) register(key3, schema);
 var specTypeSchemas = Object.freeze(_specTypeSchemas);
 var isSpecType = Object.freeze(_isSpecType);
 function bootstrapOutboundCodec(method) {
@@ -26098,8 +26100,8 @@ function liftWireOnlyMaterial(message, kind) {
     lifted: {}
   };
   const meta4 = params._meta;
-  const envelopeKeys = isPlainObject$1(meta4) ? RESERVED_ENVELOPE_META_KEYS.filter((key2) => key2 in meta4) : [];
-  const retryKeys = kind === "request" ? RETRY_PARAMS_KEYS.filter((key2) => key2 in params) : [];
+  const envelopeKeys = isPlainObject$1(meta4) ? RESERVED_ENVELOPE_META_KEYS.filter((key3) => key3 in meta4) : [];
+  const retryKeys = kind === "request" ? RETRY_PARAMS_KEYS.filter((key3) => key3 in params) : [];
   if (envelopeKeys.length === 0 && retryKeys.length === 0) return {
     message,
     lifted: {}
@@ -26109,18 +26111,18 @@ function liftWireOnlyMaterial(message, kind) {
   if (envelopeKeys.length > 0 && isPlainObject$1(meta4)) {
     const envelope = {};
     const nextMeta = { ...meta4 };
-    for (const key2 of envelopeKeys) {
-      envelope[key2] = meta4[key2];
-      delete nextMeta[key2];
+    for (const key3 of envelopeKeys) {
+      envelope[key3] = meta4[key3];
+      delete nextMeta[key3];
     }
     lifted.envelope = envelope;
     if (Object.keys(nextMeta).length > 0) nextParams._meta = nextMeta;
     else delete nextParams._meta;
   }
-  for (const key2 of retryKeys) {
-    if (key2 === "inputResponses") lifted.inputResponses = nextParams[key2];
-    if (key2 === "requestState") lifted.requestState = nextParams[key2];
-    delete nextParams[key2];
+  for (const key3 of retryKeys) {
+    if (key3 === "inputResponses") lifted.inputResponses = nextParams[key3];
+    if (key3 === "requestState") lifted.requestState = nextParams[key3];
+    delete nextParams[key3];
   }
   return {
     message: {
@@ -26898,8 +26900,8 @@ function isPlainObject$1(value) {
 }
 function mergeCapabilities(base, additional) {
   const result = { ...base };
-  for (const key2 in additional) {
-    const k = key2;
+  for (const key3 in additional) {
+    const k = key3;
     const addValue = additional[k];
     if (addValue === void 0) continue;
     const baseValue = result[k];
@@ -26920,12 +26922,12 @@ function partitionInputResponses(inputResponses) {
     accepted,
     droppedKeys
   };
-  for (const [key2, entry] of Object.entries(inputResponses)) {
+  for (const [key3, entry] of Object.entries(inputResponses)) {
     if (!isPlainObject2(entry) || "method" in entry || "result" in entry) {
-      droppedKeys.push(key2);
+      droppedKeys.push(key3);
       continue;
     }
-    accepted[key2] = entry;
+    accepted[key3] = entry;
   }
   return {
     accepted,
@@ -26959,20 +26961,20 @@ var require_content_type = /* @__PURE__ */ __commonJSMin(((exports) => {
     if (!TYPE_REGEXP.test(type)) throw new TypeError("invalid media type");
     var obj = new ContentType(type.toLowerCase());
     if (index !== -1) {
-      var key2;
+      var key3;
       var match;
       var value;
       PARAM_REGEXP.lastIndex = index;
       while (match = PARAM_REGEXP.exec(header)) {
         if (match.index !== index) throw new TypeError("invalid parameter format");
         index += match[0].length;
-        key2 = match[1].toLowerCase();
+        key3 = match[1].toLowerCase();
         value = match[2];
         if (value.charCodeAt(0) === 34) {
           value = value.slice(1, -1);
           if (value.indexOf("\\") !== -1) value = value.replace(QESC_REGEXP, "$1");
         }
-        obj.parameters[key2] = value;
+        obj.parameters[key3] = value;
       }
       if (index !== header.length) throw new TypeError("invalid parameter format");
     }
@@ -27218,13 +27220,13 @@ var require_code$1 = /* @__PURE__ */ __commonJSMin(((exports) => {
     return JSON.stringify(x).replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
   }
   exports.safeStringify = safeStringify;
-  function getProperty(key2) {
-    return typeof key2 == "string" && exports.IDENTIFIER.test(key2) ? new _Code(`.${key2}`) : _`[${key2}]`;
+  function getProperty(key3) {
+    return typeof key3 == "string" && exports.IDENTIFIER.test(key3) ? new _Code(`.${key3}`) : _`[${key3}]`;
   }
   exports.getProperty = getProperty;
-  function getEsmExportName(key2) {
-    if (typeof key2 == "string" && exports.IDENTIFIER.test(key2)) return new _Code(`${key2}`);
-    throw new Error(`CodeGen: invalid export name: ${key2}, use explicit $id name mapping`);
+  function getEsmExportName(key3) {
+    if (typeof key3 == "string" && exports.IDENTIFIER.test(key3)) return new _Code(`${key3}`);
+    throw new Error(`CodeGen: invalid export name: ${key3}, use explicit $id name mapping`);
   }
   exports.getEsmExportName = getEsmExportName;
   function regexpCode(rx) {
@@ -27835,10 +27837,10 @@ var require_codegen = /* @__PURE__ */ __commonJSMin(((exports) => {
     }
     object(...keyValues) {
       const code = ["{"];
-      for (const [key2, value] of keyValues) {
+      for (const [key3, value] of keyValues) {
         if (code.length > 1) code.push(",");
-        code.push(key2);
-        if (key2 !== value || this.opts.es5) {
+        code.push(key3);
+        if (key3 !== value || this.opts.es5) {
           code.push(":");
           (0, code_1.addCodeArg)(code, value);
         }
@@ -28060,18 +28062,18 @@ var require_util = /* @__PURE__ */ __commonJSMin(((exports) => {
     if (!opts.strictSchema) return;
     if (typeof schema === "boolean") return;
     const rules = self.RULES.keywords;
-    for (const key2 in schema) if (!rules[key2]) checkStrictMode(it, `unknown keyword: "${key2}"`);
+    for (const key3 in schema) if (!rules[key3]) checkStrictMode(it, `unknown keyword: "${key3}"`);
   }
   exports.checkUnknownRules = checkUnknownRules;
   function schemaHasRules(schema, rules) {
     if (typeof schema == "boolean") return !schema;
-    for (const key2 in schema) if (rules[key2]) return true;
+    for (const key3 in schema) if (rules[key3]) return true;
     return false;
   }
   exports.schemaHasRules = schemaHasRules;
   function schemaHasRulesButRef(schema, RULES2) {
     if (typeof schema == "boolean") return !schema;
-    for (const key2 in schema) if (key2 !== "$ref" && RULES2.all[key2]) return true;
+    for (const key3 in schema) if (key3 !== "$ref" && RULES2.all[key3]) return true;
     return false;
   }
   exports.schemaHasRulesButRef = schemaHasRulesButRef;
@@ -28578,7 +28580,7 @@ var require_defaults = /* @__PURE__ */ __commonJSMin(((exports) => {
   const util_1 = require_util();
   function assignDefaults(it, ty) {
     const { properties, items } = it.schema;
-    if (ty === "object" && properties) for (const key2 in properties) assignDefault(it, key2, properties[key2].default);
+    if (ty === "object" && properties) for (const key3 in properties) assignDefault(it, key3, properties[key3].default);
     else if (ty === "array" && Array.isArray(items)) items.forEach((sch, i2) => assignDefault(it, i2, sch.default));
   }
   exports.assignDefaults = assignDefaults;
@@ -28904,8 +28906,8 @@ var require_fast_deep_equal = /* @__PURE__ */ __commonJSMin(((exports, module) =
       if (length !== Object.keys(b).length) return false;
       for (i2 = length; i2-- !== 0; ) if (!Object.prototype.hasOwnProperty.call(b, keys2[i2])) return false;
       for (i2 = length; i2-- !== 0; ) {
-        var key2 = keys2[i2];
-        if (!equal(a[key2], b[key2])) return false;
+        var key3 = keys2[i2];
+        if (!equal(a[key3], b[key3])) return false;
       }
       return true;
     }
@@ -28972,13 +28974,13 @@ var require_json_schema_traverse = /* @__PURE__ */ __commonJSMin(((exports, modu
   function _traverse(opts, pre, post, schema, jsonPtr, rootSchema, parentJsonPtr, parentKeyword, parentSchema, keyIndex) {
     if (schema && typeof schema == "object" && !Array.isArray(schema)) {
       pre(schema, jsonPtr, rootSchema, parentJsonPtr, parentKeyword, parentSchema, keyIndex);
-      for (var key2 in schema) {
-        var sch = schema[key2];
+      for (var key3 in schema) {
+        var sch = schema[key3];
         if (Array.isArray(sch)) {
-          if (key2 in traverse.arrayKeywords) for (var i2 = 0; i2 < sch.length; i2++) _traverse(opts, pre, post, sch[i2], jsonPtr + "/" + key2 + "/" + i2, rootSchema, jsonPtr, key2, schema, i2);
-        } else if (key2 in traverse.propsKeywords) {
-          if (sch && typeof sch == "object") for (var prop2 in sch) _traverse(opts, pre, post, sch[prop2], jsonPtr + "/" + key2 + "/" + escapeJsonPtr(prop2), rootSchema, jsonPtr, key2, schema, prop2);
-        } else if (key2 in traverse.keywords || opts.allKeys && !(key2 in traverse.skipKeywords)) _traverse(opts, pre, post, sch, jsonPtr + "/" + key2, rootSchema, jsonPtr, key2, schema);
+          if (key3 in traverse.arrayKeywords) for (var i2 = 0; i2 < sch.length; i2++) _traverse(opts, pre, post, sch[i2], jsonPtr + "/" + key3 + "/" + i2, rootSchema, jsonPtr, key3, schema, i2);
+        } else if (key3 in traverse.propsKeywords) {
+          if (sch && typeof sch == "object") for (var prop2 in sch) _traverse(opts, pre, post, sch[prop2], jsonPtr + "/" + key3 + "/" + escapeJsonPtr(prop2), rootSchema, jsonPtr, key3, schema, prop2);
+        } else if (key3 in traverse.keywords || opts.allKeys && !(key3 in traverse.skipKeywords)) _traverse(opts, pre, post, sch, jsonPtr + "/" + key3, rootSchema, jsonPtr, key3, schema);
       }
       post(schema, jsonPtr, rootSchema, parentJsonPtr, parentKeyword, parentSchema, keyIndex);
     }
@@ -29026,9 +29028,9 @@ var require_resolve = /* @__PURE__ */ __commonJSMin(((exports) => {
     "$dynamicAnchor"
   ]);
   function hasRef(schema) {
-    for (const key2 in schema) {
-      if (REF_KEYWORDS.has(key2)) return true;
-      const sch = schema[key2];
+    for (const key3 in schema) {
+      if (REF_KEYWORDS.has(key3)) return true;
+      const sch = schema[key3];
       if (Array.isArray(sch) && sch.some(hasRef)) return true;
       if (typeof sch == "object" && hasRef(sch)) return true;
     }
@@ -29036,11 +29038,11 @@ var require_resolve = /* @__PURE__ */ __commonJSMin(((exports) => {
   }
   function countKeys(schema) {
     let count2 = 0;
-    for (const key2 in schema) {
-      if (key2 === "$ref") return Infinity;
+    for (const key3 in schema) {
+      if (key3 === "$ref") return Infinity;
       count2++;
-      if (SIMPLE_INLINED.has(key2)) continue;
-      if (typeof schema[key2] == "object") (0, util_1.eachItem)(schema[key2], (sch) => count2 += countKeys(sch));
+      if (SIMPLE_INLINED.has(key3)) continue;
+      if (typeof schema[key3] == "object") (0, util_1.eachItem)(schema[key3], (sch) => count2 += countKeys(sch));
       if (count2 === Infinity) return Infinity;
     }
     return count2;
@@ -29198,7 +29200,7 @@ var require_validate = /* @__PURE__ */ __commonJSMin(((exports) => {
   }
   function schemaCxtHasRules({ schema, self }) {
     if (typeof schema == "boolean") return !schema;
-    for (const key2 in schema) if (self.RULES.all[key2]) return true;
+    for (const key3 in schema) if (self.RULES.all[key3]) return true;
     return false;
   }
   function isSchemaObj(it) {
@@ -30931,7 +30933,7 @@ var require_core$3 = /* @__PURE__ */ __commonJSMin(((exports) => {
         }
       }
     }
-    addSchema(schema, key2, _meta, _validateSchema = this.opts.validateSchema) {
+    addSchema(schema, key3, _meta, _validateSchema = this.opts.validateSchema) {
       if (Array.isArray(schema)) {
         for (const sch of schema) this.addSchema(sch, void 0, _meta, _validateSchema);
         return this;
@@ -30942,13 +30944,13 @@ var require_core$3 = /* @__PURE__ */ __commonJSMin(((exports) => {
         id = schema[schemaId];
         if (id !== void 0 && typeof id != "string") throw new Error(`schema ${schemaId} must be string`);
       }
-      key2 = (0, resolve_1.normalizeId)(key2 || id);
-      this._checkUnique(key2);
-      this.schemas[key2] = this._addSchema(schema, _meta, key2, _validateSchema, true);
+      key3 = (0, resolve_1.normalizeId)(key3 || id);
+      this._checkUnique(key3);
+      this.schemas[key3] = this._addSchema(schema, _meta, key3, _validateSchema, true);
       return this;
     }
-    addMetaSchema(schema, key2, _validateSchema = this.opts.validateSchema) {
-      this.addSchema(schema, key2, true, _validateSchema);
+    addMetaSchema(schema, key3, _validateSchema = this.opts.validateSchema) {
+      this.addSchema(schema, key3, true, _validateSchema);
       return this;
     }
     validateSchema(schema, throwOrLogError) {
@@ -31080,12 +31082,12 @@ var require_core$3 = /* @__PURE__ */ __commonJSMin(((exports) => {
         const segments = jsonPointer.split("/").slice(1);
         let keywords = metaSchema;
         for (const seg of segments) keywords = keywords[seg];
-        for (const key2 in rules) {
-          const rule = rules[key2];
+        for (const key3 in rules) {
+          const rule = rules[key3];
           if (typeof rule != "object") continue;
           const { $data } = rule.definition;
-          const schema = keywords[key2];
-          if ($data && schema) keywords[key2] = schemaOrData(schema);
+          const schema = keywords[key3];
+          if ($data && schema) keywords[key3] = schemaOrData(schema);
         }
       }
       return metaSchema;
@@ -31150,9 +31152,9 @@ var require_core$3 = /* @__PURE__ */ __commonJSMin(((exports) => {
   Ajv2.MissingRefError = ref_error_1.default;
   exports.default = Ajv2;
   function checkOptions(checkOpts, options, msg, log = "error") {
-    for (const key2 in checkOpts) {
-      const opt = key2;
-      if (opt in options) this.logger[log](`${msg}: option ${key2}. ${checkOpts[opt]}`);
+    for (const key3 in checkOpts) {
+      const opt = key3;
+      if (opt in options) this.logger[log](`${msg}: option ${key3}. ${checkOpts[opt]}`);
     }
   }
   function getSchEnv(keyRef) {
@@ -31163,7 +31165,7 @@ var require_core$3 = /* @__PURE__ */ __commonJSMin(((exports) => {
     const optsSchemas = this.opts.schemas;
     if (!optsSchemas) return;
     if (Array.isArray(optsSchemas)) this.addSchema(optsSchemas);
-    else for (const key2 in optsSchemas) this.addSchema(optsSchemas[key2], key2);
+    else for (const key3 in optsSchemas) this.addSchema(optsSchemas[key3], key3);
   }
   function addInitialFormats() {
     for (const name in this.opts.formats) {
@@ -32053,10 +32055,10 @@ var require_dependencies = /* @__PURE__ */ __commonJSMin(((exports) => {
   function splitDependencies({ schema }) {
     const propertyDeps = {};
     const schemaDeps = {};
-    for (const key2 in schema) {
-      if (key2 === "__proto__") continue;
-      const deps = Array.isArray(schema[key2]) ? propertyDeps : schemaDeps;
-      deps[key2] = schema[key2];
+    for (const key3 in schema) {
+      if (key3 === "__proto__") continue;
+      const deps = Array.isArray(schema[key3]) ? propertyDeps : schemaDeps;
+      deps[key3] = schema[key3];
     }
     return [propertyDeps, schemaDeps];
   }
@@ -32118,13 +32120,13 @@ var require_propertyNames = /* @__PURE__ */ __commonJSMin(((exports) => {
       const { gen, schema, data, it } = cxt;
       if ((0, util_1.alwaysValidSchema)(it, schema)) return;
       const valid = gen.name("valid");
-      gen.forIn("key", data, (key2) => {
-        cxt.setParams({ propertyName: key2 });
+      gen.forIn("key", data, (key3) => {
+        cxt.setParams({ propertyName: key3 });
         cxt.subschema({
           keyword: "propertyNames",
-          data: key2,
+          data: key3,
           dataTypes: ["string"],
-          propertyName: key2,
+          propertyName: key3,
           compositeRule: true
         }, valid);
         gen.if((0, codegen_1.not)(valid), () => {
@@ -32164,31 +32166,31 @@ var require_additionalProperties = /* @__PURE__ */ __commonJSMin(((exports) => {
       checkAdditionalProperties();
       cxt.ok((0, codegen_1._)`${errsCount} === ${names_1.default.errors}`);
       function checkAdditionalProperties() {
-        gen.forIn("key", data, (key2) => {
-          if (!props.length && !patProps.length) additionalPropertyCode(key2);
-          else gen.if(isAdditional(key2), () => additionalPropertyCode(key2));
+        gen.forIn("key", data, (key3) => {
+          if (!props.length && !patProps.length) additionalPropertyCode(key3);
+          else gen.if(isAdditional(key3), () => additionalPropertyCode(key3));
         });
       }
-      function isAdditional(key2) {
+      function isAdditional(key3) {
         let definedProp;
         if (props.length > 8) {
           const propsSchema = (0, util_1.schemaRefOrVal)(it, parentSchema.properties, "properties");
-          definedProp = (0, code_1.isOwnProperty)(gen, propsSchema, key2);
-        } else if (props.length) definedProp = (0, codegen_1.or)(...props.map((p) => (0, codegen_1._)`${key2} === ${p}`));
+          definedProp = (0, code_1.isOwnProperty)(gen, propsSchema, key3);
+        } else if (props.length) definedProp = (0, codegen_1.or)(...props.map((p) => (0, codegen_1._)`${key3} === ${p}`));
         else definedProp = codegen_1.nil;
-        if (patProps.length) definedProp = (0, codegen_1.or)(definedProp, ...patProps.map((p) => (0, codegen_1._)`${(0, code_1.usePattern)(cxt, p)}.test(${key2})`));
+        if (patProps.length) definedProp = (0, codegen_1.or)(definedProp, ...patProps.map((p) => (0, codegen_1._)`${(0, code_1.usePattern)(cxt, p)}.test(${key3})`));
         return (0, codegen_1.not)(definedProp);
       }
-      function deleteAdditional(key2) {
-        gen.code((0, codegen_1._)`delete ${data}[${key2}]`);
+      function deleteAdditional(key3) {
+        gen.code((0, codegen_1._)`delete ${data}[${key3}]`);
       }
-      function additionalPropertyCode(key2) {
+      function additionalPropertyCode(key3) {
         if (opts.removeAdditional === "all" || opts.removeAdditional && schema === false) {
-          deleteAdditional(key2);
+          deleteAdditional(key3);
           return;
         }
         if (schema === false) {
-          cxt.setParams({ additionalProperty: key2 });
+          cxt.setParams({ additionalProperty: key3 });
           cxt.error();
           if (!allErrors) gen.break();
           return;
@@ -32196,21 +32198,21 @@ var require_additionalProperties = /* @__PURE__ */ __commonJSMin(((exports) => {
         if (typeof schema == "object" && !(0, util_1.alwaysValidSchema)(it, schema)) {
           const valid = gen.name("valid");
           if (opts.removeAdditional === "failing") {
-            applyAdditionalSchema(key2, valid, false);
+            applyAdditionalSchema(key3, valid, false);
             gen.if((0, codegen_1.not)(valid), () => {
               cxt.reset();
-              deleteAdditional(key2);
+              deleteAdditional(key3);
             });
           } else {
-            applyAdditionalSchema(key2, valid);
+            applyAdditionalSchema(key3, valid);
             if (!allErrors) gen.if((0, codegen_1.not)(valid), () => gen.break());
           }
         }
       }
-      function applyAdditionalSchema(key2, valid, errors) {
+      function applyAdditionalSchema(key3, valid, errors) {
         const subschema = {
           keyword: "additionalProperties",
-          dataProp: key2,
+          dataProp: key3,
           dataPropType: util_1.Type.Str
         };
         if (errors === false) Object.assign(subschema, {
@@ -32304,16 +32306,16 @@ var require_patternProperties = /* @__PURE__ */ __commonJSMin(((exports) => {
         for (const prop2 in checkProperties) if (new RegExp(pat).test(prop2)) (0, util_1.checkStrictMode)(it, `property ${prop2} matches pattern ${pat} (use allowMatchingProperties)`);
       }
       function validateProperties(pat) {
-        gen.forIn("key", data, (key2) => {
-          gen.if((0, codegen_1._)`${(0, code_1.usePattern)(cxt, pat)}.test(${key2})`, () => {
+        gen.forIn("key", data, (key3) => {
+          gen.if((0, codegen_1._)`${(0, code_1.usePattern)(cxt, pat)}.test(${key3})`, () => {
             const alwaysValid = alwaysValidPatterns.includes(pat);
             if (!alwaysValid) cxt.subschema({
               keyword: "patternProperties",
               schemaProp: pat,
-              dataProp: key2,
+              dataProp: key3,
               dataPropType: util_2.Type.Str
             }, valid);
-            if (it.opts.unevaluated && props !== true) gen.assign((0, codegen_1._)`${props}[${key2}]`, true);
+            if (it.opts.unevaluated && props !== true) gen.assign((0, codegen_1._)`${props}[${key3}]`, true);
             else if (!alwaysValid && !it.allErrors) gen.if((0, codegen_1.not)(valid), () => gen.break());
           });
         });
@@ -33164,13 +33166,13 @@ var require_unevaluatedProperties = /* @__PURE__ */ __commonJSMin(((exports) => 
       const { gen, schema, data, errsCount, it } = cxt;
       if (!errsCount) throw new Error("ajv implementation error");
       const { allErrors, props } = it;
-      if (props instanceof codegen_1.Name) gen.if((0, codegen_1._)`${props} !== true`, () => gen.forIn("key", data, (key2) => gen.if(unevaluatedDynamic(props, key2), () => unevaluatedPropCode(key2))));
-      else if (props !== true) gen.forIn("key", data, (key2) => props === void 0 ? unevaluatedPropCode(key2) : gen.if(unevaluatedStatic(props, key2), () => unevaluatedPropCode(key2)));
+      if (props instanceof codegen_1.Name) gen.if((0, codegen_1._)`${props} !== true`, () => gen.forIn("key", data, (key3) => gen.if(unevaluatedDynamic(props, key3), () => unevaluatedPropCode(key3))));
+      else if (props !== true) gen.forIn("key", data, (key3) => props === void 0 ? unevaluatedPropCode(key3) : gen.if(unevaluatedStatic(props, key3), () => unevaluatedPropCode(key3)));
       it.props = true;
       cxt.ok((0, codegen_1._)`${errsCount} === ${names_1.default.errors}`);
-      function unevaluatedPropCode(key2) {
+      function unevaluatedPropCode(key3) {
         if (schema === false) {
-          cxt.setParams({ unevaluatedProperty: key2 });
+          cxt.setParams({ unevaluatedProperty: key3 });
           cxt.error();
           if (!allErrors) gen.break();
           return;
@@ -33179,18 +33181,18 @@ var require_unevaluatedProperties = /* @__PURE__ */ __commonJSMin(((exports) => 
           const valid = gen.name("valid");
           cxt.subschema({
             keyword: "unevaluatedProperties",
-            dataProp: key2,
+            dataProp: key3,
             dataPropType: util_1.Type.Str
           }, valid);
           if (!allErrors) gen.if((0, codegen_1.not)(valid), () => gen.break());
         }
       }
-      function unevaluatedDynamic(evaluatedProps, key2) {
-        return (0, codegen_1._)`!${evaluatedProps} || !${evaluatedProps}[${key2}]`;
+      function unevaluatedDynamic(evaluatedProps, key3) {
+        return (0, codegen_1._)`!${evaluatedProps} || !${evaluatedProps}[${key3}]`;
       }
-      function unevaluatedStatic(evaluatedProps, key2) {
+      function unevaluatedStatic(evaluatedProps, key3) {
         const ps = [];
-        for (const p in evaluatedProps) if (evaluatedProps[p] === true) ps.push((0, codegen_1._)`${key2} !== ${p}`);
+        for (const p in evaluatedProps) if (evaluatedProps[p] === true) ps.push((0, codegen_1._)`${key3} !== ${p}`);
         return (0, codegen_1.and)(...ps);
       }
     }
@@ -34715,11 +34717,11 @@ function resolveLegacyShimOptions(options) {
     legacyShim: options?.legacyShim ?? true
   };
 }
-function coerceEmbeddedInputRequest(method, key2, entry) {
-  if (entry === null || typeof entry !== "object" || typeof entry.method !== "string") throw new ProtocolError(ProtocolErrorCode.InternalError, `Handler for ${method} returned an invalid input request '${key2}': each inputRequests entry must be an embedded elicitation/create, sampling/createMessage, or roots/list request`);
+function coerceEmbeddedInputRequest(method, key3, entry) {
+  if (entry === null || typeof entry !== "object" || typeof entry.method !== "string") throw new ProtocolError(ProtocolErrorCode.InternalError, `Handler for ${method} returned an invalid input request '${key3}': each inputRequests entry must be an embedded elicitation/create, sampling/createMessage, or roots/list request`);
   const embedded = entry;
   const required2 = requiredClientCapabilitiesForInputRequest(embedded);
-  if (required2 === void 0) throw new ProtocolError(ProtocolErrorCode.InternalError, `Handler for ${method} returned an input request '${key2}' of kind '${embedded.method}', which is not an embedded request the 2026-07-28 revision defines`);
+  if (required2 === void 0) throw new ProtocolError(ProtocolErrorCode.InternalError, `Handler for ${method} returned an input request '${key3}' of kind '${embedded.method}', which is not an embedded request the 2026-07-28 revision defines`);
   return {
     embedded,
     required: required2
@@ -34765,11 +34767,11 @@ var LegacyInputRequiredShim = class {
       if (hasInputRequests) {
         const declared = this._host.resolvedClientCapabilities(ctx);
         const coerced = [];
-        for (const [key2, entry] of Object.entries(inputRequests)) {
-          const { embedded, required: required2 } = coerceEmbeddedInputRequest(method, key2, entry);
-          if (embedded.method !== "roots/list" && embedded.params === void 0) throw new ProtocolError(ProtocolErrorCode.InternalError, `Handler for ${method} returned an input request '${key2}' of kind '${embedded.method}' without params`);
-          if (missingClientCapabilities(required2, declared) !== void 0) return legacyShimFailure(method, `Cannot request input '${key2}' (${embedded.method}): the client on this 2025-era connection did not declare the required capability${declared === void 0 ? " (no client capabilities are available on this connection \u2014 per-request legacy serving cannot receive server-to-client requests)" : ""}`);
-          coerced.push([key2, embedded]);
+        for (const [key3, entry] of Object.entries(inputRequests)) {
+          const { embedded, required: required2 } = coerceEmbeddedInputRequest(method, key3, entry);
+          if (embedded.method !== "roots/list" && embedded.params === void 0) throw new ProtocolError(ProtocolErrorCode.InternalError, `Handler for ${method} returned an input request '${key3}' of kind '${embedded.method}' without params`);
+          if (missingClientCapabilities(required2, declared) !== void 0) return legacyShimFailure(method, `Cannot request input '${key3}' (${embedded.method}): the client on this 2025-era connection did not declare the required capability${declared === void 0 ? " (no client capabilities are available on this connection \u2014 per-request legacy serving cannot receive server-to-client requests)" : ""}`);
+          coerced.push([key3, embedded]);
         }
         const roundAbort = linkedRoundAbort(outerSignal);
         try {
@@ -34781,9 +34783,9 @@ var LegacyInputRequiredShim = class {
             },
             signal: roundAbort.signal
           };
-          const fulfilled = await Promise.all(coerced.map(async ([key2, embedded]) => {
+          const fulfilled = await Promise.all(coerced.map(async ([key3, embedded]) => {
             try {
-              return [key2, await this._dispatchLeg(embedded, legOptions)];
+              return [key3, await this._dispatchLeg(embedded, legOptions)];
             } catch (error62) {
               roundAbort.abort(error62);
               throw error62;
@@ -35084,10 +35086,10 @@ var Server = class extends Protocol {
     if (!hasInputRequests && !hasRequestState) throw new ProtocolError(ProtocolErrorCode.InternalError, `Handler for ${method} returned an input-required result with neither inputRequests nor requestState (every InputRequiredResult must include at least one of the two)`);
     if (hasInputRequests) {
       const declared = this._inputRequestCapabilityView(ctx);
-      for (const [key2, entry] of Object.entries(inputRequests)) {
-        const { embedded, required: required2 } = coerceEmbeddedInputRequest(method, key2, entry);
+      for (const [key3, entry] of Object.entries(inputRequests)) {
+        const { embedded, required: required2 } = coerceEmbeddedInputRequest(method, key3, entry);
         const missing = missingClientCapabilities(required2, declared);
-        if (missing !== void 0) throw new MissingRequiredClientCapabilityError({ requiredCapabilities: missing }, `Cannot request input '${key2}' (${embedded.method}): the request's client capabilities do not declare the required capability`);
+        if (missing !== void 0) throw new MissingRequiredClientCapabilityError({ requiredCapabilities: missing }, `Cannot request input '${key3}' (${embedded.method}): the request's client capabilities do not declare the required capability`);
       }
     }
     return result;
@@ -35477,10 +35479,10 @@ function toolInputElementCount(value, max) {
       if (++count2 > max) return count2;
       if (child !== null && typeof child === "object") stack.push(child);
     }
-    else for (const key2 in node2) {
-      if (!Object.prototype.hasOwnProperty.call(node2, key2)) continue;
+    else for (const key3 in node2) {
+      if (!Object.prototype.hasOwnProperty.call(node2, key3)) continue;
       if (++count2 > max) return count2;
-      const child = node2[key2];
+      const child = node2[key3];
       if (child !== null && typeof child === "object") stack.push(child);
     }
   }
@@ -36500,7 +36502,7 @@ function markLast(wire) {
   return [...wire.slice(0, -1), { ...last, content: blocks }];
 }
 function providerRequest(kind, options) {
-  const { base, key: key2, model, messages, maxTokens, effort } = options;
+  const { base, key: key3, model, messages, maxTokens, effort } = options;
   const pieces = (Array.isArray(options.system) ? options.system : [options.system]).map((text3, at) => ({ text: text3, long: at < (options.longLived ?? 0) })).filter((piece) => piece.text.trim());
   const parts = pieces.map((piece) => piece.text);
   const cache2 = options.cache !== false;
@@ -36512,7 +36514,7 @@ function providerRequest(kind, options) {
       url: `${base}/v1/messages`,
       headers: {
         "content-type": "application/json",
-        "x-api-key": key2,
+        "x-api-key": key3,
         "anthropic-version": "2023-06-01"
       },
       body: {
@@ -36544,7 +36546,7 @@ function providerRequest(kind, options) {
   }
   return {
     url: `${base}/chat/completions`,
-    headers: { "content-type": "application/json", authorization: `Bearer ${key2}` },
+    headers: { "content-type": "application/json", authorization: `Bearer ${key3}` },
     body: {
       model,
       messages: [{ role: "system", content: parts.join("") }, ...wireMessages(kind, messages)],
@@ -36942,9 +36944,9 @@ function dumbStream(messages, signal) {
 async function askAi(options) {
   const own2 = options.own;
   if (!own2 && aiDumb()) return dumbStream(options.messages, options.signal);
-  const key2 = own2 ? own2.key : process.env.AI_API_KEY;
+  const key3 = own2 ? own2.key : process.env.AI_API_KEY;
   const model = options.model?.trim() || (own2 ? OWN_KEY_MODELS[own2.provider] : aiModel(options.role));
-  if (!key2 || !model) throw new Error("No inference provider configured.");
+  if (!key3 || !model) throw new Error("No inference provider configured.");
   const kind = own2 ? own2.provider : provider();
   const effort = takesEffort(model) ? options.effort !== void 0 ? options.effort : aiEffort(options.role) : null;
   const started = Date.now();
@@ -36970,7 +36972,7 @@ async function askAi(options) {
   const request = providerRequest(kind, {
     // `AI_OWN_BASE_URL` is the browser suite's stand-in alone (e2e/fake-ai.ts).
     base: ((own2 ? process.env.AI_OWN_BASE_URL : process.env.AI_BASE_URL) || DEFAULT_BASE[kind]).replace(/\/$/, ""),
-    key: key2,
+    key: key3,
     model,
     system: options.system,
     messages: options.messages,
@@ -37219,7 +37221,7 @@ function keyReply(settings, turn) {
 
 // packages/player/src/bridge/site.ts
 init_define_WORDPLAY_ENGINE();
-var PREVIEW_BUILD = false ? "source" : "7c4263033762";
+var PREVIEW_BUILD = false ? "source" : "594f1010caee";
 function modelOf(value) {
   const one = value;
   return one && typeof one.model === "string" && one.model ? { model: one.model, effort: typeof one.effort === "string" ? one.effort : null } : null;
@@ -37252,10 +37254,10 @@ function siteNotes(site2, facts) {
       `This preview was built from a different commit than ${site2} runs, so a play may not behave the same in both. Update the plugin ("/plugin marketplace update wordplay-labs", then restart Claude Code); wordplay follows the site's main branch and wordplay-test the test site's.`
     );
   }
-  const key2 = process.env.WORDPLAY_AI_KEY ? process.env.WORDPLAY_AI_PROVIDER === "openai" ? "openai" : "anthropic" : null;
-  if (facts.tutor && key2 !== "openai" && !claudeModel(facts.tutor.model) && !process.env.WORDPLAY_TUTOR_MODEL) {
+  const key3 = process.env.WORDPLAY_AI_KEY ? process.env.WORDPLAY_AI_PROVIDER === "openai" ? "openai" : "anthropic" : null;
+  if (facts.tutor && key3 !== "openai" && !claudeModel(facts.tutor.model) && !process.env.WORDPLAY_TUTOR_MODEL) {
     notes.push(
-      key2 ? `The site's tutor runs on ${facts.tutor.model}, which your key at Anthropic cannot run, so the tutor here is the preview's own default.` : `The site's tutor runs on ${facts.tutor.model}, which Claude Code cannot run, so the tutor here is the preview's own default.`
+      key3 ? `The site's tutor runs on ${facts.tutor.model}, which your key at Anthropic cannot run, so the tutor here is the preview's own default.` : `The site's tutor runs on ${facts.tutor.model}, which Claude Code cannot run, so the tutor here is the preview's own default.`
     );
   }
   return notes;
@@ -37270,15 +37272,15 @@ function builderSettings(site2) {
   return roleSettings("builder", site2);
 }
 function roleSettings(role, site2) {
-  const key2 = keyBackend();
-  const siteModel = key2?.provider === "openai" ? site2?.model?.trim() || null : claudeModel(site2?.model);
+  const key3 = keyBackend();
+  const siteModel = key3?.provider === "openai" ? site2?.model?.trim() || null : claudeModel(site2?.model);
   const siteEffort = siteModel && site2?.effort && EFFORTS2.includes(site2.effort) ? site2.effort : null;
   const ownModel = process.env[`WORDPLAY_${role.toUpperCase()}_MODEL`]?.trim();
   const ownEffort = process.env[`WORDPLAY_${role.toUpperCase()}_EFFORT`]?.trim();
   const from = (own2, fromSite) => own2 ? "author" : fromSite ? "site" : "default";
-  const fallback = !key2 || key2.provider === "anthropic" ? role === "builder" ? DEFAULT_BUILDER_MODEL : KEY_DEFAULT_MODEL : "";
+  const fallback = !key3 || key3.provider === "anthropic" ? role === "builder" ? DEFAULT_BUILDER_MODEL : KEY_DEFAULT_MODEL : "";
   return {
-    backend: key2 ? "key" : "claude",
+    backend: key3 ? "key" : "claude",
     command: process.env.WORDPLAY_CLAUDE || "claude",
     model: ownModel || siteModel || fallback,
     effort: ownEffort || siteEffort || "medium",
@@ -37669,10 +37671,10 @@ function readSharedJson(text3) {
   }
   if (!isPlain(sent)) return { block: null, problems: ["The shared block is not a JSON object."] };
   const problems = [];
-  for (const key2 of Object.keys(sent))
-    if (!KEYS.has(key2))
+  for (const key3 of Object.keys(sent))
+    if (!KEYS.has(key3))
       problems.push(
-        `The shared block's "${key2}" is not one Wordplay reads: ${[...KEYS].join(", ")}.`
+        `The shared block's "${key3}" is not one Wordplay reads: ${[...KEYS].join(", ")}.`
       );
   let fields = null;
   if (sent.fields !== void 0) {
@@ -37709,9 +37711,9 @@ function readSharedJson(text3) {
       );
     else entries2 = n;
   }
-  for (const key2 of ["names", "guests", "tutor"])
-    if (sent[key2] !== void 0 && typeof sent[key2] !== "boolean")
-      problems.push(`The shared block's "${key2}" is true or false.`);
+  for (const key3 of ["names", "guests", "tutor"])
+    if (sent[key3] !== void 0 && typeof sent[key3] !== "boolean")
+      problems.push(`The shared block's "${key3}" is true or false.`);
   const tally = [];
   if (sent.tally !== void 0) {
     const named = Array.isArray(sent.tally) ? sent.tally : [sent.tally];
@@ -37814,7 +37816,7 @@ function tallyOf(block, value) {
 }
 function tallyFrom(block, counts) {
   if (!block?.tally.length || !block.fields) return void 0;
-  const of = (key2) => counts.get(key2) ?? 0;
+  const of = (key3) => counts.get(key3) ?? 0;
   const tally = {};
   for (const name of block.tally) {
     const field = block.fields[name];
@@ -37830,8 +37832,8 @@ function tallyFrom(block, counts) {
 function countsOver(block, values) {
   const counts = /* @__PURE__ */ new Map();
   for (const value of values)
-    for (const [key2, n] of Object.entries(tallyOf(block, value)))
-      counts.set(key2, (counts.get(key2) ?? 0) + n);
+    for (const [key3, n] of Object.entries(tallyOf(block, value)))
+      counts.set(key3, (counts.get(key3) ?? 0) + n);
   return counts;
 }
 
@@ -37844,7 +37846,10 @@ function addsOf(wordplay) {
 }
 var isChatLink = (id) => id === "chat";
 
-// packages/format/src/tree.ts
+// packages/format/src/blocks.ts
+init_define_WORDPLAY_ENGINE();
+
+// packages/format/src/names.ts
 init_define_WORDPLAY_ENGINE();
 
 // node_modules/dom-accessibility-api/dist/index.mjs
@@ -37935,12 +37940,12 @@ function _createClass(Constructor, protoProps, staticProps) {
   Object.defineProperty(Constructor, "prototype", { writable: false });
   return Constructor;
 }
-function _defineProperty(obj, key2, value) {
-  key2 = _toPropertyKey(key2);
-  if (key2 in obj) {
-    Object.defineProperty(obj, key2, { value, enumerable: true, configurable: true, writable: true });
+function _defineProperty(obj, key3, value) {
+  key3 = _toPropertyKey(key3);
+  if (key3 in obj) {
+    Object.defineProperty(obj, key3, { value, enumerable: true, configurable: true, writable: true });
   } else {
-    obj[key2] = value;
+    obj[key3] = value;
   }
   return obj;
 }
@@ -41515,16 +41520,16 @@ function formatAttributes(attributes, opts) {
   if (!attributes)
     return;
   const encode3 = ((_a5 = opts.encodeEntities) !== null && _a5 !== void 0 ? _a5 : opts.decodeEntities) === false ? replaceQuotes : opts.xmlMode || opts.encodeEntities !== "utf8" ? encodeXML : escapeAttribute;
-  return Object.keys(attributes).map((key2) => {
+  return Object.keys(attributes).map((key3) => {
     var _a6, _b;
-    const value = (_a6 = attributes[key2]) !== null && _a6 !== void 0 ? _a6 : "";
+    const value = (_a6 = attributes[key3]) !== null && _a6 !== void 0 ? _a6 : "";
     if (opts.xmlMode === "foreign") {
-      key2 = (_b = attributeNames.get(key2)) !== null && _b !== void 0 ? _b : key2;
+      key3 = (_b = attributeNames.get(key3)) !== null && _b !== void 0 ? _b : key3;
     }
     if (!opts.emptyAttrs && !opts.xmlMode && value === "") {
-      return key2;
+      return key3;
     }
-    return `${key2}="${encode3(value)}"`;
+    return `${key3}="${encode3(value)}"`;
   }).join(" ");
 }
 var singleTag = /* @__PURE__ */ new Set([
@@ -41930,9 +41935,9 @@ function combineFuncs(a, b) {
   return (elem) => a(elem) || b(elem);
 }
 function compileTest(options) {
-  const funcs = Object.keys(options).map((key2) => {
-    const value = options[key2];
-    return Object.prototype.hasOwnProperty.call(Checks, key2) ? Checks[key2](value) : getAttribCheck(key2, value);
+  const funcs = Object.keys(options).map((key3) => {
+    const value = options[key3];
+    return Object.prototype.hasOwnProperty.call(Checks, key3) ? Checks[key3](value) : getAttribCheck(key3, value);
   });
   return funcs.length === 0 ? null : funcs.reduce(combineFuncs);
 }
@@ -42377,8 +42382,8 @@ var CustomElementRegistry = class {
         for (const attr of attributes)
           element.removeAttributeNode(attr);
         const values = entries(element);
-        for (const [key2] of values)
-          delete element[key2];
+        for (const [key3] of values)
+          delete element[key3];
         setPrototypeOf(element, Class2.prototype);
         ownerDocument[UPGRADE] = { element, values };
         new Class2(ownerDocument, ce);
@@ -44098,9 +44103,9 @@ function combineFuncs2(a, b) {
   return (element) => a(element) || b(element);
 }
 function compileTest2(options) {
-  const funcs = Object.keys(options).map((key2) => {
-    const value = options[key2];
-    return Object.hasOwn(Checks2, key2) ? Checks2[key2](value) : getAttribCheck2(key2, value);
+  const funcs = Object.keys(options).map((key3) => {
+    const value = options[key3];
+    return Object.hasOwn(Checks2, key3) ? Checks2[key3](value) : getAttribCheck2(key3, value);
   });
   return funcs.length === 0 ? null : funcs.reduce(combineFuncs2);
 }
@@ -44324,11 +44329,11 @@ function formatAttributes2(attributes, options, xmlMode) {
   const isForeign = xmlMode === "foreign";
   const showEmpty = !!(options.emptyAttrs ?? xmlMode);
   let result = "";
-  for (const key2 in attributes) {
-    if (!Object.hasOwn(attributes, key2))
+  for (const key3 in attributes) {
+    if (!Object.hasOwn(attributes, key3))
       continue;
-    const value = attributes[key2];
-    const k = isForeign ? attributeNames2.get(key2) ?? key2 : key2;
+    const value = attributes[key3];
+    const k = isForeign ? attributeNames2.get(key3) ?? key3 : key3;
     result += !showEmpty && (value == null || value === "") ? ` ${k}` : ` ${k}="${encode3(value == null ? "" : String(value))}"`;
   }
   return result;
@@ -46373,7 +46378,7 @@ var DOMTokenList = class extends Set {
 // node_modules/linkedom/esm/interface/css-style-declaration.js
 init_define_WORDPLAY_ENGINE();
 var refs2 = /* @__PURE__ */ new WeakMap();
-var getKeys = (style) => [...style.keys()].filter((key2) => key2 !== PRIVATE);
+var getKeys = (style) => [...style.keys()].filter((key3) => key3 !== PRIVATE);
 var updateKeys = (style) => {
   const attr = refs2.get(style).getAttributeNode("style");
   if (!attr || attr[CHANGED] || style.get(PRIVATE) !== attr) {
@@ -46381,12 +46386,12 @@ var updateKeys = (style) => {
     if (attr) {
       style.set(PRIVATE, attr);
       for (const rule of attr[VALUE].split(/\s*;\s*/)) {
-        let [key2, ...rest] = rule.split(":");
+        let [key3, ...rest] = rule.split(":");
         if (rest.length > 0) {
-          key2 = key2.trim();
+          key3 = key3.trim();
           const value = rest.join(":").trim();
-          if (key2 && value)
-            style.set(key2, value);
+          if (key3 && value)
+            style.set(key3, value);
         }
       }
     }
@@ -46474,9 +46479,9 @@ var CSSStyleDeclaration = class extends Map {
   }
 };
 var { prototype } = CSSStyleDeclaration;
-function push(value, key2) {
-  if (key2 !== PRIVATE)
-    this.push(`${key2}:${value}`);
+function push(value, key3) {
+  if (key3 !== PRIVATE)
+    this.push(`${key3}:${value}`);
 }
 
 // node_modules/linkedom/esm/interface/event.js
@@ -46596,8 +46601,8 @@ var ShadowRoot = class extends NonElementParentNode {
 
 // node_modules/linkedom/esm/interface/element.js
 var attributesHandler = {
-  get(target, key2) {
-    return key2 in target ? target[key2] : target.find(({ name }) => name === key2);
+  get(target, key3) {
+    return key3 in target ? target[key3] : target.find(({ name }) => name === key3);
   }
 };
 var create2 = (ownerDocument, element, localName) => {
@@ -47212,8 +47217,8 @@ var HTMLElement = class extends Element2 {
     if (ownerDocument[UPGRADE]) {
       const { element, values } = ownerDocument[UPGRADE];
       ownerDocument[UPGRADE] = null;
-      for (const [key2, value] of values)
-        element[key2] = value;
+      for (const [key3, value] of values)
+        element[key3] = value;
       return element;
     }
     if (ownerLess) {
@@ -49524,29 +49529,7 @@ function styleOf(_element) {
   return { getPropertyValue: () => "" };
 }
 
-// packages/format/src/tree.ts
-var STATES = [
-  "checked",
-  "pressed",
-  "selected",
-  "expanded",
-  "disabled",
-  "current"
-];
-var NAMED_FROM_CONTENT = /* @__PURE__ */ new Set([
-  "button",
-  "link",
-  "heading",
-  "option",
-  "tab",
-  "menuitem",
-  "checkbox",
-  "radio",
-  "switch",
-  "cell",
-  "columnheader",
-  "rowheader"
-]);
+// packages/format/src/names.ts
 var CONTROL_ROLES = /* @__PURE__ */ new Set([
   "button",
   "link",
@@ -49562,35 +49545,6 @@ var CONTROL_ROLES = /* @__PURE__ */ new Set([
   "option",
   "tab",
   "menuitem"
-]);
-var INLINE = /* @__PURE__ */ new Set([
-  "a",
-  "abbr",
-  "b",
-  "bdi",
-  "bdo",
-  "cite",
-  "data",
-  "dfn",
-  "em",
-  "i",
-  "kbd",
-  "mark",
-  "q",
-  "s",
-  "samp",
-  "small",
-  "span",
-  "strong",
-  "sub",
-  "sup",
-  "time",
-  "u",
-  "var",
-  "del",
-  "ins",
-  "label",
-  "font"
 ]);
 var SKIPPED = /* @__PURE__ */ new Set([
   "script",
@@ -49645,10 +49599,6 @@ function roleOf(element) {
       return "paragraph";
     case "blockquote":
       return "blockquote";
-    case "nav":
-      return "navigation";
-    case "main":
-      return "main";
     case "aside":
       return "complementary";
     case "form":
@@ -49661,12 +49611,6 @@ function roleOf(element) {
       return element.hasAttribute("aria-label") || element.hasAttribute("aria-labelledby") ? "region" : null;
     case "table":
       return "table";
-    case "tr":
-      return "row";
-    case "td":
-      return "cell";
-    case "th":
-      return "columnheader";
     case "img":
       return element.getAttribute("alt") === "" ? "presentation" : "img";
     case "svg":
@@ -49685,9 +49629,6 @@ function roleOf(element) {
       return "dialog";
     case "hr":
       return "separator";
-    case "pre":
-    case "code":
-      return null;
     default:
       return null;
   }
@@ -49701,6 +49642,7 @@ function foldedAway(element) {
     chat?.hasAttribute("data-chat") && chat.hasAttribute("data-folded") && !element.classList.contains("wordplay-chat-bar")
   );
 }
+var squash = (text3) => text3.replace(/\s+/g, " ");
 function chatName(element) {
   const label = squash(element.getAttribute("aria-label") ?? "").trim();
   if (label) return label;
@@ -49752,7 +49694,6 @@ function valueOf(element, role) {
   if (tag === "progress" || tag === "meter") return element.getAttribute("value") ?? void 0;
   return void 0;
 }
-var squash = (text3) => text3.replace(/\s+/g, " ");
 var matchKey = (text3) => text3.toLowerCase().replace(/\s+/g, "");
 function nameOf(element) {
   return squash(
@@ -49761,118 +49702,435 @@ function nameOf(element) {
     })
   ).trim();
 }
-function accessibilityTree(root, options = {}) {
-  return tidy(childrenOf(root, options));
+var isPage = (element) => isPageAttrs(element.tagName, (name) => element.hasAttribute(name));
+var pagesOf = (body2) => addsOf({ body: body2 }).pages ? Array.from(body2.children).filter(isPage) : [];
+var pageName = (section, at) => squash(section.getAttribute("aria-label") ?? "").trim() || squash(section.querySelector("h1, h2, h3, h4, h5, h6")?.textContent ?? "").trim() || `Page ${at + 1}`;
+
+// packages/format/src/blocks.ts
+var MAX_TABLE_ROWS = 20;
+var MAX_PICTURES = 20;
+var squash2 = (text3) => text3.replace(/\s+/g, " ").trim();
+var tagOf = (element) => element.tagName.toLowerCase();
+var isNotes = (element) => element.hasAttribute("data-context");
+var CHROME = "[data-chat-box], [data-calculator-button], [data-calculator-room], [data-wordplay-live], [data-wordplay-stand-in], data[data-key]";
+var READ = /* @__PURE__ */ new Set([
+  "p",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "ul",
+  "ol",
+  "blockquote",
+  "pre"
+]);
+var BOXES = /* @__PURE__ */ new Set(["div", "section", "aside", "article", "header", "footer", "main"]);
+var WORKS = "svg, canvas, button, input, select, textarea, iframe, video, audio, object, embed";
+var DRAWN = "svg, canvas, iframe, video, img";
+var runs = (script2) => {
+  const type = script2.getAttribute("type")?.trim().toLowerCase();
+  return !type || type === "module" || type.includes("javascript");
+};
+var handlersOf = (element) => Array.from(element.attributes).filter((one) => /^on/i.test(one.name));
+function codeOf(element) {
+  const all = [element, ...Array.from(element.querySelectorAll("*"))];
+  return all.flatMap((one) => [
+    ...handlersOf(one).map((handler4) => handler4.value),
+    ...tagOf(one) === "script" && runs(one) ? [one.textContent ?? ""] : []
+  ]).join("\n");
 }
-function childrenOf(element, options) {
+var framing = (element) => element.matches("[data-container], [data-group]");
+function pictureIn(element) {
+  const tag = tagOf(element);
+  if (tag === "img") return element;
+  if (tag !== "figure" && tag !== "p") return null;
+  const [picture2, ...rest] = Array.from(element.children);
+  if (picture2?.tagName.toLowerCase() !== "img") return null;
+  if (rest.some((one) => tagOf(one) !== "figcaption")) return null;
+  const loose = Array.from(element.childNodes).some(
+    (child) => child.nodeType === 3 && (child.textContent ?? "").trim()
+  );
+  return loose ? null : picture2;
+}
+function isCustom(element) {
+  const tag = tagOf(element);
+  if (!element.hasAttribute("data-description") && (isWritable(element) || CONTROL_ROLES.has(roleOf(element) ?? "")))
+    return false;
+  if (element.classList.contains("wordplay-answer") || element.hasAttribute("data-chat"))
+    return false;
+  if (element.hasAttribute("data-description")) return true;
+  if (BOXES.has(tag) && !handlersOf(element).length) {
+    const children = Array.from(element.children);
+    if (children.some((one) => READ.has(tagOf(one)) || framing(one) || one.hasAttribute("data-chat")))
+      return false;
+  }
+  if (element.querySelector(WORKS) || element.matches(WORKS) || codeOf(element)) return true;
+  if (element.querySelector("style")) return true;
+  if (READ.has(tag) || pictureIn(element)) return false;
+  if (["table", "details", "output", "hr", "br", "figure"].includes(tag)) return false;
+  if (BOXES.has(tag)) {
+    const named = element.hasAttribute("class") || element.hasAttribute("id");
+    return named && !Array.from(element.children).some((one) => READ.has(tagOf(one)));
+  }
+  return true;
+}
+function descriptionOf(element) {
+  const own2 = element.getAttribute("data-description");
+  if (own2 !== null) return squash2(own2);
+  const drawings = element.matches("svg") ? [] : Array.from(element.querySelectorAll("svg"));
+  const only = drawings.filter((one) => !one.parentElement?.closest("svg"));
+  return only.length === 1 ? squash2(only[0].getAttribute("data-description") ?? "") : "";
+}
+var holdsBlocks = (element) => BOXES.has(tagOf(element)) && !isCustom(element);
+function skipped(element) {
+  const tag = tagOf(element);
+  return SKIPPED.has(tag) || tag === "hr" || tag === "br" || isNotes(element) || hiddenFromReader(element) || element.matches(CHROME);
+}
+function styledAway(element) {
+  const style = styleOf(element);
+  return style.getPropertyValue("display") === "none" || style.getPropertyValue("visibility") === "hidden";
+}
+function wordsIn(element) {
   const out = [];
-  for (const child of Array.from(element.childNodes)) {
+  const visit2 = (node2) => {
+    for (const child of Array.from(node2.childNodes)) {
+      if (child.nodeType === 3) {
+        out.push(child.textContent ?? "");
+        continue;
+      }
+      if (child.nodeType !== 1) continue;
+      const one = child;
+      const tag = tagOf(one);
+      if (one.getAttribute("role") === "math") {
+        const tex = one.getAttribute("aria-label") ?? "";
+        const display = Boolean(one.querySelector(".katex-display"));
+        out.push(display ? `$$${tex}$$` : `$${tex}$`);
+        continue;
+      }
+      if (skipped(one) || /^(input|select|textarea|button)$/.test(tag)) {
+        if (tag === "br") out.push(" ");
+        continue;
+      }
+      if (tag === "img") {
+        const alt = squash2(one.getAttribute("alt") ?? "");
+        if (alt) out.push(` [${alt}] `);
+        continue;
+      }
+      const inline = /^(a|abbr|b|bdi|bdo|cite|code|data|dfn|em|i|kbd|mark|q|s|samp|small|span|strong|sub|sup|time|u|var|del|ins|label|font|output)$/.test(
+        tag
+      );
+      if (!inline) out.push(" ");
+      visit2(one);
+      if (!inline) out.push(" ");
+    }
+  };
+  visit2(element);
+  return squash2(out.join(""));
+}
+var SAID = {
+  textbox: "field",
+  searchbox: "field",
+  spinbutton: "field",
+  combobox: "drop-down",
+  listbox: "drop-down"
+};
+function commandsIn(element) {
+  const commands = [];
+  const visit2 = (children) => {
+    for (const child of children) {
+      if (skipped(child) || child.getAttribute("role") === "math") continue;
+      const role = roleOf(child);
+      if (isWritable(child)) {
+        const name = nameOf(child);
+        if (name)
+          commands.push(
+            `yours to write ${JSON.stringify(name)} = ${JSON.stringify(squash2(child.textContent ?? ""))}`
+          );
+        continue;
+      }
+      if (role && CONTROL_ROLES.has(role) && role !== "option") {
+        const name = nameOf(child);
+        if (name) {
+          const value = valueOf(child, role);
+          const calculator = child.hasAttribute("data-calculator") ? " with a calculator" : "";
+          const states = statesOf(child, role);
+          commands.push(
+            [
+              `${SAID[role] ?? role} ${JSON.stringify(name)}${calculator}`,
+              ...value !== void 0 ? [`= ${JSON.stringify(value)}`] : [],
+              ...states
+            ].join(" ")
+          );
+        }
+        if (role !== "group") continue;
+      }
+      visit2(Array.from(child.children));
+    }
+  };
+  const itself = isWritable(element) || CONTROL_ROLES.has(roleOf(element) ?? "");
+  visit2(itself ? [element] : Array.from(element.children));
+  return commands;
+}
+function sentenceOf(sentence, select) {
+  let out = "";
+  for (const node2 of Array.from(sentence.childNodes))
+    out += node2 === select ? " ___ " : node2.nodeType === 1 ? wordsIn(node2) : node2.textContent ?? "";
+  return squash2(out);
+}
+function checkOf(element) {
+  try {
+    const read = JSON.parse(
+      element.querySelector('script[type="application/json"]')?.textContent ?? "{}"
+    );
+    return read && typeof read === "object" ? read : {};
+  } catch {
+    return {};
+  }
+}
+var key2 = (text3) => text3.toLowerCase().replace(/\s+/g, "");
+function answerBlock(element) {
+  const check2 = checkOf(element);
+  const right = Array.isArray(check2.answers) ? check2.answers.filter((one) => typeof one === "string").map(key2) : [];
+  const lines = [];
+  const chosen = [];
+  const select = element.querySelector("select");
+  const options = Array.from(element.querySelectorAll("fieldset label"));
+  if (select) {
+    const sentence = select.closest("p");
+    if (sentence) lines.push(`sentence: ${JSON.stringify(sentenceOf(sentence, select))}`);
+    for (const option of Array.from(select.querySelectorAll("option"))) {
+      const words2 = squash2(option.textContent ?? "");
+      if (!words2) continue;
+      lines.push(`option ${JSON.stringify(words2)}${right.includes(key2(words2)) ? " (right)" : ""}`);
+    }
+    const value = valueOf(select, "combobox");
+    if (value) chosen.push(value);
+  } else if (options.length) {
+    for (const label of options) {
+      const words2 = wordsIn(label);
+      lines.push(`option ${JSON.stringify(words2)}${right.includes(key2(words2)) ? " (right)" : ""}`);
+      const field = label.querySelector("input");
+      if (field && statesOf(field, roleOf(field) ?? "radio").includes("checked"))
+        chosen.push(words2);
+    }
+  } else {
+    const value = typeof check2.value === "string" ? check2.value : "";
+    const near = typeof check2.tolerance === "number" ? check2.tolerance : 0;
+    if (value)
+      lines.push(
+        `right: ${JSON.stringify(value)}${near ? `, within ${+(near * 100).toPrecision(3)}%` : ""}`
+      );
+    const field = element.querySelector("input");
+    const typed = field ? valueOf(field, "textbox") : void 0;
+    if (typed) chosen.push(typed);
+  }
+  const said2 = element.querySelector("[role=alert]")?.getAttribute("data-said");
+  const how = said2 === "right" ? "right" : said2 === "wrong" ? "wrong" : "not checked yet";
+  const state = `${chosen.length ? `given ${chosen.map((one) => JSON.stringify(one)).join(", ")}` : "nothing given"}, ${how}`;
+  return {
+    kind: "answer",
+    text: squash2(element.getAttribute("aria-label") ?? "") || "An answer",
+    lines,
+    state,
+    commands: commandsIn(element)
+  };
+}
+function withExtras(block, element) {
+  const commands = block.commands ?? commandsIn(element);
+  return {
+    ...block,
+    ...commands.length ? { commands } : { commands: void 0 },
+    ...styledAway(element) ? { hidden: true } : {}
+  };
+}
+function blocksOfElement(element, reading) {
+  if (skipped(element)) return [];
+  const tag = tagOf(element);
+  const finish = (block) => [withExtras(block, element)];
+  if (element.hasAttribute("data-chat"))
+    return finish({
+      kind: "chat",
+      text: chatName(element),
+      open: !element.hasAttribute("data-folded"),
+      children: blocksIn2(element, reading),
+      commands: []
+    });
+  if (element.classList.contains("wordplay-answer")) return finish(answerBlock(element));
+  const picture2 = pictureIn(element);
+  if (picture2 && !element.hasAttribute("data-description")) {
+    const caption = element.querySelector("figcaption");
+    const words3 = caption ? wordsIn(caption) : "";
+    return finish({
+      kind: "picture",
+      text: squash2(picture2.getAttribute("alt") ?? ""),
+      ...words3 ? { lines: [words3] } : {},
+      ...reading.pictures.has(picture2) ? { picture: reading.pictures.get(picture2) } : {}
+    });
+  }
+  if (tag === "details") {
+    const summary = element.querySelector(":scope > summary");
+    const inner2 = Array.from(element.children).filter((one) => one !== summary);
+    return finish({
+      kind: "fold",
+      text: summary ? wordsIn(summary) : "Details",
+      open: element.hasAttribute("open"),
+      children: inner2.flatMap((one) => blocksOfElement(one, reading)),
+      commands: []
+    });
+  }
+  if (tag === "table") {
+    const rows = Array.from(element.querySelectorAll("tr")).slice(0, MAX_TABLE_ROWS).map(
+      (row) => Array.from(row.children).map((cell) => wordsIn(cell)).join(" | ")
+    );
+    return finish({ kind: "table", text: "", lines: rows });
+  }
+  if (!element.hasAttribute("data-description") && (isWritable(element) || CONTROL_ROLES.has(roleOf(element) ?? "")))
+    return finish({ kind: "control", text: "" });
+  if (isCustom(element)) {
+    const description = descriptionOf(element);
+    const named = description ? "" : squash2(element.getAttribute("aria-label") ?? "");
+    const words3 = description ? "" : wordsIn(element);
+    const state = squash2(element.getAttribute("data-state") ?? "");
+    if (!description && !words3 && !state && !element.matches(DRAWN) && !element.querySelector(DRAWN) && !codeOf(element).trim() && commandsIn(element).length)
+      return finish({ kind: "control", text: named });
+    return finish({
+      kind: "custom",
+      text: description || [named, words3].filter(Boolean).join(": "),
+      ...description ? {} : { undescribed: true },
+      ...state && state.length <= MAX_STATE ? { state } : {}
+    });
+  }
+  if (framing(element) || holdsBlocks(element)) {
+    const inner2 = blocksIn2(element, reading);
+    if (inner2.length || BOXES.has(tag)) return inner2;
+  }
+  const words2 = wordsIn(element);
+  if (/^h[1-6]$/.test(tag)) return finish({ kind: "heading", text: words2, level: Number(tag[1]) });
+  if (tag === "ul" || tag === "ol") {
+    const items = Array.from(element.children).filter(
+      (one) => tagOf(one) === "li" && !skipped(one)
+    );
+    return finish({
+      kind: "list",
+      text: "",
+      lines: items.map((item, at) => `${tag === "ol" ? `${at + 1}.` : "-"} ${wordsIn(item)}`)
+    });
+  }
+  if (tag === "blockquote") return finish({ kind: "quote", text: words2 });
+  if (tag === "pre") return finish({ kind: "code", text: squash2(element.textContent ?? "") });
+  if (!words2 && !commandsIn(element).length) return [];
+  if (/^\$\$[\s\S]*\$\$$/.test(words2)) return finish({ kind: "formula", text: words2 });
+  return finish({ kind: "text", text: words2 });
+}
+function blocksIn2(holder, reading = readingOf(holder)) {
+  const out = [];
+  let loose = "";
+  const flush = () => {
+    if (squash2(loose)) out.push({ kind: "text", text: squash2(loose) });
+    loose = "";
+  };
+  for (const child of Array.from(holder.childNodes)) {
     if (child.nodeType === 3) {
-      const text3 = squash(child.textContent ?? "");
-      if (text3.trim()) out.push({ role: "text", name: text3 });
-      else if (text3) out.push({ role: "text", name: " " });
+      loose += child.textContent ?? "";
       continue;
     }
     if (child.nodeType !== 1) continue;
-    out.push(...nodesOf(child, options));
-  }
-  return out;
-}
-function nodesOf(element, options) {
-  if (hiddenFromReader(element) || options.skip?.(element)) return [];
-  if (element.hasAttribute("data-chat-box") && !element.classList.contains("wordplay-chat-bar") || element.hasAttribute("data-calculator-button") || element.hasAttribute("data-calculator-room") || element.hasAttribute("data-wordplay-live"))
-    return [];
-  if (element.tagName.toLowerCase() === "data" && element.hasAttribute("data-key")) return [];
-  if (element.hasAttribute("data-chat")) {
-    return [
-      { role: "chat", name: chatName(element), ...withChildren(childrenOf(element, options)) }
-    ];
-  }
-  const tag = element.tagName.toLowerCase();
-  if (tag === "br") return [{ role: "text", name: " " }];
-  const role = roleOf(element);
-  if (element.hasAttribute("data-met") && (!role || role === "generic")) {
-    const heading = element.querySelector("h1, h2, h3, h4, h5, h6");
-    const name2 = squash(element.getAttribute("aria-label") ?? "").trim() || squash(heading?.textContent ?? "").trim() || (element.getAttribute("data-met") ?? "");
-    return [{ role: "group", name: name2, ...withChildren(childrenOf(element, options)) }];
-  }
-  const live = isLive(element);
-  if (!role || role === "presentation" || role === "generic") {
-    const inner2 = childrenOf(element, options);
-    if (!live) {
-      return INLINE.has(tag) ? inner2 : [{ role: "text", name: " " }, ...inner2, { role: "text", name: " " }];
-    }
-    return [{ role: "group", live: true, ...withChildren(inner2) }];
-  }
-  const node2 = { role };
-  const name = nameOf(element);
-  if (name && role !== "paragraph" && role !== "listitem" && role !== "blockquote")
-    node2.name = name;
-  if (role === "heading") {
-    const level = /^h([1-6])$/.exec(tag)?.[1] ?? element.getAttribute("aria-level");
-    if (level) node2.value = level;
-  }
-  const value = valueOf(element, role);
-  if (value !== void 0 && role !== "heading") node2.value = value;
-  const states = statesOf(element, role);
-  if (states.length) node2.state = states;
-  if (isWritable(element)) node2.tutor = true;
-  else if (live) node2.live = true;
-  const leaf = tag === "input" || tag === "textarea" || tag === "select" || tag === "img" || tag === "canvas" || role === "img" && tag === "svg";
-  if (!leaf) {
-    let inner2 = childrenOf(element, options);
-    if (NAMED_FROM_CONTENT.has(role) && inner2.every((one) => one.role === "text")) inner2 = [];
-    Object.assign(node2, withChildren(inner2));
-  }
-  return [node2];
-}
-function withChildren(inner2) {
-  const children = tidy(inner2);
-  return children.length ? { children } : {};
-}
-function tidy(nodes) {
-  const out = [];
-  for (const node2 of nodes) {
-    const last = out[out.length - 1];
-    if (node2.role === "text" && last?.role === "text") last.name = squash(last.name + node2.name);
-    else out.push(node2.role === "text" ? { ...node2 } : node2);
-  }
-  return out.map((node2) => node2.role === "text" ? { role: "text", name: node2.name.trim() } : node2).filter((node2) => node2.role !== "text" || node2.name);
-}
-function treeText(nodes, depth = 0) {
-  const lines = [];
-  for (const node2 of nodes) {
-    const pad2 = "  ".repeat(depth);
-    if (node2.role === "text") {
-      lines.push(`${pad2}${JSON.stringify(node2.name ?? "")}`);
+    const element = child;
+    if (/^(a|b|strong|em|i|span|code|sub|sup|s|u)$/.test(tagOf(element)) && !isCustom(element)) {
+      loose += wordsIn(element);
       continue;
     }
-    const bits = [node2.role];
-    if (node2.name) bits.push(JSON.stringify(node2.name));
-    if (node2.role === "heading" && node2.value) bits.push(`level ${node2.value}`);
-    else if (node2.value !== void 0) bits.push(`value ${JSON.stringify(node2.value)}`);
-    for (const one of node2.state ?? []) bits.push(one);
-    if (node2.live) bits.push("live");
-    if (node2.tutor) bits.push("tutor");
-    lines.push(`${pad2}- ${bits.join(" ")}`);
-    if (node2.children) lines.push(...treeText(node2.children, depth + 1));
+    flush();
+    out.push(...blocksOfElement(element, reading));
   }
-  return lines;
+  flush();
+  return out;
 }
-var isPage = (element) => isPageAttrs(element.tagName, (name) => element.hasAttribute(name));
-var pagesOf = (body2) => addsOf({ body: body2 }).pages ? Array.from(body2.children).filter(isPage) : [];
-function documentTree(body2, current = 0) {
+function readingOf(holder) {
+  const body2 = holder.ownerDocument?.body ?? holder;
+  const pictures = Array.from(body2.querySelectorAll("img")).filter((one) => one.getAttribute("src")?.trim()).slice(0, MAX_PICTURES);
+  return { pictures: new Map(pictures.map((one, at) => [one, at + 1])) };
+}
+function pageBlocks(body2, current = 0) {
+  const reading = readingOf(body2);
   const pages = pagesOf(body2);
-  if (!pages.length) return accessibilityTree(body2);
+  if (!pages.length) return blocksIn2(body2, reading);
+  const outside = Array.from(body2.childNodes).filter(
+    (node2) => !(node2.nodeType === 1 && pages.includes(node2))
+  );
+  const holder = { childNodes: outside };
   return [
-    ...accessibilityTree(body2, { skip: (one) => pages.includes(one) }),
+    ...blocksIn2(holder, reading),
     ...pages.map((section, at) => ({
-      role: "page",
-      name: section.getAttribute("aria-label")?.trim() || section.querySelector("h1, h2, h3, h4, h5, h6")?.textContent?.trim() || `Page ${at + 1}`,
-      ...at === current ? { state: ["current"] } : {},
-      children: accessibilityTree(section)
+      kind: "page",
+      text: pageName(section, at),
+      level: at + 1,
+      of: pages.length,
+      ...at === current ? { open: true } : {},
+      children: blocksIn2(section, reading)
     }))
   ];
+}
+function partBlocks(element) {
+  const copy = element.cloneNode(true);
+  for (const inner2 of Array.from(copy.querySelectorAll("[data-context], [data-expect]")))
+    inner2.remove();
+  copy.removeAttribute("data-expect");
+  return blocksOfElement(copy, readingOf(element));
+}
+function headOf2(block) {
+  const words2 = JSON.stringify(block.text);
+  const hidden2 = block.hidden ? " (hidden by the page)" : "";
+  switch (block.kind) {
+    case "heading":
+      return `Heading ${block.level ?? 1}: ${words2}${hidden2}`;
+    case "text":
+      return `Text: ${words2}${hidden2}`;
+    case "quote":
+      return `Quote: ${words2}${hidden2}`;
+    case "code":
+      return `Code: ${words2}${hidden2}`;
+    case "formula":
+      return `Formula: ${words2}${hidden2}`;
+    case "list":
+      return `List:${hidden2}`;
+    case "table":
+      return `Table:${hidden2}`;
+    case "picture":
+      return `Picture${block.picture ? ` ${block.picture}` : ""}: ${block.text ? words2 : "with no description"}${hidden2}`;
+    case "answer":
+      return `Answer ${words2}${hidden2}`;
+    case "chat":
+      return `Chat ${words2}${block.open ? "" : " (folded)"}${hidden2}`;
+    case "page":
+      return `Page ${block.level ?? 1} of ${block.of ?? 1} ${words2}${block.open ? " (open)" : ""}`;
+    case "fold":
+      return `Fold ${words2} (${block.open ? "open" : "closed"})${hidden2}`;
+    case "control":
+      return `Control${block.text ? ` ${words2}` : ""}${hidden2}`;
+    case "custom":
+      return `${block.undescribed ? "Element, with no description of its own" : "Element"}: ${words2}${hidden2}`;
+  }
+}
+function blocksText(blocks, depth = 0) {
+  const lines = [];
+  const pad2 = "  ".repeat(depth);
+  for (const block of blocks) {
+    lines.push(`${pad2}- ${headOf2(block)}`);
+    for (const line of block.lines ?? [])
+      lines.push(
+        `${pad2}    ${block.kind === "picture" ? `caption: ${JSON.stringify(line)}` : line}`
+      );
+    if (block.state)
+      lines.push(
+        `${pad2}    Now: ${block.kind === "custom" ? JSON.stringify(block.state) : block.state}`
+      );
+    if (block.commands?.length) lines.push(`${pad2}    Commands: ${block.commands.join("; ")}`);
+    if (block.children?.length) lines.push(...blocksText(block.children, depth + 1));
+  }
+  return lines;
 }
 
 // packages/format/src/wordplay.ts
@@ -49881,7 +50139,9 @@ var STANDARD_ATTRIBUTES = [
   "data-wordplay",
   "data-context",
   "data-expect",
-  "data-tutor"
+  "data-tutor",
+  "data-description",
+  "data-state"
 ];
 var WORDPLAY_ATTRIBUTES = [
   "data-chat",
@@ -49915,12 +50175,12 @@ function conditionOf(element) {
   const expect = element.getAttribute("data-expect");
   return expect === null ? null : expect.trim();
 }
-var squash2 = (text3) => text3.replace(/\s+/g, " ").trim();
+var squash3 = (text3) => text3.replace(/\s+/g, " ").trim();
 function nameOfElement(element, fallback) {
-  const label = squash2(element.getAttribute("aria-label") ?? "");
+  const label = squash3(element.getAttribute("aria-label") ?? "");
   if (label) return label;
   const heading = element.querySelector("h1, h2, h3, h4, h5, h6");
-  const text3 = squash2(heading?.textContent ?? "");
+  const text3 = squash3(heading?.textContent ?? "");
   return text3 || fallback;
 }
 function parseWordplay(source) {
@@ -49937,20 +50197,20 @@ function parseWordplay(source) {
       if (isKeyElement(child)) {
         keys2++;
         const kind = (child.getAttribute("data-key") ?? "").trim().toLowerCase();
-        const key2 = {
+        const key3 = {
           kind: "key",
           id: child.getAttribute("id")?.trim() || `k${keys2}`,
           element: child,
           parent: holder,
           children: [],
           key: KEY_KINDS.includes(kind) ? kind : null,
-          label: squash2(child.textContent ?? ""),
+          label: squash3(child.textContent ?? ""),
           value: (child.getAttribute("value") ?? "").trim(),
           condition: conditionOf(child),
           calculator: calculatorOf(child)
         };
-        parts.push(key2);
-        (holder ? holder.children : top).push(key2);
+        parts.push(key3);
+        (holder ? holder.children : top).push(key3);
         continue;
       }
       if (!hasCondition(child)) {
@@ -50004,7 +50264,7 @@ function parseWordplay(source) {
   return wordplay;
 }
 function titleOf(wordplay) {
-  return squash2(wordplay.document.querySelector("title")?.textContent ?? "");
+  return squash3(wordplay.document.querySelector("title")?.textContent ?? "");
 }
 function givenParts(wordplay, held) {
   const holds = new Set(held);
@@ -50021,7 +50281,7 @@ function waitingParts(wordplay, held) {
     (part) => !given.has(part.id) && (!part.parent || given.has(part.parent.id))
   );
 }
-var INLINE2 = /* @__PURE__ */ new Set([
+var INLINE = /* @__PURE__ */ new Set([
   "a",
   "abbr",
   "b",
@@ -50055,7 +50315,7 @@ function contextText(element) {
   const paragraphs = [];
   let line = "";
   const end = () => {
-    const text3 = squash2(line);
+    const text3 = squash3(line);
     if (text3) paragraphs.push(text3);
     line = "";
   };
@@ -50070,7 +50330,7 @@ function contextText(element) {
       if (isContext(one) || hasCondition(one)) continue;
       const tag = one.tagName.toLowerCase();
       if (NOT_READ.has(tag)) continue;
-      if (INLINE2.has(tag)) {
+      if (INLINE.has(tag)) {
         line += tag === "br" ? " " : one.outerHTML;
         continue;
       }
@@ -50215,11 +50475,11 @@ function readableProblems(wordplay) {
       problems.push(
         `The chat "${chatName(element)}" is named for the box, not its subject. Name it for what it is about, in a few words.`
       );
-    const key2 = element.getAttribute("data-key");
-    if (key2 !== null && element.tagName.toLowerCase() !== "data")
+    const key3 = element.getAttribute("data-key");
+    if (key3 !== null && element.tagName.toLowerCase() !== "data")
       problems.push(`data-key goes on a <data> element, not on a ${describe3(element)}.`);
-    else if (key2 !== null && !KEY_KINDS.includes(key2.trim().toLowerCase()))
-      problems.push(`data-key is ${KEY_KINDS.join(", ")}, not "${key2}".`);
+    else if (key3 !== null && !KEY_KINDS.includes(key3.trim().toLowerCase()))
+      problems.push(`data-key is ${KEY_KINDS.join(", ")}, not "${key3}".`);
   }
   for (const name of DECLARATIONS)
     if (body2?.hasAttribute(name) && body2.getAttribute(name) !== "")
@@ -50238,12 +50498,12 @@ function readableProblems(wordplay) {
       problems.push(
         "A chat has no name. Give it an aria-label, so the tutor knows which chat the reader is in."
       );
-    const key2 = matchKey(chat.name);
-    if (chatNames.has(key2))
+    const key3 = matchKey(chat.name);
+    if (chatNames.has(key3))
       problems.push(
         `Two chats are called "${chat.name}". Name each its own, so the tutor can tell them apart.`
       );
-    chatNames.add(key2);
+    chatNames.add(key3);
   }
   const written = /* @__PURE__ */ new Set();
   for (const element of Array.from(document2.querySelectorAll("[data-tutor]"))) {
@@ -50268,23 +50528,23 @@ function readableProblems(wordplay) {
       problems.push(
         `The output "${name}" has a colon in its name, where the tutor's words would begin. Name it without one.`
       );
-    const key2 = matchKey(name);
-    if (written.has(key2))
+    const key3 = matchKey(name);
+    if (written.has(key3))
       problems.push(
         `Two outputs the tutor writes are called "${name}". Name each its own, so the tutor writes in the one it means.`
       );
-    written.add(key2);
+    written.add(key3);
   }
-  for (const key2 of wordplay.keys) {
-    if (!key2.key) continue;
-    if (!key2.label) problems.push(`A ${key2.key} key has no text: write the key in the <data>.`);
-    else if (!key2.calculator)
+  for (const key3 of wordplay.keys) {
+    if (!key3.key) continue;
+    if (!key3.label) problems.push(`A ${key3.key} key has no text: write the key in the <data>.`);
+    else if (!key3.calculator)
       problems.push(
-        `The key "${key2.label}" is on no calculator: put it in a chat with data-calculator, or in the <label> of an input with it.`
+        `The key "${key3.label}" is on no calculator: put it in a chat with data-calculator, or in the <label> of an input with it.`
       );
-    if (key2.key === "constant" && !key2.value)
+    if (key3.key === "constant" && !key3.value)
       problems.push(
-        `The constant "${key2.label}" needs its value: <data data-key="constant" value="9.81 m/s^2">g</data>.`
+        `The constant "${key3.label}" needs its value: <data data-key="constant" value="9.81 m/s^2">g</data>.`
       );
   }
   for (const calculator of Array.from(document2.querySelectorAll("[data-calculator]"))) {
@@ -50328,6 +50588,17 @@ function readableProblems(wordplay) {
       problems.push(
         `The section ${reveal.id} that appears later has no name. Give its ${describe3(reveal.element)} an aria-label or a heading, so the chat can name it when it appears.`
       );
+  for (const [attribute2, most, what2] of [
+    ["data-description", MAX_ELEMENT_DESCRIPTION, "description"],
+    ["data-state", MAX_STATE, "state"]
+  ])
+    for (const element of Array.from(wordplay.body.querySelectorAll(`[${attribute2}]`))) {
+      const length = (element.getAttribute(attribute2) ?? "").replace(/\s+/g, " ").trim().length;
+      if (length > most)
+        problems.push(
+          `The ${what2} on ${describe3(element)} is ${length} characters, over the ${most} it may be. Say only what the tutor needs.`
+        );
+    }
   for (const part of wordplay.parts) {
     const condition = part.condition;
     if (condition === null) continue;
@@ -50436,6 +50707,44 @@ function unseenControls(region) {
     `${region.name}, ${unnamed.length === 1 ? `a ${describe3(unnamed[0])} has` : `${unnamed.length} controls have`} no accessible name, and nothing there is named or live, so the tutor cannot see what it does. Name it with a label or aria-label, or add a live status line.`
   ];
 }
+function codeFor(element, scripts) {
+  const id = element.getAttribute("id");
+  const named = id ? scripts.filter((one) => one.includes(id)) : [];
+  return [codeOf(element), ...named].join("\n");
+}
+var keepsState = (code) => /dataset\.state|data-state|"state"\]/.test(code);
+function undescribedElements(wordplay) {
+  const { body: body2 } = wordplay;
+  const scripts = Array.from(body2.querySelectorAll("script")).map((one) => one.textContent ?? "");
+  const found = [];
+  const visit2 = (holder) => {
+    for (const child of Array.from(holder.children)) {
+      const tag = child.tagName.toLowerCase();
+      if (isContext(child) || hiddenFromReader(child) || /^(hr|br|data)$/.test(tag)) continue;
+      if (isPageElement(child) || child.hasAttribute("data-chat") || framing(child) || holdsBlocks(child)) {
+        visit2(child);
+        continue;
+      }
+      if (!isCustom(child)) continue;
+      const code = codeFor(child, scripts);
+      if (!descriptionOf(child)) {
+        const drawing = child.matches("svg, canvas") || Boolean(child.querySelector("svg, canvas"));
+        if (!drawing && !wordsIn(child) && !child.hasAttribute("data-state") && !code.trim() && commandsIn(child).length)
+          continue;
+        found.push({ element: child, kind: drawing ? "drawing" : "element" });
+        continue;
+      }
+      if (code.trim() && !keepsState(code)) found.push({ element: child, kind: "changes" });
+    }
+  };
+  visit2(body2);
+  return found;
+}
+function whichElement(element) {
+  const id = element.getAttribute("id");
+  const named = element.getAttribute("class")?.trim().split(/\s+/)[0];
+  return `${describe3(element)}${id ? ` "${id}"` : named ? ` "${named}"` : ""}`;
+}
 function publishableProblems(wordplay, source) {
   const problems = [];
   if (source !== void 0 && source.length > MAX_FILE)
@@ -50494,14 +50803,14 @@ function emptyStandings(self, names, title = self) {
 
 // packages/format/src/openings.ts
 init_define_WORDPLAY_ENGINE();
-var squash3 = (text3) => text3.replace(/\s+/g, " ").trim();
+var squash4 = (text3) => text3.replace(/\s+/g, " ").trim();
 function openingOf(wordplay) {
-  return squash3(wordplay.body?.getAttribute("data-opening") ?? "") || null;
+  return squash4(wordplay.body?.getAttribute("data-opening") ?? "") || null;
 }
 function chatOpenings(wordplay) {
   const lines = {};
   for (const chat of wordplay.chats) {
-    const line = squash3(chat.element.getAttribute("data-opening") ?? "");
+    const line = squash4(chat.element.getAttribute("data-opening") ?? "");
     if (line && !(chat.name in lines)) lines[chat.name] = line;
   }
   return lines;
@@ -51277,10 +51586,10 @@ var createClass = function createClass2(classes) {
 };
 var cssStyleToString = function cssStyleToString2(style) {
   var styles2 = "";
-  for (var key2 of Object.keys(style)) {
-    var value = style[key2];
+  for (var key3 of Object.keys(style)) {
+    var value = style[key3];
     if (value !== void 0) {
-      styles2 += hyphenate(key2) + ":" + value + ";";
+      styles2 += hyphenate(key3) + ":" + value + ";";
     }
   }
   return styles2;
@@ -53896,9 +54205,9 @@ function getGlobalMetrics(size) {
     var metrics = fontMetricsBySizeIndex[sizeIndex] = {
       cssEmPerMu: sigmasAndXis.quad[sizeIndex] / 18
     };
-    for (var key2 in sigmasAndXis) {
-      if (sigmasAndXis.hasOwnProperty(key2)) {
-        metrics[key2] = sigmasAndXis[key2][sizeIndex];
+    for (var key3 in sigmasAndXis) {
+      if (sigmasAndXis.hasOwnProperty(key3)) {
+        metrics[key3] = sigmasAndXis[key3][sizeIndex];
       }
     }
   }
@@ -54911,8 +55220,8 @@ var canCombine = (prev, next) => {
       return false;
     }
   }
-  for (var key2 of Object.keys(prev.style)) {
-    if (prev.style[key2] !== next.style[key2]) {
+  for (var key3 of Object.keys(prev.style)) {
+    if (prev.style[key3] !== next.style[key3]) {
       return false;
     }
   }
@@ -60449,9 +60758,9 @@ defineFunction({
           if (firstEquals < 0) {
             throw new ParseError2("\\htmlData key/value '" + item + "' missing equals sign");
           }
-          var key2 = item.slice(0, firstEquals);
+          var key3 = item.slice(0, firstEquals);
           var _value = item.slice(firstEquals + 1);
-          attributes["data-" + key2.trim()] = _value;
+          attributes["data-" + key3.trim()] = _value;
         }
         trustContext = {
           command: "\\htmlData",
@@ -65499,11 +65808,11 @@ function tutorEnvelope(wordplay, source, title, view) {
     waiting: waitingParts(wordplay, view.held).filter((part) => part.condition !== null).map((part) => ({
       id: part.id,
       kind: part.kind,
-      ...part.kind === "reveal" ? { name: part.name } : {},
+      ...part.kind === "reveal" ? { name: part.name, blocks: partBlocks(part.element) } : {},
       ...part.kind === "key" ? { name: part.label } : {},
       condition: part.condition
     })),
-    tree: view.tree?.length ? view.tree : documentTree(readerDocument(source, view.held).body),
+    blocks: view.blocks?.length ? view.blocks : pageBlocks(readerDocument(source, view.held).body),
     announced: (view.announced ?? []).slice(-MAX_ANNOUNCED),
     told: (view.told ?? []).slice(-MAX_TOLD),
     calculations: (view.calculations ?? []).slice(-MAX_CALCULATIONS),
@@ -65533,11 +65842,11 @@ function calculationLine({ on, line, value, error: error62, put, seen }) {
   const gave = value !== void 0 ? `${shown} = ${value}` : `${shown} gave no value: ${error62}`;
   return `- for "${on}": ${gave}${put ? ", put in it" : ""}${seen ? "" : " (new)"}`;
 }
-function whereIn(tree) {
-  const pages = tree.filter((node2) => node2.role === "page");
-  const at = pages.findIndex((node2) => node2.state?.includes("current"));
+function whereIn(blocks) {
+  const pages = blocks.filter((block) => block.kind === "page");
+  const at = pages.findIndex((block) => block.open);
   if (pages.length < 2 || at < 0) return "";
-  const name = pages[at].name;
+  const name = pages[at].text;
   return `page ${at + 1} of ${pages.length}${name && name !== `Page ${at + 1}` ? `, "${name}"` : ""}`;
 }
 function asData(line) {
@@ -65554,12 +65863,13 @@ function envelopeBindings(envelope) {
   return {
     title: envelope.title,
     context: envelope.context.map((one) => `${one.id}${one.chat ? ` (the chat "${one.chat}" alone)` : ""}: ${one.text}`).join("\n\n"),
-    waiting: envelope.waiting.map(
-      (one) => `- ${one.id}, ${WHAT[one.kind](one.name ?? "")} (expect: ${one.condition})`
-    ),
-    page: treeText(envelope.tree).map(asData),
+    waiting: envelope.waiting.flatMap((one) => [
+      `- ${one.id}, ${WHAT[one.kind](one.name ?? "")} (expect: ${one.condition})`,
+      ...blocksText(one.blocks ?? [], 1).map(asData)
+    ]),
+    page: blocksText(envelope.blocks).map(asData),
     pictures: envelope.pictures > 0,
-    where: whereIn(envelope.tree),
+    where: whereIn(envelope.blocks),
     announced: envelope.announced.map((line) => `- ${asLine(line)}`),
     told: envelope.told.map((line) => `- ${asLine(line)}`),
     calculations: envelope.calculations.map((one) => asLine(calculationLine(one))),
@@ -65639,15 +65949,15 @@ function readPage(value) {
   const sent = value;
   const controls = {};
   const given = sent.controls && typeof sent.controls === "object" ? sent.controls : {};
-  for (const [key2, one] of Object.entries(given).slice(
+  for (const [key3, one] of Object.entries(given).slice(
     0,
     MAX_CONTROLS
   )) {
-    if (!key2 || key2.length > 200) continue;
-    if (typeof one === "boolean") controls[key2] = one;
-    else if (typeof one === "string") controls[key2] = one.slice(0, MAX_CONTROL_TEXT);
+    if (!key3 || key3.length > 200) continue;
+    if (typeof one === "boolean") controls[key3] = one;
+    else if (typeof one === "string") controls[key3] = one.slice(0, MAX_CONTROL_TEXT);
     else if (Array.isArray(one))
-      controls[key2] = one.filter((choice) => typeof choice === "string").slice(0, 100).map((choice) => choice.slice(0, 200));
+      controls[key3] = one.filter((choice) => typeof choice === "string").slice(0, 100).map((choice) => choice.slice(0, 200));
   }
   const page2 = { controls };
   if (sent.kept !== void 0) {
@@ -65663,41 +65973,63 @@ function readPage(value) {
 }
 
 // packages/player/src/lib/play-view.ts
-var MAX_NODES = 4e3;
+var MAX_BLOCKS = 4e3;
 var MAX_TEXT = 2e3;
 var MAX_DEPTH = 40;
-var MAX_TREE_TEXT = 6e4;
+var MAX_PAGE_TEXT = 6e4;
 var oneLine = (text3) => text3.replace(/\[\[|\]\]/g, "").replace(/\s+/g, " ").trim();
-function readTree(value) {
+var KINDS = /* @__PURE__ */ new Set([
+  "text",
+  "heading",
+  "quote",
+  "list",
+  "code",
+  "formula",
+  "picture",
+  "table",
+  "answer",
+  "chat",
+  "page",
+  "fold",
+  "control",
+  "custom"
+]);
+function readBlocks(value) {
   if (!Array.isArray(value)) return null;
-  let left = MAX_NODES;
-  let text3 = MAX_TREE_TEXT;
+  let left = MAX_BLOCKS;
+  let text3 = MAX_PAGE_TEXT;
   const take = (value2) => {
     const kept = oneLine(value2.slice(0, MAX_TEXT * 2)).slice(0, Math.min(MAX_TEXT, text3));
     text3 -= kept.length;
     return kept;
   };
+  const strings = (list) => (Array.isArray(list) ? list : []).filter((one) => typeof one === "string").slice(0, 200).map(take);
+  const count2 = (value2) => typeof value2 === "number" && Number.isInteger(value2) && value2 > 0 && value2 < 1e4 ? value2 : void 0;
   const read = (list, depth) => {
     const out = [];
     for (const one of list) {
       if (left <= 0 || text3 <= 0 || depth > MAX_DEPTH) break;
       if (!one || typeof one !== "object") continue;
-      const node2 = one;
-      if (typeof node2.role !== "string") continue;
+      const block = one;
+      if (typeof block.kind !== "string" || !KINDS.has(block.kind)) continue;
       left--;
-      const kept = { role: oneLine(node2.role).slice(0, 40) };
-      if (typeof node2.name === "string") kept.name = take(node2.name);
-      if (typeof node2.value === "string") kept.value = take(node2.value);
-      if (Array.isArray(node2.state)) {
-        const states = node2.state.filter(
-          (state) => STATES.includes(state)
-        );
-        if (states.length) kept.state = states;
-      }
-      if (node2.live === true) kept.live = true;
-      if (node2.tutor === true) kept.tutor = true;
-      if (Array.isArray(node2.children)) {
-        const children = read(node2.children, depth + 1);
+      const kept = {
+        kind: block.kind,
+        text: typeof block.text === "string" ? take(block.text) : ""
+      };
+      const lines = strings(block.lines);
+      if (lines.length) kept.lines = lines;
+      const commands = strings(block.commands);
+      if (commands.length) kept.commands = commands;
+      if (typeof block.state === "string") kept.state = take(block.state.slice(0, MAX_STATE * 4));
+      if (count2(block.level)) kept.level = count2(block.level);
+      if (count2(block.of)) kept.of = count2(block.of);
+      if (count2(block.picture)) kept.picture = count2(block.picture);
+      if (block.open === true) kept.open = true;
+      if (block.hidden === true) kept.hidden = true;
+      if (block.undescribed === true) kept.undescribed = true;
+      if (Array.isArray(block.children)) {
+        const children = read(block.children, depth + 1);
         if (children.length) kept.children = children;
       }
       out.push(kept);
@@ -65729,7 +66061,7 @@ function readTold(value) {
 }
 function readView(sent) {
   return {
-    tree: readTree(sent.tree),
+    blocks: readBlocks(sent.blocks),
     announced: readAnnounced(sent.announced),
     told: readTold(sent.told),
     calculations: readCalculations(sent.calculations)
@@ -65743,7 +66075,7 @@ var WINDOW_MS = 6e4;
 var PAGE_SAYS_REFUSED = "The page sent the tutor too many messages in a minute. Wait a moment, then try again.";
 var windows = /* @__PURE__ */ new Map();
 function pageMaySay(conversation, now = Date.now()) {
-  for (const [key2, window3] of windows) if (now - window3.start >= WINDOW_MS) windows.delete(key2);
+  for (const [key3, window3] of windows) if (now - window3.start >= WINDOW_MS) windows.delete(key3);
   const window2 = windows.get(conversation);
   if (!window2) {
     windows.set(conversation, { start: now, count: 1 });
@@ -66744,8 +67076,8 @@ var SYMBOLS = {
 };
 function symbolCatalogue() {
   const groups = /* @__PURE__ */ new Map();
-  for (const [name, key2] of Object.entries(SYMBOLS)) {
-    groups.set(key2.group, [...groups.get(key2.group) ?? [], name]);
+  for (const [name, key3] of Object.entries(SYMBOLS)) {
+    groups.set(key3.group, [...groups.get(key3.group) ?? [], name]);
   }
   return [...groups].map(([group, names]) => `${group}: ${names.join(", ")}`);
 }
@@ -66887,6 +67219,8 @@ function specText() {
   return render5(load2("spec"), {
     maxFile: count(MAX_FILE),
     maxCondition: count(MAX_CONDITION),
+    maxDescription: count(MAX_ELEMENT_DESCRIPTION),
+    maxState: count(MAX_STATE),
     maxAnnouncement: count(MAX_ANNOUNCEMENT),
     maxWritten: count(MAX_WRITTEN),
     maxSaid: count(MAX_SAID),
@@ -66909,7 +67243,10 @@ function specText() {
 // packages/player/src/lib/wordplay-guide.ts
 function wordplayGuide(host) {
   return prompt("wordplay-guide", {
-    editor: prompt("editor", {}),
+    editor: prompt("editor", {
+      maxDescription: MAX_ELEMENT_DESCRIPTION.toLocaleString("en-US"),
+      maxState: MAX_STATE.toLocaleString("en-US")
+    }),
     // Wordplay's recommended notes on how to answer, which every wordplay's notes start from.
     tutorDefault: tutorDefault().split(/\n\s*\n/).join("\n\n     "),
     // The format, whole: the guide never restates it (SPEC.md).
@@ -66999,7 +67336,7 @@ function pageWhere(file2, sent) {
 function builderPrompt(...args) {
   return builderParts(...args).pieces;
 }
-function builderParts(file2, changes, trial, material = [], host = "creator", wordplays = [], page2 = null, fresh = true, element = null) {
+function builderParts(file2, changes, trial, material = [], host = "creator", wordplays = [], page2 = null, fresh = true, element = null, seen = { pictures: false, svgFiles: [] }) {
   const text3 = file2.trim();
   const tried = trialText(trial);
   const guide = `${wordplayGuide(host)}
@@ -67026,7 +67363,9 @@ ${one.text}
     problems: text3 ? fileProblems(file2) : [],
     changes: changeLines(changes),
     fresh: Boolean(tried && fresh),
-    page: page2 ?? ""
+    page: page2 ?? "",
+    pictures: seen.pictures,
+    svgFiles: seen.svgFiles
   }) + (element === null ? "" : `
 
 ${prompt("element", { element: element.trim() })}`);
@@ -67047,9 +67386,19 @@ ${prompt("element", { element: element.trim() })}`);
 function readElement(sent) {
   return typeof sent === "string" && sent.length <= MAX_FILE ? sent : null;
 }
+var MOST_UNDESCRIBED = 10;
 function fileProblems(file2) {
   const wordplay = parseWordplay(file2);
-  return [.../* @__PURE__ */ new Set([...wordplay.problems, ...publishableProblems(wordplay, file2)])];
+  const undescribed = undescribedElements(wordplay).slice(0, MOST_UNDESCRIBED).map(
+    ({ element, kind }) => prompt("undescribed", {
+      which: whichElement(element),
+      drawing: kind === "drawing",
+      changes: kind === "changes"
+    }).trim()
+  );
+  return [
+    .../* @__PURE__ */ new Set([...wordplay.problems, ...publishableProblems(wordplay, file2), ...undescribed])
+  ];
 }
 
 // packages/player/src/lib/tutor-turn.ts
@@ -67062,11 +67411,11 @@ var STAND_IN2 = "";
 function lengthWithout(envelope, blank) {
   const bindings = { ...envelopeBindings(envelope), cut: CUT };
   let standing = 0;
-  for (const key2 of blank) {
-    const value = bindings[key2];
+  for (const key3 of blank) {
+    const value = bindings[key3];
     const said2 = Array.isArray(value) ? value.some((one) => String(one).trim()) : Boolean(value && String(value).trim());
     if (!said2) continue;
-    bindings[key2] = Array.isArray(value) ? [STAND_IN2] : STAND_IN2;
+    bindings[key3] = Array.isArray(value) ? [STAND_IN2] : STAND_IN2;
     standing += STAND_IN2.length;
   }
   return prompt("tutor", bindings).split(CUT).filter((part) => part.trim()).join("").length - standing;
@@ -67092,7 +67441,7 @@ init_define_WORDPLAY_ENGINE();
 init_define_WORDPLAY_ENGINE();
 var HIDDEN_RUN = 8;
 var words = (text3) => text3.toLowerCase().replace(/<[^>]+>/g, " ").split(/[^\p{L}\p{N}.]+/u).filter(Boolean);
-function runs(text3, size) {
+function runs2(text3, size) {
   const list = words(text3);
   const out = /* @__PURE__ */ new Set();
   for (let at = 0; at + size <= list.length; at++) out.add(list.slice(at, at + size).join(" "));
@@ -67107,11 +67456,11 @@ var partName = (part) => part.kind === "reveal" ? `the part "${part.name}"` : `t
 var isWithheld = (part) => part.kind === "reveal";
 function readerView(source, held) {
   const wordplay = parseWordplay(source);
-  const tree = treeText(documentTree(readerDocument(source, held).body)).join("\n");
+  const page2 = blocksText(pageBlocks(readerDocument(source, held).body)).join("\n");
   const title = titleOf(wordplay);
   return `${title ? `# ${title}
 
-` : ""}${tree}`;
+` : ""}${page2}`;
 }
 function trialReport(source, turns, acts = []) {
   const wordplay = parseWordplay(source);
@@ -67127,10 +67476,10 @@ function trialReport(source, turns, acts = []) {
     const given = givenParts(wordplay, held);
     const waiting = new Map(waitingParts(wordplay, before2).map((part) => [part.id, part]));
     const { text: text3, show } = readMarkers(turn.content);
-    const said2 = runs(text3, HIDDEN_RUN);
+    const said2 = runs2(text3, HIDDEN_RUN);
     for (const part of wordplay.parts) {
       if (given.has(part.id) || !isWithheld(part)) continue;
-      const shared = [...runs(partText(part), HIDDEN_RUN)].find((run2) => said2.has(run2));
+      const shared = [...runs2(partText(part), HIDDEN_RUN)].find((run2) => said2.has(run2));
       if (shared)
         flags.push(
           `Reply ${reply} said words of ${partName(part)} before it was given: "${shared}".`
@@ -67296,8 +67645,8 @@ var LabsSignIn = class {
     }
     const verifier = base64url3(randomBytes(32));
     const state = base64url3(randomBytes(16));
-    for (const [key2, one] of this.pending)
-      if (Date.now() - one.at > PENDING_MS) this.pending.delete(key2);
+    for (const [key3, one] of this.pending)
+      if (Date.now() - one.at > PENDING_MS) this.pending.delete(key3);
     this.pending.set(state, { verifier, at: Date.now(), clientId, redirect: this.redirect });
     const url2 = new URL(`${this.origin()}/connect`);
     url2.search = new URLSearchParams({
@@ -67409,20 +67758,20 @@ function tutorName(model, effort) {
   return `${modelName(model)}${effort && effortApplies(model) ? ` at ${effort}` : ""}`;
 }
 function tutorsLine(trial) {
-  const runs2 = [];
+  const runs3 = [];
   for (const one of trial.usage ?? []) {
     if (!one.model) continue;
     const who = tutorName(one.model, one.effort);
-    const last = runs2[runs2.length - 1];
+    const last = runs3[runs3.length - 1];
     if (last && last.who === who) last.to = one.after;
-    else runs2.push({ who, from: one.after, to: one.after });
+    else runs3.push({ who, from: one.after, to: one.after });
   }
-  if (runs2.length === 0) {
+  if (runs3.length === 0) {
     return trial.tutor ? `Tutor: ${tutorName(trial.tutor.model, trial.tutor.effort)}.` : null;
   }
-  if (runs2.length === 1) return `Tutor: ${runs2[0].who}.`;
+  if (runs3.length === 1) return `Tutor: ${runs3[0].who}.`;
   const span = (run2) => run2.from === run2.to ? `reply ${run2.from}` : `replies ${run2.from} to ${run2.to}`;
-  return `Tutor: ${runs2.map((run2) => `${run2.who} for ${span(run2)}`).join(", then ")}.`;
+  return `Tutor: ${runs3.map((run2) => `${run2.who} for ${span(run2)}`).join(", then ")}.`;
 }
 function spent(trial) {
   const lines = [tutorsLine(trial), trial.usage?.length ? tokensLine(trial.usage) : null];
@@ -67444,8 +67793,8 @@ function actionWords({ name, value }) {
 }
 async function relay(response, answer) {
   const headers = { "Cache-Control": "no-store" };
-  answer.headers.forEach((value, key2) => {
-    headers[key2] = value;
+  answer.headers.forEach((value, key3) => {
+    headers[key3] = value;
   });
   response.writeHead(answer.status, headers);
   if (!answer.body) return response.end();
@@ -68258,7 +68607,7 @@ function askFor(s, play) {
       turn.messages.slice(-MAX_TURNS),
       {
         held: turn.held,
-        tree: turn.tree,
+        blocks: turn.blocks,
         announced: turn.announced,
         told: turn.told,
         calculations: turn.calculations
@@ -68305,11 +68654,11 @@ function hidden(element) {
   return false;
 }
 function controlNamed(document2, name) {
-  const key2 = matchKey(name);
+  const key3 = matchKey(name);
   for (const element of Array.from(document2.body.querySelectorAll("*"))) {
     const role = roleOf(element);
     if (!role || !CONTROL_ROLES.has(role) || hidden(element)) continue;
-    if (matchKey(nameOf(element)) === key2) return element;
+    if (matchKey(nameOf(element)) === key3) return element;
   }
   return null;
 }
@@ -68369,18 +68718,18 @@ function toggleChecked(document2, control, want) {
   if (want) control.setAttribute("checked", "");
   else control.removeAttribute("checked");
 }
-function simulatedTree(source, held, operations) {
+function simulatedBlocks(source, held, operations) {
   const document2 = readerDocument(source, held);
   let refused = null;
   for (const operation of operations) refused = operate(document2, operation);
-  return { tree: documentTree(document2.body), refused };
+  return { blocks: pageBlocks(document2.body), refused };
 }
 function simulatedView(source, held, operations) {
   const title = titleOf(parseWordplay(source));
-  const tree = treeText(simulatedTree(source, held, operations).tree).join("\n");
+  const page2 = blocksText(simulatedBlocks(source, held, operations).blocks).join("\n");
   return `${title ? `# ${title}
 
-` : ""}${tree}`;
+` : ""}${page2}`;
 }
 
 // packages/player/src/bridge/preview-trials.ts
@@ -68438,7 +68787,7 @@ async function say(s, id, said2) {
     messages,
     {
       held: trial.held,
-      tree: simulatedTree(source, trial.held, operations).tree,
+      blocks: simulatedBlocks(source, trial.held, operations).blocks,
       announced: []
     },
     trial.tutor
@@ -68453,7 +68802,7 @@ async function say(s, id, said2) {
   let now = operations;
   for (const action of read.actions) {
     const tried = [...now, action];
-    const refused = simulatedTree(
+    const refused = simulatedBlocks(
       source,
       heldAfterReply(wordplay, trial.held, answer),
       tried
@@ -68494,7 +68843,7 @@ function act(s, id, name, value) {
   const wordplay = parseWordplay(source);
   const action = value === void 0 ? { name } : { name, value };
   const operations = [...trial.operations ?? [], action];
-  const { refused } = simulatedTree(source, trial.held, operations);
+  const { refused } = simulatedBlocks(source, trial.held, operations);
   if (refused) throw new Error(refused);
   const held = trial.held;
   const line = `The reader ${actionWords(action)}`;

@@ -4,9 +4,9 @@ through it, so be that person, not a tester.
 
 Who you are: {{persona}}
 
-The page in front of you, as you see it now, read the way a screen reader
-reads it: each thing's role, its name in quotes and its state, indented by
-what holds it.
+The page in front of you, as you see it now, a line for each thing on it:
+its words, or for something the teacher built, what it is and what it
+shows now, and under it the buttons and fields it has, by name.
 
 `````
 {{page}}
