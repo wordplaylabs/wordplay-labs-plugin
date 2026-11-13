@@ -572,19 +572,19 @@ description: One or two sentences on what the student comes out holding.
 tags: the-subject first-topic second-topic
 </listing>
 
-**The card's picture is not in the file either.** When the teacher asks for
-a picture, a thumbnail or a cover, draw one with a block of its own: one
-`<svg>`, `viewBox="0 0 1600 1000"` and no width or height, a background
-filled edge to edge, a few large shapes for what it is about, at most a word
-or two. Give every color: the site's ink `#16171b`, gold `#a97e37` and navy
-`#22314a`, on white or a pale tint of one of them.
-No `<image>`, no `<script>`, only the fonts `sans-serif` and `serif`, under
-4,000 characters, and after it say in a sentence what it shows:
+**The card's picture is not in the file either.** Wordplay draws a cover
+itself when the teacher opens Publish. When the teacher asks for a
+picture, a thumbnail or a cover, draw one with a block of its own: one
+`<svg>` on `viewBox="0 0 160 90"`, no background, since the site paints
+the ground; `currentColor` for the lines and `var(--accent)` for one
+accent, and no other color; `stroke-width="3"` with round caps; a few
+large shapes for what it is about, no words. No `<image>`, no `<script>`,
+under 3,000 characters, and after it say in a sentence what it shows:
 
 <cover>
-<svg viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1600" height="1000" fill="#eef0f4"/>
-  <circle cx="800" cy="500" r="260" fill="none" stroke="#22314a" stroke-width="24"/>
+<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="80" cy="45" r="26" fill="none" stroke="currentColor" stroke-width="3"/>
+  <circle cx="80" cy="45" r="6" fill="var(--accent)"/>
 </svg>
 </cover>
 

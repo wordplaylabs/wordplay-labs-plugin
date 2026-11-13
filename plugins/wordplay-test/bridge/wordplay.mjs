@@ -37221,7 +37221,7 @@ function keyReply(settings, turn) {
 
 // packages/player/src/bridge/site.ts
 init_define_WORDPLAY_ENGINE();
-var PREVIEW_BUILD = false ? "source" : "594f1010caee";
+var PREVIEW_BUILD = false ? "source" : "949d826a96a7";
 function modelOf(value) {
   const one = value;
   return one && typeof one.model === "string" && one.model ? { model: one.model, effort: typeof one.effort === "string" ? one.effort : null } : null;
