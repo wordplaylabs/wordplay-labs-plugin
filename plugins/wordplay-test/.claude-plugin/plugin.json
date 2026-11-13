@@ -1,7 +1,7 @@
 {
   "name": "wordplay-test",
   "displayName": "Wordplay (test site)",
-  "version": "2026.1113.83259",
+  "version": "2026.1113.162914",
   "description": "The test site's Wordplay (https://test.wordplaylabs.com), following the repository's test branch: try a change here before production's plugin has it. Write wordplays from your own material as .wplay files in your folder, try them with the tutor and simulated readers on your own Claude plan, and publish them on Wordplay when you say so.",
   "author": {
     "name": "Wordplay Labs",
