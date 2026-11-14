@@ -24904,23 +24904,23 @@ var EXTENDED_RESULT_TYPE_METHODS = [
   "resources/read"
 ];
 function stampResultType(method, result) {
-  const provided2 = result["resultType"];
-  if (provided2 === void 0) return {
+  const provided = result["resultType"];
+  if (provided === void 0) return {
     ...result,
     resultType: "complete"
   };
-  if (provided2 === "complete") return result;
+  if (provided === "complete") return result;
   if (EXTENDED_RESULT_TYPE_METHODS.includes(method)) return result;
-  throw new ProtocolError(ProtocolErrorCode.InternalError, `Handler for ${method} returned resultType '${String(provided2)}', but results of ${method} only support 'complete' on protocol revision 2026-07-28`);
+  throw new ProtocolError(ProtocolErrorCode.InternalError, `Handler for ${method} returned resultType '${String(provided)}', but results of ${method} only support 'complete' on protocol revision 2026-07-28`);
 }
 function fillCacheFields(method, result) {
   const fallback = cacheHintFallbackOf(result);
   if (result["resultType"] !== "complete" || !isCacheableResultMethod(method)) return fallback === void 0 ? result : stripCacheHintFallback(result);
-  const provided2 = result;
-  const ttlMs = isValidCacheTtlMs(provided2["ttlMs"]) ? provided2["ttlMs"] : resolveTtlMs(fallback);
-  const cacheScope = isValidCacheScope(provided2["cacheScope"]) ? provided2["cacheScope"] : resolveCacheScope(fallback);
+  const provided = result;
+  const ttlMs = isValidCacheTtlMs(provided["ttlMs"]) ? provided["ttlMs"] : resolveTtlMs(fallback);
+  const cacheScope = isValidCacheScope(provided["cacheScope"]) ? provided["cacheScope"] : resolveCacheScope(fallback);
   const filled = {
-    ...provided2,
+    ...provided,
     ttlMs,
     cacheScope
   };
@@ -36248,980 +36248,26 @@ init_define_WORDPLAY_ENGINE();
 
 // packages/player/src/lib/ai/models.ts
 init_define_WORDPLAY_ENGINE();
-
-// packages/player/src/lib/own-models.ts
-init_define_WORDPLAY_ENGINE();
-var OWN_KEY_DEFAULTS = {
-  anthropic: "claude-sonnet-5-5",
-  openai: "gpt-6.1-sol"
-};
-
-// packages/player/src/lib/ai/models.ts
-var DEFAULT_BASE = {
-  openai: "https://api.openai.com/v1",
-  anthropic: "https://api.anthropic.com"
-};
-function provider() {
-  return process.env.AI_PROVIDER === "anthropic" ? "anthropic" : "openai";
-}
-function assistantModel() {
-  return process.env.AI_ASSISTANT_MODEL || "";
-}
-function aiDumb() {
-  return process.env.AI_PROVIDER === "dumb";
-}
-function aiModel(role = "assistant") {
-  if (role === "tutor" && process.env.AI_TUTOR_MODEL) return process.env.AI_TUTOR_MODEL;
-  if (role === "builder") {
-    if (process.env.AI_BUILDER_MODEL) return process.env.AI_BUILDER_MODEL;
-    if (provider() === "anthropic") return DEFAULT_BUILDER_MODEL;
-  }
-  if (role === "reader") {
-    if (process.env.AI_STUDENT_MODEL) return process.env.AI_STUDENT_MODEL;
-    if (provider() === "anthropic") return DEFAULT_READER_MODEL;
-    return aiModel("tutor");
-  }
-  return assistantModel();
-}
-var DEFAULT_READER_MODEL = "claude-haiku-5-5";
 var DEFAULT_BUILDER_MODEL = "claude-opus-5-5";
-var OWN_KEY_MODELS = OWN_KEY_DEFAULTS;
-var ROLE_EFFORT = {
-  builder: "medium",
-  tutor: "low",
-  reader: "medium",
-  assistant: null
-};
-var EFFORTS = ["low", "medium", "high", "xhigh", "max"];
-function aiEffort(role = "assistant") {
-  const set2 = process.env[`AI_${role.toUpperCase()}_EFFORT`]?.trim().toLowerCase();
-  if (set2 === "default") return null;
-  if (set2 && EFFORTS.includes(set2)) return set2;
-  return ROLE_EFFORT[role];
-}
 function takesEffort(model) {
   return /claude-(fable|mythos|opus-5|opus-4-[5-8]|sonnet-5|sonnet-4-6|haiku-5)/i.test(model);
 }
-var THINKING_ROOM = 8e3;
 
 // packages/player/src/lib/ai/failures.ts
 init_define_WORDPLAY_ENGINE();
-var AiError = class extends Error {
-  constructor(failure2, message) {
-    super(message);
-    this.failure = failure2;
-    this.name = "AiError";
-  }
-};
-function failureOf(status, said2) {
-  if (status === 429 || status === 503 || status === 529 || /overloaded|rate.?limit/i.test(said2)) {
-    return "busy";
-  }
-  if (/too long|too many tokens|context (length|window)|maximum context/i.test(said2)) return "long";
-  if (status >= 500) return "provider";
-  return "setup";
-}
-function refusalLine(call, provider2, status, said2) {
-  let type = "";
-  let message = said2;
-  try {
-    const body2 = JSON.parse(said2);
-    const error62 = typeof body2.error === "object" && body2.error ? body2.error : null;
-    type = error62?.type ?? error62?.code ?? body2.type ?? "";
-    message = error62?.message ?? (typeof body2.error === "string" ? body2.error : body2.message) ?? said2;
-  } catch {
-  }
-  const text3 = (typeof message === "string" ? message : JSON.stringify(message) ?? "").replace(/\b(?:sk|pk|rk|key|api)[-_][A-Za-z0-9_-]{8,}/gi, "[key]").replace(/\b[A-Za-z0-9_-]{40,}\b/g, "[key]").replace(/\s+/g, " ").trim().slice(0, 300);
-  return `[ai] refused ${call} provider=${provider2} status=${status} type=${String(type) || "none"} message=${JSON.stringify(text3)}`;
-}
-function explainAiFailure(error62) {
-  const failure2 = error62 instanceof AiError ? error62.failure : "unreachable";
-  switch (failure2) {
-    case "busy":
-      return "The model is busy right now. Wait a minute, then send your message again.";
-    case "long":
-      return "This conversation has grown too long for the model. Send a shorter message.";
-    case "setup":
-      return "The model provider refused the site's request, so sending again will not help. The reason is in the site's log.";
-    case "provider":
-      return "The model provider had an error of its own. Send your message again.";
-    case "cut":
-      return "The answer stopped partway through. Send your message again.";
-    case "refused":
-      return "The model declined to answer that. Put it another way, or ask about something else.";
-    case "limit":
-      return "The answer ran past its length limit. Ask for a smaller piece at a time.";
-    default:
-      return "The model provider could not be reached. Send your message again in a moment.";
-  }
-}
 
 // packages/player/src/lib/ai/wire.ts
 init_define_WORDPLAY_ENGINE();
 
 // packages/player/src/lib/picture-size.ts
 init_define_WORDPLAY_ENGINE();
-var PICTURE_TOKENS_UNKNOWN = 1568;
-var MOST = 4784;
-var HEAD_BYTES = 65536;
-function pictureTokens(data) {
-  if (!data) return PICTURE_TOKENS_UNKNOWN;
-  const size = pictureSize(headOf(data));
-  if (!size || !size.width || !size.height) return PICTURE_TOKENS_UNKNOWN;
-  return Math.min(Math.ceil(size.width / 28) * Math.ceil(size.height / 28), MOST);
-}
-function headOf(data) {
-  const base643 = data.replace(/^data:[^,]*,/, "");
-  const length = Math.min(base643.length, Math.ceil(HEAD_BYTES / 3) * 4);
-  const text3 = (() => {
-    try {
-      return atob(base643.slice(0, length - length % 4));
-    } catch {
-      return "";
-    }
-  })();
-  const bytes = new Uint8Array(text3.length);
-  for (let at = 0; at < text3.length; at += 1) bytes[at] = text3.charCodeAt(at);
-  return bytes;
-}
-function pictureSize(bytes) {
-  const at = (index) => bytes[index] ?? 0;
-  const ascii = (from, to) => String.fromCharCode(...Array.from(bytes.subarray(from, to)));
-  if (bytes.length >= 24 && at(0) === 137 && ascii(1, 4) === "PNG") {
-    const be = (index) => (at(index) << 24 | at(index + 1) << 16 | at(index + 2) << 8 | at(index + 3)) >>> 0;
-    return { width: be(16), height: be(20) };
-  }
-  if (bytes.length >= 10 && ascii(0, 3) === "GIF") {
-    return { width: at(6) | at(7) << 8, height: at(8) | at(9) << 8 };
-  }
-  if (at(0) === 255 && at(1) === 216) {
-    let index = 2;
-    while (index + 9 < bytes.length) {
-      if (at(index) !== 255) {
-        index += 1;
-        continue;
-      }
-      const marker = at(index + 1);
-      if (marker === 255) {
-        index += 1;
-        continue;
-      }
-      if (marker === 1 || marker >= 208 && marker <= 216) {
-        index += 2;
-        continue;
-      }
-      const frame = marker >= 192 && marker <= 207 && ![196, 200, 204].includes(marker);
-      if (frame)
-        return {
-          height: at(index + 5) << 8 | at(index + 6),
-          width: at(index + 7) << 8 | at(index + 8)
-        };
-      index += 2 + (at(index + 2) << 8 | at(index + 3));
-    }
-    return null;
-  }
-  if (bytes.length >= 20 && ascii(0, 4) === "RIFF" && ascii(8, 12) === "WEBP") {
-    const chunk = ascii(12, 16);
-    if (chunk === "VP8 ")
-      return {
-        width: (at(26) | at(27) << 8) & 16383,
-        height: (at(28) | at(29) << 8) & 16383
-      };
-    if (chunk === "VP8L") {
-      const bits = (at(21) | at(22) << 8 | at(23) << 16 | at(24) << 24) >>> 0;
-      return { width: (bits & 16383) + 1, height: (bits >>> 14 & 16383) + 1 };
-    }
-    if (chunk === "VP8X")
-      return {
-        width: 1 + (at(24) | at(25) << 8 | at(26) << 16),
-        height: 1 + (at(27) | at(28) << 8 | at(29) << 16)
-      };
-  }
-  return null;
-}
-
-// packages/player/src/lib/ai/wire.ts
-function wirePicture(kind, picture2) {
-  if ("url" in picture2) {
-    return kind === "anthropic" ? { type: "image", source: { type: "url", url: picture2.url } } : { type: "image_url", image_url: { url: picture2.url } };
-  }
-  return kind === "anthropic" ? {
-    type: "image",
-    source: { type: "base64", media_type: picture2.mediaType, data: picture2.data }
-  } : { type: "image_url", image_url: { url: `data:${picture2.mediaType};base64,${picture2.data}` } };
-}
-function wireMessages(kind, messages) {
-  return messages.map(({ role, content, images, pictures: shown }) => {
-    if (!images?.length && !shown?.length) return { role, content };
-    const pictures = (images ?? []).map(
-      (data) => wirePicture(kind, { label: "", mediaType: "image/png", data })
-    );
-    const wordplay = (shown ?? []).flatMap((picture2) => [
-      { type: "text", text: picture2.label },
-      wirePicture(kind, picture2)
-    ]);
-    return { role, content: [...wordplay, ...pictures, { type: "text", text: content }] };
-  });
-}
-function extraBody() {
-  const raw = process.env.AI_EXTRA_BODY;
-  if (!raw?.trim()) return {};
-  try {
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
-  } catch {
-    console.error("[ai] AI_EXTRA_BODY is not a JSON object; ignoring it");
-    return {};
-  }
-}
-function measureMessages(messages) {
-  let conversationChars = 0;
-  let pictureCount = 0;
-  let tokens = 0;
-  for (const message of messages) {
-    conversationChars += message.content.length;
-    for (const image of message.images ?? []) {
-      pictureCount += 1;
-      tokens += pictureTokens(image);
-    }
-    for (const picture2 of message.pictures ?? []) {
-      pictureCount += 1;
-      tokens += pictureTokens("data" in picture2 ? picture2.data : null);
-    }
-  }
-  return { conversationChars, pictureCount, pictureTokens: tokens };
-}
-var MAX_CACHE_MARKERS = 4;
-var EPHEMERAL = { type: "ephemeral" };
-function markLast(wire) {
-  const last = wire[wire.length - 1];
-  if (!last) return wire;
-  const blocks = typeof last.content === "string" ? last.content ? [{ type: "text", text: last.content }] : [] : [...last.content];
-  if (!blocks.length) return wire;
-  blocks[blocks.length - 1] = { ...blocks[blocks.length - 1], cache_control: EPHEMERAL };
-  return [...wire.slice(0, -1), { ...last, content: blocks }];
-}
-function providerRequest(kind, options) {
-  const { base, key: key3, model, messages, maxTokens, effort } = options;
-  const pieces = (Array.isArray(options.system) ? options.system : [options.system]).map((text3, at) => ({ text: text3, long: at < (options.longLived ?? 0) })).filter((piece) => piece.text.trim());
-  const parts = pieces.map((piece) => piece.text);
-  const cache2 = options.cache !== false;
-  const wire = wireMessages(kind, messages);
-  const marked = cache2 && kind === "anthropic" ? markLast(wire) : wire;
-  const systemMarks = cache2 ? MAX_CACHE_MARKERS - (marked === wire ? 0 : 1) : 0;
-  if (kind === "anthropic") {
-    return {
-      url: `${base}/v1/messages`,
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": key3,
-        "anthropic-version": "2023-06-01"
-      },
-      body: {
-        model,
-        // An array of blocks rather than a string, which is what carries the
-        // cache marker. One block per piece, each marked: a head that does not
-        // change is then read from cache even when the piece after it did.
-        // The API takes four markers at most, one of them the conversation's
-        // (`markLast`), so past three only the last three pieces carry one,
-        // and a piece before them is read with the next.
-        // The ones kept an hour lead, as the provider requires of a longer
-        // entry before a shorter.
-        system: pieces.map(({ text: text3, long }, at) => ({
-          type: "text",
-          text: text3,
-          ...at >= parts.length - systemMarks ? { cache_control: long ? { ...EPHEMERAL, ttl: "1h" } : EPHEMERAL } : {}
-        })),
-        messages: marked,
-        // Thinking counts towards the ceiling, and on these models it is on
-        // whether or not anything asks, so it gets room of its own rather
-        // than eating the answer's. An unused ceiling costs nothing.
-        max_tokens: maxTokens + THINKING_ROOM,
-        ...effort ? { output_config: { effort } } : {},
-        ...options.webSearch ? { tools: [webSearchTool(model)] } : {},
-        stream: true,
-        ...options.own ? {} : extraBody()
-      }
-    };
-  }
-  return {
-    url: `${base}/chat/completions`,
-    headers: { "content-type": "application/json", authorization: `Bearer ${key3}` },
-    body: {
-      model,
-      messages: [{ role: "system", content: parts.join("") }, ...wireMessages(kind, messages)],
-      ...options.own ? { max_completion_tokens: maxTokens + THINKING_ROOM } : { max_tokens: maxTokens },
-      stream: true,
-      // **A teacher's OpenAI key says what the call used** (plans/ai-usage-by-part.md): the
-      // stream's last chunk carries `usage` only when asked for; the site's router is left as it is.
-      ...options.own ? { stream_options: { include_usage: true } } : extraBody()
-    }
-  };
-}
-var WEB_SEARCHES = 5;
-function webSearchTool(model) {
-  const filters2 = /^claude-(opus|sonnet)-(5|4-[6-9])/.test(model);
-  return {
-    type: filters2 ? "web_search_20260209" : "web_search_20250305",
-    name: "web_search",
-    max_uses: WEB_SEARCHES
-  };
-}
 
 // packages/player/src/lib/ai/stream.ts
 init_define_WORDPLAY_ENGINE();
-
-// node_modules/eventsource-parser/dist/index.js
-init_define_WORDPLAY_ENGINE();
-var ParseError = class extends Error {
-  constructor(message, options) {
-    super(message), this.name = "ParseError", this.type = options.type, this.field = options.field, this.value = options.value, this.line = options.line;
-  }
-};
-var LF = 10;
-var CR = 13;
-var SPACE = 32;
-function noop(_arg) {
-}
-function createParser(config2) {
-  if (typeof config2 == "function")
-    throw new TypeError(
-      "`config` must be an object, got a function instead. Did you mean `createParser({onEvent: fn})`?"
-    );
-  const { onEvent = noop, onError = noop, onRetry = noop, onComment, maxBufferSize } = config2, pendingFragments = [];
-  let pendingFragmentsLength = 0, isFirstChunk = true, id, data = "", dataLines = 0, eventType, terminated = false;
-  function feed(chunk) {
-    if (terminated)
-      throw new Error(
-        "Cannot feed parser: it was terminated after exceeding the configured max buffer size. Call `reset()` to resume parsing."
-      );
-    if (isFirstChunk && (isFirstChunk = false, chunk.charCodeAt(0) === 239 && chunk.charCodeAt(1) === 187 && chunk.charCodeAt(2) === 191 && (chunk = chunk.slice(3))), pendingFragments.length === 0) {
-      const trailing2 = processLines(chunk);
-      trailing2 !== "" && (pendingFragments.push(trailing2), pendingFragmentsLength = trailing2.length), checkBufferSize();
-      return;
-    }
-    if (chunk.indexOf(`
-`) === -1 && chunk.indexOf("\r") === -1) {
-      pendingFragments.push(chunk), pendingFragmentsLength += chunk.length, checkBufferSize();
-      return;
-    }
-    pendingFragments.push(chunk);
-    const input2 = pendingFragments.join("");
-    pendingFragments.length = 0, pendingFragmentsLength = 0;
-    const trailing = processLines(input2);
-    trailing !== "" && (pendingFragments.push(trailing), pendingFragmentsLength = trailing.length), checkBufferSize();
-  }
-  function checkBufferSize() {
-    maxBufferSize !== void 0 && (pendingFragmentsLength + data.length <= maxBufferSize || (terminated = true, pendingFragments.length = 0, pendingFragmentsLength = 0, id = void 0, data = "", dataLines = 0, eventType = void 0, onError(
-      new ParseError(`Buffered data exceeded max buffer size of ${maxBufferSize} characters`, {
-        type: "max-buffer-size-exceeded"
-      })
-    )));
-  }
-  function processLines(chunk) {
-    let searchIndex = 0;
-    if (chunk.indexOf("\r") === -1) {
-      let lfIndex = chunk.indexOf(`
-`, searchIndex);
-      for (; lfIndex !== -1; ) {
-        if (searchIndex === lfIndex) {
-          dataLines > 0 && onEvent({ id, event: eventType, data }), id = void 0, data = "", dataLines = 0, eventType = void 0, searchIndex = lfIndex + 1, lfIndex = chunk.indexOf(`
-`, searchIndex);
-          continue;
-        }
-        const firstCharCode = chunk.charCodeAt(searchIndex);
-        if (isDataPrefix(chunk, searchIndex, firstCharCode)) {
-          const valueStart = chunk.charCodeAt(searchIndex + 5) === SPACE ? searchIndex + 6 : searchIndex + 5, value = chunk.slice(valueStart, lfIndex);
-          if (dataLines === 0 && chunk.charCodeAt(lfIndex + 1) === LF) {
-            onEvent({ id, event: eventType, data: value }), id = void 0, data = "", eventType = void 0, searchIndex = lfIndex + 2, lfIndex = chunk.indexOf(`
-`, searchIndex);
-            continue;
-          }
-          data = dataLines === 0 ? value : `${data}
-${value}`, dataLines++;
-        } else isEventPrefix(chunk, searchIndex, firstCharCode) ? eventType = chunk.slice(
-          chunk.charCodeAt(searchIndex + 6) === SPACE ? searchIndex + 7 : searchIndex + 6,
-          lfIndex
-        ) || void 0 : parseLine2(chunk, searchIndex, lfIndex);
-        searchIndex = lfIndex + 1, lfIndex = chunk.indexOf(`
-`, searchIndex);
-      }
-      return chunk.slice(searchIndex);
-    }
-    for (; searchIndex < chunk.length; ) {
-      const crIndex = chunk.indexOf("\r", searchIndex), lfIndex = chunk.indexOf(`
-`, searchIndex);
-      let lineEnd = -1;
-      if (crIndex !== -1 && lfIndex !== -1 ? lineEnd = crIndex < lfIndex ? crIndex : lfIndex : crIndex !== -1 ? crIndex === chunk.length - 1 ? lineEnd = -1 : lineEnd = crIndex : lfIndex !== -1 && (lineEnd = lfIndex), lineEnd === -1)
-        break;
-      parseLine2(chunk, searchIndex, lineEnd), searchIndex = lineEnd + 1, chunk.charCodeAt(searchIndex - 1) === CR && chunk.charCodeAt(searchIndex) === LF && searchIndex++;
-    }
-    return chunk.slice(searchIndex);
-  }
-  function parseLine2(chunk, start, end) {
-    if (start === end) {
-      dispatchEvent();
-      return;
-    }
-    const firstCharCode = chunk.charCodeAt(start);
-    if (isDataPrefix(chunk, start, firstCharCode)) {
-      const valueStart = chunk.charCodeAt(start + 5) === SPACE ? start + 6 : start + 5, value2 = chunk.slice(valueStart, end);
-      data = dataLines === 0 ? value2 : `${data}
-${value2}`, dataLines++;
-      return;
-    }
-    if (isEventPrefix(chunk, start, firstCharCode)) {
-      eventType = chunk.slice(chunk.charCodeAt(start + 6) === SPACE ? start + 7 : start + 6, end) || void 0;
-      return;
-    }
-    if (firstCharCode === 105 && chunk.charCodeAt(start + 1) === 100 && chunk.charCodeAt(start + 2) === 58) {
-      const value2 = chunk.slice(chunk.charCodeAt(start + 3) === SPACE ? start + 4 : start + 3, end);
-      value2.includes("\0") || (id = value2);
-      return;
-    }
-    if (firstCharCode === 58) {
-      if (onComment) {
-        const line2 = chunk.slice(start, end);
-        onComment(line2.slice(chunk.charCodeAt(start + 1) === SPACE ? 2 : 1));
-      }
-      return;
-    }
-    const line = chunk.slice(start, end), fieldSeparatorIndex = line.indexOf(":");
-    if (fieldSeparatorIndex === -1) {
-      processField(line, "", line);
-      return;
-    }
-    const field = line.slice(0, fieldSeparatorIndex), offset = line.charCodeAt(fieldSeparatorIndex + 1) === SPACE ? 2 : 1, value = line.slice(fieldSeparatorIndex + offset);
-    processField(field, value, line);
-  }
-  function processField(field, value, line) {
-    switch (field) {
-      case "event":
-        eventType = value || void 0;
-        break;
-      case "data":
-        data = dataLines === 0 ? value : `${data}
-${value}`, dataLines++;
-        break;
-      case "id":
-        value.includes("\0") || (id = value);
-        break;
-      case "retry":
-        /^\d+$/.test(value) ? onRetry(parseInt(value, 10)) : onError(
-          new ParseError(`Invalid \`retry\` value: "${value}"`, {
-            type: "invalid-retry",
-            value,
-            line
-          })
-        );
-        break;
-      default:
-        onError(
-          new ParseError(
-            `Unknown field "${field.length > 20 ? `${field.slice(0, 20)}\u2026` : field}"`,
-            { type: "unknown-field", field, value, line }
-          )
-        );
-        break;
-    }
-  }
-  function dispatchEvent() {
-    dataLines > 0 && onEvent({
-      id,
-      event: eventType,
-      data
-    }), id = void 0, data = "", dataLines = 0, eventType = void 0;
-  }
-  function reset(options = {}) {
-    if (options.consume && pendingFragments.length > 0) {
-      const incompleteLine = pendingFragments.join("");
-      parseLine2(incompleteLine, 0, incompleteLine.length);
-    }
-    isFirstChunk = true, id = void 0, data = "", dataLines = 0, eventType = void 0, pendingFragments.length = 0, pendingFragmentsLength = 0, terminated = false;
-  }
-  return { feed, reset };
-}
-function isDataPrefix(chunk, i2, firstCharCode) {
-  return firstCharCode === 100 && chunk.charCodeAt(i2 + 1) === 97 && chunk.charCodeAt(i2 + 2) === 116 && chunk.charCodeAt(i2 + 3) === 97 && chunk.charCodeAt(i2 + 4) === 58;
-}
-function isEventPrefix(chunk, i2, firstCharCode) {
-  return firstCharCode === 101 && chunk.charCodeAt(i2 + 1) === 118 && chunk.charCodeAt(i2 + 2) === 101 && chunk.charCodeAt(i2 + 3) === 110 && chunk.charCodeAt(i2 + 4) === 116 && chunk.charCodeAt(i2 + 5) === 58;
-}
-
-// packages/player/src/lib/ai/stream.ts
-function deltaOf(payload, kind) {
-  if (payload === "[DONE]") return "";
-  let json4;
-  try {
-    json4 = JSON.parse(payload);
-  } catch {
-    return "";
-  }
-  if (kind === "anthropic") {
-    const event = json4;
-    return event.type === "content_block_delta" ? event.delta?.text ?? "" : "";
-  }
-  const chunk = json4;
-  return chunk.choices?.[0]?.delta?.content ?? "";
-}
-function errorIn(payload) {
-  let json4;
-  try {
-    json4 = JSON.parse(payload);
-  } catch {
-    return null;
-  }
-  const frame = json4;
-  if (!frame.error || frame.type !== void 0 && frame.type !== "error") return null;
-  const said2 = `${frame.error.type ?? frame.error.code ?? ""} ${frame.error.message ?? ""}`.trim();
-  return { failure: /overloaded|rate.?limit/i.test(said2) ? "busy" : failureOf(500, said2), said: said2 };
-}
-function isTerminal(payload, kind) {
-  if (kind !== "anthropic" && payload === "[DONE]") return true;
-  let json4;
-  try {
-    json4 = JSON.parse(payload);
-  } catch {
-    return false;
-  }
-  if (kind === "anthropic") {
-    const event = json4;
-    if (event.type === "message_stop") return true;
-    return event.type === "message_delta" && Boolean(event.delta?.stop_reason);
-  }
-  const chunk = json4;
-  return Boolean(chunk.choices?.[0]?.finish_reason);
-}
-var FIRST_RESPONSE_MS = 6e4;
-var HEARTBEAT = "\n";
-var HEARTBEAT_MS = 1e4;
-var STALL_MS = 12e4;
-function readWithin(reader, ms) {
-  let timer;
-  return Promise.race([
-    reader.read(),
-    new Promise((_resolve, reject) => {
-      timer = setTimeout(() => reject(new Error(`nothing for ${ms / 1e3}s`)), ms);
-    })
-  ]).finally(() => clearTimeout(timer));
-}
-function eventsOf(body2) {
-  const reader = body2.getReader();
-  const decoder = new TextDecoder();
-  const queue = [];
-  let ended = false;
-  const parser = createParser({ onEvent: (event) => queue.push(event.data) });
-  return {
-    async next(ms, until) {
-      for (; ; ) {
-        const data = queue.shift();
-        if (data !== void 0) {
-          const payload = data.trim();
-          if (payload) return payload;
-          continue;
-        }
-        if (ended) return null;
-        const within = until === void 0 ? ms : Math.min(ms, until - Date.now());
-        const { done, value } = await readWithin(reader, Math.max(within, 0));
-        if (done) {
-          ended = true;
-          parser.feed(`${decoder.decode()}
-
-`);
-        } else {
-          parser.feed(decoder.decode(value, { stream: true }));
-        }
-      }
-    },
-    cancel: () => letGo(reader)
-  };
-}
-var USAGE_WAIT_MS = 2e3;
-async function usageAfter(events, usage) {
-  const until = Date.now() + USAGE_WAIT_MS;
-  for (; ; ) {
-    let payload;
-    try {
-      payload = await events.next(USAGE_WAIT_MS, until);
-    } catch {
-      return;
-    }
-    if (payload === null || payload === "[DONE]") return;
-    usage.readOpenAi(payload);
-    if (usage.counted) return;
-  }
-}
-var Usage = class {
-  constructor() {
-    this.input = 0;
-    this.cacheRead = 0;
-    this.cacheWrite = 0;
-    /** Of `cacheWrite`, the hour's: `cache_creation.ephemeral_1h_input_tokens`. */
-    this.cacheWriteLong = 0;
-    this.output = 0;
-    this.stop = null;
-    /** The characters handed to the reader, which is output less the thinking. */
-    this.textChars = 0;
-    /** Whether an OpenAI-shaped stream has sent its `usage` chunk yet. */
-    this.counted = false;
-  }
-  read(payload) {
-    let event;
-    try {
-      event = JSON.parse(payload);
-    } catch {
-      return;
-    }
-    const count2 = (value) => typeof value === "number" ? value : 0;
-    const counts = event.type === "message_start" ? event.message?.usage : event.usage;
-    if (counts) {
-      this.input = Math.max(this.input, count2(counts.input_tokens));
-      this.cacheRead = Math.max(this.cacheRead, count2(counts.cache_read_input_tokens));
-      this.cacheWrite = Math.max(this.cacheWrite, count2(counts.cache_creation_input_tokens));
-      const split = counts.cache_creation;
-      this.cacheWriteLong = Math.max(this.cacheWriteLong, count2(split?.ephemeral_1h_input_tokens));
-      this.output = Math.max(this.output, count2(counts.output_tokens));
-    }
-    if (event.type === "message_delta" && event.delta?.stop_reason) {
-      this.stop = event.delta.stop_reason;
-    }
-  }
-  /** The OpenAI shape's stop reasons, in Anthropic's words, and its counts when sent. */
-  readOpenAi(payload) {
-    let chunk;
-    try {
-      chunk = JSON.parse(payload);
-    } catch {
-      return;
-    }
-    if (chunk.usage) {
-      this.counted = true;
-      const cached2 = chunk.usage.prompt_tokens_details?.cached_tokens ?? 0;
-      this.input = Math.max(0, (chunk.usage.prompt_tokens ?? 0) - cached2);
-      this.cacheRead = cached2;
-      this.output = chunk.usage.completion_tokens ?? 0;
-    }
-    const reason = chunk.choices?.[0]?.finish_reason;
-    if (reason === "length") this.stop = "max_tokens";
-    else if (reason === "content_filter") this.stop = "refusal";
-    else if (reason) this.stop = reason;
-  }
-  line() {
-    const long = this.cacheWriteLong ? ` cache_write_1h=${this.cacheWriteLong}` : "";
-    return `in=${this.input} cache_read=${this.cacheRead} cache_write=${this.cacheWrite}${long} out=${this.output} stop=${this.stop ?? "none"}`;
-  }
-};
-function letGo(reader) {
-  void reader.cancel().catch(() => {
-  });
-}
-
-// packages/player/src/lib/ai.ts
-var DUMB_REPLIES = [
-  "Interesting. Have you tried turning it off and on again?",
-  "I am only a stand-in tutor, but that sounds right to me. Or wrong. One of the two.",
-  "Hmm. What would a duck say about that?",
-  "Bold claim. Can you say it again, but louder?"
-];
-function dumbReply(messages) {
-  const said2 = messages.filter((one) => one.role === "user").at(-1)?.content ?? "";
-  const last = said2.trim().split("\n").at(-1)?.trim() ?? "";
-  const reply = DUMB_REPLIES[messages.length % DUMB_REPLIES.length];
-  return last ? `${reply} You said: "${last.slice(0, 200)}".` : reply;
-}
-function dumbStream(messages, signal) {
-  const encoder = new TextEncoder();
-  const words2 = dumbReply(messages).split(/(?<= )/);
-  let at = 0;
-  return new ReadableStream({
-    async pull(controller) {
-      if (signal?.aborted || at >= words2.length) return controller.close();
-      await new Promise((done) => setTimeout(done, 40));
-      controller.enqueue(encoder.encode(words2[at++]));
-    }
-  });
-}
-async function askAi(options) {
-  const own2 = options.own;
-  if (!own2 && aiDumb()) return dumbStream(options.messages, options.signal);
-  const key3 = own2 ? own2.key : process.env.AI_API_KEY;
-  const model = options.model?.trim() || (own2 ? OWN_KEY_MODELS[own2.provider] : aiModel(options.role));
-  if (!key3 || !model) throw new Error("No inference provider configured.");
-  const kind = own2 ? own2.provider : provider();
-  const effort = takesEffort(model) ? options.effort !== void 0 ? options.effort : aiEffort(options.role) : null;
-  const started = Date.now();
-  const measured = measureMessages(options.messages);
-  const report = (usage, failure2, firstAt) => options.onCall?.({
-    operation: options.role ?? "assistant",
-    provider: kind,
-    model,
-    effort,
-    input: usage.input,
-    cacheRead: usage.cacheRead,
-    cacheWrite: usage.cacheWrite,
-    cacheWriteLong: usage.cacheWriteLong,
-    output: usage.output,
-    textChars: usage.textChars,
-    stopReason: usage.stop,
-    failure: failure2,
-    durationMs: Date.now() - started,
-    firstTokenMs: firstAt === null ? null : firstAt - started,
-    parts: options.parts ?? null,
-    ...measured
-  });
-  const request = providerRequest(kind, {
-    // `AI_OWN_BASE_URL` is the browser suite's stand-in alone (e2e/fake-ai.ts).
-    base: ((own2 ? process.env.AI_OWN_BASE_URL : process.env.AI_BASE_URL) || DEFAULT_BASE[kind]).replace(/\/$/, ""),
-    key: key3,
-    model,
-    system: options.system,
-    messages: options.messages,
-    maxTokens: options.maxTokens ?? 1500,
-    effort,
-    cache: options.cache,
-    longLived: options.longLived,
-    own: Boolean(own2),
-    webSearch: options.webSearch
-  });
-  const deadline = new AbortController();
-  const timer = setTimeout(() => deadline.abort(), FIRST_RESPONSE_MS);
-  let response;
-  try {
-    response = await fetch(request.url, {
-      method: "POST",
-      headers: request.headers,
-      body: JSON.stringify(request.body),
-      signal: options.signal ? AbortSignal.any([options.signal, deadline.signal]) : deadline.signal
-    });
-  } catch (error62) {
-    report(new Usage(), "unreachable", null);
-    throw new AiError(
-      "unreachable",
-      deadline.signal.aborted ? `Inference did not answer within ${FIRST_RESPONSE_MS / 1e3}s` : `Inference unreachable: ${String(error62)}`
-    );
-  } finally {
-    clearTimeout(timer);
-  }
-  if (!response.ok || !response.body) {
-    const detail = await response.text().catch(() => "");
-    const failure2 = failureOf(response.status, detail);
-    if (!response.ok)
-      console.error(
-        refusalLine(`${options.role ?? "assistant"} ${model}`, kind, response.status, detail)
-      );
-    report(new Usage(), failure2, null);
-    throw new AiError(failure2, `Inference failed (${response.status}): ${detail.slice(0, 500)}`);
-  }
-  return textOf(
-    response.body,
-    kind,
-    `${options.role ?? "assistant"} ${model} parts=${fingerprints(options.system)}`,
-    (end) => report(end.usage, end.failure, end.firstAt)
-  );
-}
-function fingerprints(system) {
-  return (Array.isArray(system) ? system : [system]).filter((part) => part.trim()).map((part) => {
-    let hash2 = 2166136261;
-    for (let k = 0; k < part.length; k++) {
-      hash2 ^= part.charCodeAt(k);
-      hash2 = Math.imul(hash2, 16777619);
-    }
-    return `${(hash2 >>> 0).toString(16).padStart(8, "0")}:${part.length}`;
-  }).join(",");
-}
-function textOf(body2, kind, label, ended) {
-  const encoder = new TextEncoder();
-  const events = eventsOf(body2);
-  let finished = false;
-  const usage = new Usage();
-  const started = Date.now();
-  let firstText = null;
-  const logged = (failure2 = null) => {
-    ended?.({ usage, failure: failure2, firstAt: firstText });
-    if (!label) return;
-    const first = firstText === null ? "none" : `${firstText - started}`;
-    console.log(`[ai] ${label} ${usage.line()} ms=${Date.now() - started} first_ms=${first}`);
-  };
-  let beat;
-  const quiet = () => clearInterval(beat);
-  return new ReadableStream({
-    start(controller) {
-      beat = setInterval(() => {
-        if (finished || firstText !== null) return quiet();
-        controller.enqueue(encoder.encode(HEARTBEAT));
-      }, HEARTBEAT_MS);
-    },
-    async pull(controller) {
-      if (finished) return quiet();
-      for (; ; ) {
-        let payload;
-        try {
-          payload = await events.next(STALL_MS);
-        } catch (error62) {
-          finished = true;
-          usage.stop ??= "cut";
-          logged("cut");
-          events.cancel();
-          controller.error(new AiError("cut", `Inference stream failed: ${String(error62)}`));
-          return;
-        }
-        if (payload === null) {
-          finished = true;
-          if (kind !== "anthropic" || usage.stop !== null) {
-            logged();
-            controller.close();
-            return;
-          }
-          usage.stop = "cut";
-          logged("cut");
-          controller.error(new AiError("cut", "Inference stream ended before its last frame."));
-          return;
-        }
-        const refusal = errorIn(payload);
-        if (refusal) {
-          finished = true;
-          if (label) console.error(refusalLine(label, kind, "stream", payload));
-          logged(refusal.failure);
-          controller.error(
-            new AiError(refusal.failure, `Inference stream refused: ${refusal.said}`)
-          );
-          events.cancel();
-          return;
-        }
-        if (kind === "anthropic") usage.read(payload);
-        else usage.readOpenAi(payload);
-        const over = isTerminal(payload, kind);
-        const text3 = deltaOf(payload, kind);
-        if (text3) {
-          firstText ??= Date.now();
-          quiet();
-          usage.textChars += text3.length;
-          controller.enqueue(encoder.encode(text3));
-        }
-        if (over) {
-          finished = true;
-          const failure2 = usage.stop === "refusal" ? "refused" : usage.stop === "max_tokens" ? "limit" : null;
-          if (kind !== "anthropic" && !usage.counted) {
-            void usageAfter(events, usage).finally(() => {
-              logged(failure2);
-              events.cancel();
-            });
-          } else {
-            logged(failure2);
-            events.cancel();
-          }
-          if (usage.stop === "refusal") {
-            controller.error(new AiError("refused", "The model declined to answer."));
-          } else if (usage.stop === "max_tokens") {
-            controller.error(new AiError("limit", "The answer reached max_tokens."));
-          } else {
-            controller.close();
-          }
-          return;
-        }
-        if (text3) return;
-      }
-    },
-    cancel() {
-      quiet();
-      if (!finished) {
-        usage.stop ??= "abandoned";
-        logged();
-      }
-      finished = true;
-      events.cancel();
-    }
-  });
-}
-
-// packages/player/src/bridge/key.ts
-init_define_WORDPLAY_ENGINE();
-function keyBackend() {
-  if (!process.env.WORDPLAY_AI_KEY) return null;
-  return { provider: process.env.WORDPLAY_AI_PROVIDER === "openai" ? "openai" : "anthropic" };
-}
-var KEY_DEFAULT_MODEL = "claude-sonnet-5-5";
-var provided = false;
-function provide() {
-  if (provided) return;
-  provided = true;
-  process.env.AI_PROVIDER = keyBackend()?.provider ?? "anthropic";
-  process.env.AI_API_KEY = process.env.WORDPLAY_AI_KEY ?? "";
-  if (process.env.WORDPLAY_AI_BASE_URL) process.env.AI_BASE_URL = process.env.WORDPLAY_AI_BASE_URL;
-  if (process.env.WORDPLAY_AI_EXTRA_BODY) {
-    process.env.AI_EXTRA_BODY = process.env.WORDPLAY_AI_EXTRA_BODY;
-  }
-}
-function endOf(error62) {
-  if (error62 instanceof AiError && error62.failure === "limit")
-    return { stop: "max_tokens", error: null };
-  if (error62 instanceof AiError && error62.failure === "refused") {
-    return { stop: "refusal", error: explainAiFailure(error62) };
-  }
-  return { stop: null, error: explainAiFailure(error62) };
-}
-function keyReply(settings, turn) {
-  provide();
-  process.env.AI_ASSISTANT_MODEL = settings.model;
-  process.env.AI_TUTOR_MODEL = settings.model;
-  process.env.AI_TUTOR_EFFORT = settings.effort;
-  const controller = new AbortController();
-  let finish = () => {
-  };
-  const end = new Promise((done) => finish = done);
-  async function* text3() {
-    if (!settings.model) {
-      finish({
-        stop: null,
-        error: "No model is set for the key: set WORDPLAY_TUTOR_MODEL to one your provider runs."
-      });
-      return;
-    }
-    let stop = null;
-    let usage;
-    let model;
-    try {
-      const stream = await askAi({
-        system: turn.system,
-        messages: turn.messages,
-        // The site's tutor cap (`/api/tutor`), or the builder's.
-        maxTokens: turn.maxTokens ?? 700,
-        role: turn.role ?? "tutor",
-        // The model and effort these settings name, the author's pick among
-        // them, for the assistant as for the tutor (`builderSettings`); a
-        // model that takes no effort is sent none (`takesEffort`, in `askAi`).
-        model: settings.model,
-        effort: settings.effort,
-        signal: controller.signal,
-        onCall: (call) => {
-          stop = call.stopReason;
-          model = call.model;
-          usage = {
-            input: call.input,
-            output: call.output,
-            cacheRead: call.cacheRead,
-            cacheWrite: call.cacheWrite
-          };
-        }
-      });
-      const reader = stream.getReader();
-      const decoder = new TextDecoder();
-      for (; ; ) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        yield decoder.decode(value, { stream: true });
-      }
-      finish({ stop, error: null, usage, model });
-    } catch (error62) {
-      finish(endOf(error62));
-    }
-  }
-  return { text: text3(), end, cancel: () => controller.abort() };
-}
 
 // packages/player/src/bridge/site.ts
 init_define_WORDPLAY_ENGINE();
-var PREVIEW_BUILD = false ? "source" : "316ebafd544d";
+var PREVIEW_BUILD = false ? "source" : "7a9b47614b35";
 function modelOf(value) {
   const one = value;
   return one && typeof one.model === "string" && one.model ? { model: one.model, effort: typeof one.effort === "string" ? one.effort : null } : null;
@@ -37254,33 +36300,31 @@ function siteNotes(site2, facts) {
       `This preview was built from a different commit than ${site2} runs, so a play may not behave the same in both. Update the plugin ("/plugin marketplace update wordplay-labs", then restart Claude Code); wordplay follows the site's main branch and wordplay-test the test site's.`
     );
   }
-  const key3 = process.env.WORDPLAY_AI_KEY ? process.env.WORDPLAY_AI_PROVIDER === "openai" ? "openai" : "anthropic" : null;
-  if (facts.tutor && key3 !== "openai" && !claudeModel(facts.tutor.model) && !process.env.WORDPLAY_TUTOR_MODEL) {
+  if (facts.tutor && !claudeModel(facts.tutor.model) && !process.env.WORDPLAY_TUTOR_MODEL) {
     notes.push(
-      key3 ? `The site's tutor runs on ${facts.tutor.model}, which your key at Anthropic cannot run, so the tutor here is the preview's own default.` : `The site's tutor runs on ${facts.tutor.model}, which Claude Code cannot run, so the tutor here is the preview's own default.`
+      `The site's tutor runs on ${facts.tutor.model}, which Claude Code cannot run, so the tutor here is the preview's own default.`
     );
   }
   return notes;
 }
 
 // packages/player/src/bridge/claude.ts
-var EFFORTS2 = ["low", "medium", "high", "xhigh", "max"];
+var EFFORTS = ["low", "medium", "high", "xhigh", "max"];
 function tutorSettings(site2) {
   return roleSettings("tutor", site2);
 }
 function builderSettings(site2) {
   return roleSettings("builder", site2);
 }
+var TUTOR_DEFAULT_MODEL = "claude-sonnet-5-5";
 function roleSettings(role, site2) {
-  const key3 = keyBackend();
-  const siteModel = key3?.provider === "openai" ? site2?.model?.trim() || null : claudeModel(site2?.model);
-  const siteEffort = siteModel && site2?.effort && EFFORTS2.includes(site2.effort) ? site2.effort : null;
+  const siteModel = claudeModel(site2?.model);
+  const siteEffort = siteModel && site2?.effort && EFFORTS.includes(site2.effort) ? site2.effort : null;
   const ownModel = process.env[`WORDPLAY_${role.toUpperCase()}_MODEL`]?.trim();
   const ownEffort = process.env[`WORDPLAY_${role.toUpperCase()}_EFFORT`]?.trim();
   const from = (own2, fromSite) => own2 ? "author" : fromSite ? "site" : "default";
-  const fallback = !key3 || key3.provider === "anthropic" ? role === "builder" ? DEFAULT_BUILDER_MODEL : KEY_DEFAULT_MODEL : "";
+  const fallback = role === "builder" ? DEFAULT_BUILDER_MODEL : TUTOR_DEFAULT_MODEL;
   return {
-    backend: key3 ? "key" : "claude",
     command: process.env.WORDPLAY_CLAUDE || "claude",
     model: ownModel || siteModel || fallback,
     effort: ownEffort || siteEffort || "medium",
@@ -37299,7 +36343,6 @@ function effortApplies(model) {
   return !/^claude-/i.test(model) || takesEffort(model);
 }
 function tutorChoices(settings, site2) {
-  if (settings.backend === "key" && keyBackend()?.provider === "openai") return null;
   const siteModel = claudeModel(site2?.model);
   const own2 = [settings.model, ...siteModel ? [siteModel] : []];
   const rest = TUTOR_MODELS.filter((id) => !own2.some((one) => modelName(one) === modelName(id)));
@@ -37311,9 +36354,9 @@ function tutorChoices(settings, site2) {
       site: id === siteModel,
       effort: effortApplies(id)
     })),
-    efforts: EFFORTS2,
+    efforts: EFFORTS,
     chosen: { model: settings.model, effort: settings.effort },
-    via: settings.backend === "key" ? "your own API key" : "your Claude Code"
+    via: "your Claude Code"
   };
 }
 function withChoice(settings, choices, choice) {
@@ -37323,7 +36366,7 @@ function withChoice(settings, choices, choice) {
   return {
     ...settings,
     ...offered ? { model: offered.id, modelFrom: offered.site ? "site" : "author" } : {},
-    ...typeof effort === "string" && EFFORTS2.includes(effort) ? { effort, effortFrom: "author" } : {}
+    ...typeof effort === "string" && EFFORTS.includes(effort) ? { effort, effortFrom: "author" } : {}
   };
 }
 function modelName(model) {
@@ -37333,11 +36376,8 @@ function modelName(model) {
   return number4 ? `${name} ${number4}` : name;
 }
 function tutorWords(settings) {
-  if (!settings.model) {
-    return "no model is set for the tutor: WORDPLAY_TUTOR_MODEL names one your provider runs";
-  }
   const lead = `the tutor is ${modelName(settings.model)} at ${settings.effort} effort`;
-  const tail = settings.backend === "key" ? "on your own API key" : "through your Claude Code";
+  const tail = "through your Claude Code";
   if (settings.modelFrom === "site" && settings.effortFrom === "site") {
     return `${lead}, as on the site, ${tail}`;
   }
@@ -37585,8 +36625,15 @@ init_define_WORDPLAY_ENGINE();
 var ANSWER_STOPPED = "";
 function stoppedIn(text3) {
   const at = text3.indexOf(ANSWER_STOPPED);
-  if (at === -1) return { text: text3, stopped: null };
-  return { text: text3.slice(0, at), stopped: text3.slice(at + ANSWER_STOPPED.length).trim() };
+  if (at === -1) return { text: text3, stopped: null, kind: null };
+  const rest = text3.slice(at + ANSWER_STOPPED.length);
+  const second = rest.indexOf(ANSWER_STOPPED);
+  const kind = second > 0 && /^[a-z-]+$/.test(rest.slice(0, second)) ? rest.slice(0, second) : null;
+  return {
+    text: text3.slice(0, at),
+    stopped: (kind ? rest.slice(second + ANSWER_STOPPED.length) : rest).trim(),
+    kind
+  };
 }
 
 // packages/player/src/lib/local-preview.ts
@@ -50080,7 +49127,7 @@ function partBlocks(element) {
   copy.removeAttribute("data-expect");
   return blocksOfElement(copy, readingOf(element));
 }
-function headOf2(block) {
+function headOf(block) {
   const words2 = JSON.stringify(block.text);
   const hidden2 = block.hidden ? " (hidden by the page)" : "";
   switch (block.kind) {
@@ -50118,7 +49165,7 @@ function blocksText(blocks, depth = 0) {
   const lines = [];
   const pad2 = "  ".repeat(depth);
   for (const block of blocks) {
-    lines.push(`${pad2}- ${headOf2(block)}`);
+    lines.push(`${pad2}- ${headOf(block)}`);
     for (const line of block.lines ?? [])
       lines.push(
         `${pad2}    ${block.kind === "picture" ? `caption: ${JSON.stringify(line)}` : line}`
@@ -50821,7 +49868,7 @@ init_define_WORDPLAY_ENGINE();
 
 // node_modules/katex/dist/katex.mjs
 init_define_WORDPLAY_ENGINE();
-var ParseError2 = class _ParseError extends Error {
+var ParseError = class _ParseError extends Error {
   // The underlying error message without any context added.
   constructor(message, token) {
     var error62 = "KaTeX parse error: " + message;
@@ -51067,7 +50114,7 @@ var Settings = class {
     if (!strict || strict === "ignore") {
       return;
     } else if (strict === true || strict === "error") {
-      throw new ParseError2("LaTeX-incompatible input and strict mode is set to 'error': " + (errorMsg + " [" + errorCode + "]"), token);
+      throw new ParseError("LaTeX-incompatible input and strict mode is set to 'error': " + (errorMsg + " [" + errorCode + "]"), token);
     } else if (strict === "warn") {
       typeof console !== "undefined" && console.warn("LaTeX-incompatible input and strict mode is set to 'warn': " + (errorMsg + " [" + errorCode + "]"));
     } else {
@@ -51570,7 +50617,7 @@ var calculateSize = function calculateSize2(sizeValue, options) {
     } else if (sizeValue.unit === "em") {
       scale = unitOptions.fontMetrics().quad;
     } else {
-      throw new ParseError2("Invalid unit: '" + sizeValue.unit + "'");
+      throw new ParseError("Invalid unit: '" + sizeValue.unit + "'");
     }
     if (unitOptions !== options) {
       scale *= unitOptions.sizeMultiplier / options.sizeMultiplier;
@@ -51635,7 +50682,7 @@ var toMarkup = function toMarkup2(tagName19) {
   }
   for (var attr of Object.keys(this.attributes)) {
     if (invalidAttributeNameRegex.test(attr)) {
-      throw new ParseError2("Invalid attribute name '" + attr + "'");
+      throw new ParseError("Invalid attribute name '" + attr + "'");
     }
     markup += " " + attr + '="' + escape5(this.attributes[attr]) + '"';
   }
@@ -55080,7 +54127,7 @@ var wideCharacterFont = (wideChar2) => {
   } else if (120486 < codePoint && codePoint < 120782) {
     return noFont;
   } else {
-    throw new ParseError2("Unsupported character: " + wideChar2);
+    throw new ParseError("Unsupported character: " + wideChar2);
   }
 };
 var lookupSymbol = function lookupSymbol2(value, fontName, mode) {
@@ -55826,7 +54873,7 @@ var buildGroup$1 = function buildGroup(group, options, baseOptions) {
     }
     return groupNode;
   } else {
-    throw new ParseError2("Got group of unknown type: '" + group.type + "'");
+    throw new ParseError("Got group of unknown type: '" + group.type + "'");
   }
 };
 function buildHTMLUnbreakable(children, options) {
@@ -56213,7 +55260,7 @@ var buildGroup2 = function buildGroup3(group, options) {
   if (_mathmlGroupBuilders[group.type]) {
     return _mathmlGroupBuilders[group.type](group, options);
   } else {
-    throw new ParseError2("Got group of unknown type: '" + group.type + "'");
+    throw new ParseError("Got group of unknown type: '" + group.type + "'");
   }
 };
 function buildMathML(tree, texExpression, options, isDisplayMode, forMathmlOnly) {
@@ -57431,7 +56478,7 @@ function parseCD(parser) {
       }
       break;
     } else {
-      throw new ParseError2("Expected \\\\ or \\cr or \\end", parser.nextToken);
+      throw new ParseError("Expected \\\\ or \\cr or \\end", parser.nextToken);
     }
   }
   var row = [];
@@ -57468,16 +56515,16 @@ function parseCD(parser) {
                 break;
               }
               if (isStartOfArrow(rowNodes[k])) {
-                throw new ParseError2("Missing a " + arrowChar + " character to complete a CD arrow.", rowNodes[k]);
+                throw new ParseError("Missing a " + arrowChar + " character to complete a CD arrow.", rowNodes[k]);
               }
               labels[labelNum].body.push(rowNodes[k]);
             }
             if (inLabel) {
-              throw new ParseError2("Missing a " + arrowChar + " character to complete a CD arrow.", rowNodes[j]);
+              throw new ParseError("Missing a " + arrowChar + " character to complete a CD arrow.", rowNodes[j]);
             }
           }
         } else {
-          throw new ParseError2('Expected one of "<>AV=|." after @', rowNodes[j]);
+          throw new ParseError('Expected one of "<>AV=|." after @', rowNodes[j]);
         }
         var arrow = cdArrow(arrowChar, labels, parser);
         var wrappedArrow = {
@@ -57609,9 +56656,9 @@ defineFunction({
     var code = parseInt(number4);
     var text3;
     if (isNaN(code)) {
-      throw new ParseError2("\\@char has non-numeric argument " + number4);
+      throw new ParseError("\\@char has non-numeric argument " + number4);
     } else if (code < 0 || code >= 1114111) {
-      throw new ParseError2("\\@char with invalid code point " + number4);
+      throw new ParseError("\\@char with invalid code point " + number4);
     } else if (code <= 65535) {
       text3 = String.fromCharCode(code);
     } else {
@@ -57743,7 +56790,7 @@ var globalMap = {
 var checkControlSequence = (tok) => {
   var name = tok.text;
   if (/^(?:[\\{}$&#^_]|EOF)$/.test(name)) {
-    throw new ParseError2("Expected a control sequence", tok);
+    throw new ParseError("Expected a control sequence", tok);
   }
   return name;
 };
@@ -57795,7 +56842,7 @@ defineFunction({
       }
       return assertNodeType(parser.parseFunction(), "internal");
     }
-    throw new ParseError2("Invalid token after macro prefix", token);
+    throw new ParseError("Invalid token after macro prefix", token);
   }
 });
 defineFunction({
@@ -57814,7 +56861,7 @@ defineFunction({
     var tok = parser.gullet.popToken();
     var name = tok.text;
     if (/^(?:[\\{}$&#^_]|EOF)$/.test(name)) {
-      throw new ParseError2("Expected a control sequence", tok);
+      throw new ParseError("Expected a control sequence", tok);
     }
     var numArgs = 0;
     var insert2;
@@ -57829,15 +56876,15 @@ defineFunction({
         }
         tok = parser.gullet.popToken();
         if (!/^[1-9]$/.test(tok.text)) {
-          throw new ParseError2('Invalid argument number "' + tok.text + '"');
+          throw new ParseError('Invalid argument number "' + tok.text + '"');
         }
         if (parseInt(tok.text) !== numArgs + 1) {
-          throw new ParseError2('Argument number "' + tok.text + '" out of order');
+          throw new ParseError('Argument number "' + tok.text + '" out of order');
         }
         numArgs++;
         delimiters2.push([]);
       } else if (tok.text === "EOF") {
-        throw new ParseError2("Expected a macro definition");
+        throw new ParseError("Expected a macro definition");
       } else {
         delimiters2[numArgs].push(tok.text);
       }
@@ -58267,7 +57314,7 @@ var makeSizedDelim = function makeSizedDelim2(delim, size, options, mode, classe
   } else if (stackAlwaysDelimiters.has(delim)) {
     return makeStackedDelim(delim, sizeToMaxHeight[size], false, options, mode, classes);
   } else {
-    throw new ParseError2("Illegal delimiter: '" + delim + "'");
+    throw new ParseError("Illegal delimiter: '" + delim + "'");
   }
 };
 var stackNeverDelimiterSequence = [{
@@ -58477,9 +57524,9 @@ function checkDelimiter(delim, context) {
   if (symDelim && delimiters.has(symDelim.text)) {
     return symDelim;
   } else if (symDelim) {
-    throw new ParseError2("Invalid delimiter '" + symDelim.text + "' after '" + context.funcName + "'", delim);
+    throw new ParseError("Invalid delimiter '" + symDelim.text + "' after '" + context.funcName + "'", delim);
   } else {
-    throw new ParseError2("Invalid delimiter type '" + delim.type + "'", delim);
+    throw new ParseError("Invalid delimiter type '" + delim.type + "'", delim);
   }
 }
 defineFunction({
@@ -58538,7 +57585,7 @@ defineFunction({
   handler: (context, args) => {
     var color = context.parser.gullet.macros.get("\\current@color");
     if (color && typeof color !== "string") {
-      throw new ParseError2("\\current@color set to non-string in \\right");
+      throw new ParseError("\\current@color set to non-string in \\right");
     }
     return {
       type: "leftright-right",
@@ -58645,7 +57692,7 @@ defineFunction({
   handler: (context, args) => {
     var delim = checkDelimiter(args[0], context);
     if (!context.parser.leftrightDepth) {
-      throw new ParseError2("\\middle without preceding \\left", delim);
+      throw new ParseError("\\middle without preceding \\left", delim);
     }
     return {
       type: "middle",
@@ -59089,7 +58136,7 @@ function getHLines(parser) {
 var validateAmsEnvironmentContext = (context) => {
   var settings = context.parser.settings;
   if (!settings.displayMode) {
-    throw new ParseError2("{" + context.envName + "} can be used only in display mode.");
+    throw new ParseError("{" + context.envName + "} can be used only in display mode.");
   }
 };
 var gatherEnvironments = /* @__PURE__ */ new Set(["gather", "gather*"]);
@@ -59122,7 +58169,7 @@ function parseArray(parser, _ref, style) {
     } else {
       arraystretch = parseFloat(stretch);
       if (!arraystretch || arraystretch < 0) {
-        throw new ParseError2("Invalid \\arraystretch: " + stretch);
+        throw new ParseError("Invalid \\arraystretch: " + stretch);
       }
     }
   }
@@ -59172,7 +58219,7 @@ function parseArray(parser, _ref, style) {
     if (next === "&") {
       if (maxNumCols && row.length === maxNumCols) {
         if (singleRow || colSeparationType) {
-          throw new ParseError2("Too many tab characters: &", parser.nextToken);
+          throw new ParseError("Too many tab characters: &", parser.nextToken);
         } else {
           parser.settings.reportNonstrict("textEnv", "Too few columns specified in the {array} column argument.");
         }
@@ -59200,7 +58247,7 @@ function parseArray(parser, _ref, style) {
       body2.push(row);
       beginRow();
     } else {
-      throw new ParseError2("Expected & or \\\\ or \\cr or \\end", parser.nextToken);
+      throw new ParseError("Expected & or \\\\ or \\cr or \\end", parser.nextToken);
     }
   }
   parser.gullet.endGroup();
@@ -59371,7 +58418,7 @@ var htmlBuilder$6 = function htmlBuilder(group, options) {
         }
         cols.push(separator);
       } else {
-        throw new ParseError2("Invalid separator type: " + colDescr.separator);
+        throw new ParseError("Invalid separator type: " + colDescr.separator);
       }
       colDescrNum++;
       colDescr = colDescriptions[colDescrNum];
@@ -59607,7 +58654,7 @@ var alignedHandler = function alignedHandler2(context, args) {
     if (!isAligned) {
       var curMaths = row.length / 2;
       if (numMaths < curMaths) {
-        throw new ParseError2("Too many math in a row: " + ("expected " + numMaths + ", but got " + curMaths), row[0]);
+        throw new ParseError("Too many math in a row: " + ("expected " + numMaths + ", but got " + curMaths), row[0]);
       }
     } else if (numCols < row.length) {
       numCols = row.length;
@@ -59659,7 +58706,7 @@ defineEnvironment({
           separator: ":"
         };
       }
-      throw new ParseError2("Unknown column alignment: " + ca2, nde);
+      throw new ParseError("Unknown column alignment: " + ca2, nde);
     });
     var res = {
       cols,
@@ -59703,7 +58750,7 @@ defineEnvironment({
         parser.consumeSpaces();
         colAlign = parser.fetch().text;
         if (!"lcr".includes(colAlign)) {
-          throw new ParseError2("Expected l or c or r", parser.nextToken);
+          throw new ParseError("Expected l or c or r", parser.nextToken);
         }
         parser.consume();
         parser.consumeSpaces();
@@ -59769,10 +58816,10 @@ defineEnvironment({
           align: ca2
         };
       }
-      throw new ParseError2("Unknown column alignment: " + ca2, nde);
+      throw new ParseError("Unknown column alignment: " + ca2, nde);
     });
     if (cols.length > 1) {
-      throw new ParseError2("{subarray} can contain only one column");
+      throw new ParseError("{subarray} can contain only one column");
     }
     var payload = {
       cols,
@@ -59781,7 +58828,7 @@ defineEnvironment({
     };
     var res = parseArray(context.parser, payload, "script");
     if (res.body.length > 0 && res.body[0].length > 1) {
-      throw new ParseError2("{subarray} can contain only one column");
+      throw new ParseError("{subarray} can contain only one column");
     }
     return res;
   },
@@ -59918,7 +58965,7 @@ defineFunction({
     allowedInMath: true
   },
   handler(context, args) {
-    throw new ParseError2(context.funcName + " valid only within array environment");
+    throw new ParseError(context.funcName + " valid only within array environment");
   }
 });
 var environments = _environments;
@@ -59936,7 +58983,7 @@ defineFunction({
     } = _ref;
     var nameGroup = args[0];
     if (nameGroup.type !== "ordgroup") {
-      throw new ParseError2("Invalid environment name", nameGroup);
+      throw new ParseError("Invalid environment name", nameGroup);
     }
     var envName = "";
     for (var i2 = 0; i2 < nameGroup.body.length; ++i2) {
@@ -59944,7 +58991,7 @@ defineFunction({
     }
     if (funcName === "\\begin") {
       if (!environments.hasOwnProperty(envName)) {
-        throw new ParseError2("No such environment: " + envName, nameGroup);
+        throw new ParseError("No such environment: " + envName, nameGroup);
       }
       var env = environments[envName];
       var {
@@ -59961,7 +59008,7 @@ defineFunction({
       var endNameToken = parser.nextToken;
       var end = assertNodeType(parser.parseFunction(), "environment");
       if (end.name !== envName) {
-        throw new ParseError2("Mismatch: \\begin{" + envName + "} matched by \\end{" + end.name + "}", endNameToken);
+        throw new ParseError("Mismatch: \\begin{" + envName + "} matched by \\end{" + end.name + "}", endNameToken);
       }
       return result;
     }
@@ -60756,7 +59803,7 @@ defineFunction({
           var item = data[i2];
           var firstEquals = item.indexOf("=");
           if (firstEquals < 0) {
-            throw new ParseError2("\\htmlData key/value '" + item + "' missing equals sign");
+            throw new ParseError("\\htmlData key/value '" + item + "' missing equals sign");
           }
           var key3 = item.slice(0, firstEquals);
           var _value = item.slice(firstEquals + 1);
@@ -60835,7 +59882,7 @@ var sizeData = function sizeData2(str) {
   } else {
     var match = /([-+]?) *(\d+(?:\.\d*)?|\.\d+) *([a-z]{2})/.exec(str);
     if (!match) {
-      throw new ParseError2("Invalid size: '" + str + "' in \\includegraphics");
+      throw new ParseError("Invalid size: '" + str + "' in \\includegraphics");
     }
     var data = {
       number: +(match[1] + match[2]),
@@ -60843,7 +59890,7 @@ var sizeData = function sizeData2(str) {
       unit: match[3]
     };
     if (!validUnit(data)) {
-      throw new ParseError2("Invalid unit: '" + data.unit + "' in \\includegraphics.");
+      throw new ParseError("Invalid unit: '" + data.unit + "' in \\includegraphics.");
     }
     return data;
   }
@@ -60895,7 +59942,7 @@ defineFunction({
               totalheight = sizeData(str);
               break;
             default:
-              throw new ParseError2("Invalid key: '" + keyVal[0] + "' in \\includegraphics.");
+              throw new ParseError("Invalid key: '" + keyVal[0] + "' in \\includegraphics.");
           }
         }
       }
@@ -61096,7 +60143,7 @@ defineFunction({
     allowedInMath: false
   },
   handler(context, args) {
-    throw new ParseError2("Mismatched " + context.funcName);
+    throw new ParseError("Mismatched " + context.funcName);
   }
 });
 var chooseMathStyle = (group, options) => {
@@ -62407,7 +61454,7 @@ defineFunctionBuilders({
     } else if (cssSpace.hasOwnProperty(group.text)) {
       return makeSpan(["mspace", cssSpace[group.text]], [], options);
     } else {
-      throw new ParseError2('Unknown type of space "' + group.text + '"');
+      throw new ParseError('Unknown type of space "' + group.text + '"');
     }
   },
   mathmlBuilder(group, options) {
@@ -62417,7 +61464,7 @@ defineFunctionBuilders({
     } else if (cssSpace.hasOwnProperty(group.text)) {
       return new MathNode("mspace");
     } else {
-      throw new ParseError2('Unknown type of space "' + group.text + '"');
+      throw new ParseError('Unknown type of space "' + group.text + '"');
     }
     return node2;
   }
@@ -62602,7 +61649,7 @@ defineFunction({
     allowedInText: true
   },
   handler(context, args, optArgs) {
-    throw new ParseError2("\\verb ended by end of line instead of matching delimiter");
+    throw new ParseError("\\verb ended by end of line instead of matching delimiter");
   },
   htmlBuilder(group, options) {
     var text3 = makeVerb(group);
@@ -62672,7 +61719,7 @@ var Lexer = class {
     }
     var match = this.tokenRegex.exec(input2);
     if (match === null || match.index !== pos) {
-      throw new ParseError2("Unexpected character: '" + input2[pos] + "'", new Token(input2[pos], new SourceLocation(this, pos, pos + 1)));
+      throw new ParseError("Unexpected character: '" + input2[pos] + "'", new Token(input2[pos], new SourceLocation(this, pos, pos + 1)));
     }
     var text3 = match[6] || match[3] || (match[2] ? "\\ " : " ");
     if (this.catcodes[text3] === 14) {
@@ -62720,7 +61767,7 @@ var Namespace = class {
    */
   endGroup() {
     if (this.undefStack.length === 0) {
-      throw new ParseError2("Unbalanced namespace destruction: attempt to pop global namespace; please report this as a bug");
+      throw new ParseError("Unbalanced namespace destruction: attempt to pop global namespace; please report this as a bug");
     }
     var undefs = this.undefStack.pop();
     for (var undef in undefs) {
@@ -62899,7 +61946,7 @@ defineMacro("\\char", function(context) {
     if (token.text[0] === "\\") {
       number4 = token.text.charCodeAt(1);
     } else if (token.text === "EOF") {
-      throw new ParseError2("\\char` missing argument");
+      throw new ParseError("\\char` missing argument");
     } else {
       number4 = token.text.charCodeAt(0);
     }
@@ -62909,7 +61956,7 @@ defineMacro("\\char", function(context) {
   if (base) {
     number4 = digitToNumber[token.text];
     if (number4 == null || number4 >= base) {
-      throw new ParseError2("Invalid base-" + base + " digit " + token.text);
+      throw new ParseError("Invalid base-" + base + " digit " + token.text);
     }
     var digit;
     while ((digit = digitToNumber[context.future().text]) != null && digit < base) {
@@ -62923,15 +61970,15 @@ defineMacro("\\char", function(context) {
 var newcommand = (context, existsOK, nonexistsOK, skipIfExists) => {
   var arg = context.consumeArg().tokens;
   if (arg.length !== 1) {
-    throw new ParseError2("\\newcommand's first argument must be a macro name");
+    throw new ParseError("\\newcommand's first argument must be a macro name");
   }
   var name = arg[0].text;
   var exists = context.isDefined(name);
   if (exists && !existsOK) {
-    throw new ParseError2("\\newcommand{" + name + "} attempting to redefine " + (name + "; use \\renewcommand"));
+    throw new ParseError("\\newcommand{" + name + "} attempting to redefine " + (name + "; use \\renewcommand"));
   }
   if (!exists && !nonexistsOK) {
-    throw new ParseError2("\\renewcommand{" + name + "} when command " + name + " does not yet exist; use \\newcommand");
+    throw new ParseError("\\renewcommand{" + name + "} when command " + name + " does not yet exist; use \\newcommand");
   }
   var numArgs = 0;
   arg = context.consumeArg().tokens;
@@ -62943,7 +61990,7 @@ var newcommand = (context, existsOK, nonexistsOK, skipIfExists) => {
       token = context.expandNextToken();
     }
     if (!argText.match(/^\s*[0-9]+\s*$/)) {
-      throw new ParseError2("Invalid number of arguments: " + argText);
+      throw new ParseError("Invalid number of arguments: " + argText);
     }
     numArgs = parseInt(argText);
     arg = context.consumeArg().tokens;
@@ -63194,7 +62241,7 @@ defineMacro("\\tag", "\\@ifstar\\tag@literal\\tag@paren");
 defineMacro("\\tag@paren", "\\tag@literal{({#1})}");
 defineMacro("\\tag@literal", (context) => {
   if (context.macros.get("\\df@tag")) {
-    throw new ParseError2("Multiple \\tag");
+    throw new ParseError("Multiple \\tag");
   }
   return "\\gdef\\df@tag{\\text{#1}}";
 });
@@ -63610,10 +62657,10 @@ var MacroExpander = class {
       } else if (tok.text === "}") {
         --depth;
         if (depth === -1) {
-          throw new ParseError2("Extra }", tok);
+          throw new ParseError("Extra }", tok);
         }
       } else if (tok.text === "EOF") {
-        throw new ParseError2("Unexpected end of input in a macro argument, expected '" + (delims && isDelimited ? delims[match] : "}") + "'", tok);
+        throw new ParseError("Unexpected end of input in a macro argument, expected '" + (delims && isDelimited ? delims[match] : "}") + "'", tok);
       }
       if (delims && isDelimited) {
         if ((depth === 0 || depth === 1 && delims[match] === "{") && tok.text === delims[match]) {
@@ -63645,13 +62692,13 @@ var MacroExpander = class {
   consumeArgs(numArgs, delimiters2) {
     if (delimiters2) {
       if (delimiters2.length !== numArgs + 1) {
-        throw new ParseError2("The length of delimiters doesn't match the number of args!");
+        throw new ParseError("The length of delimiters doesn't match the number of args!");
       }
       var delims = delimiters2[0];
       for (var i2 = 0; i2 < delims.length; i2++) {
         var tok = this.popToken();
         if (delims[i2] !== tok.text) {
-          throw new ParseError2("Use of the macro doesn't match its definition", tok);
+          throw new ParseError("Use of the macro doesn't match its definition", tok);
         }
       }
     }
@@ -63668,7 +62715,7 @@ var MacroExpander = class {
   countExpansion(amount) {
     this.expansionCount += amount;
     if (this.expansionCount > this.settings.maxExpand) {
-      throw new ParseError2("Too many expansions: infinite loop or need to increase maxExpand setting");
+      throw new ParseError("Too many expansions: infinite loop or need to increase maxExpand setting");
     }
   }
   /**
@@ -63696,7 +62743,7 @@ var MacroExpander = class {
     var expansion = !topToken.noexpand ? this._getExpansion(name) : null;
     if (expansion == null || expandableOnly && expansion.unexpandable) {
       if (expandableOnly && expansion == null && name[0] === "\\" && !this.isDefined(name)) {
-        throw new ParseError2("Undefined control sequence: " + name);
+        throw new ParseError("Undefined control sequence: " + name);
       }
       this.pushToken(topToken);
       return false;
@@ -63710,7 +62757,7 @@ var MacroExpander = class {
         var tok = tokens[i2];
         if (tok.text === "#") {
           if (i2 === 0) {
-            throw new ParseError2("Incomplete placeholder at end of macro body", tok);
+            throw new ParseError("Incomplete placeholder at end of macro body", tok);
           }
           tok = tokens[--i2];
           if (tok.text === "#") {
@@ -63718,7 +62765,7 @@ var MacroExpander = class {
           } else if (/^[1-9]$/.test(tok.text)) {
             tokens.splice(i2, 2, ...args[+tok.text - 1]);
           } else {
-            throw new ParseError2("Not a valid argument number", tok);
+            throw new ParseError("Not a valid argument number", tok);
           }
         }
       }
@@ -64369,7 +63416,7 @@ var Parser3 = class _Parser {
       consume = true;
     }
     if (this.fetch().text !== text3) {
-      throw new ParseError2("Expected '" + text3 + "', got '" + this.fetch().text + "'", this.fetch());
+      throw new ParseError("Expected '" + text3 + "', got '" + this.fetch().text + "'", this.fetch());
     }
     if (consume) {
       this.consume();
@@ -64488,7 +63535,7 @@ var Parser3 = class _Parser {
       var node2 = body2[i2];
       if (node2.type === "infix") {
         if (overIndex !== -1) {
-          throw new ParseError2("only one infix operator per group", node2.token);
+          throw new ParseError("only one infix operator per group", node2.token);
         }
         overIndex = i2;
         funcName = node2.replaceWith;
@@ -64542,7 +63589,7 @@ var Parser3 = class _Parser {
       group = this.parseGroup(name);
     } while (((_group = group) == null ? void 0 : _group.type) === "internal");
     if (!group) {
-      throw new ParseError2("Expected group after '" + symbol2 + "'", symbolToken);
+      throw new ParseError("Expected group after '" + symbol2 + "'", symbolToken);
     }
     return group;
   }
@@ -64598,22 +63645,22 @@ var Parser3 = class _Parser {
             base.limits = lex.text === "\\limits";
           }
         } else {
-          throw new ParseError2("Limit controls must follow a math operator", lex);
+          throw new ParseError("Limit controls must follow a math operator", lex);
         }
         this.consume();
       } else if (lex.text === "^") {
         if (superscript) {
-          throw new ParseError2("Double superscript", lex);
+          throw new ParseError("Double superscript", lex);
         }
         superscript = this.handleSupSubscript("superscript");
       } else if (lex.text === "_") {
         if (subscript) {
-          throw new ParseError2("Double subscript", lex);
+          throw new ParseError("Double subscript", lex);
         }
         subscript = this.handleSupSubscript("subscript");
       } else if (lex.text === "'") {
         if (superscript) {
-          throw new ParseError2("Double superscript", lex);
+          throw new ParseError("Double superscript", lex);
         }
         var prime = {
           type: "textord",
@@ -64692,11 +63739,11 @@ var Parser3 = class _Parser {
     }
     this.consume();
     if (name && name !== "atom" && !funcData.allowedInArgument) {
-      throw new ParseError2("Got function '" + func + "' with no arguments" + (name ? " as " + name : ""), token);
+      throw new ParseError("Got function '" + func + "' with no arguments" + (name ? " as " + name : ""), token);
     } else if (this.mode === "text" && !funcData.allowedInText) {
-      throw new ParseError2("Can't use function '" + func + "' in text mode", token);
+      throw new ParseError("Can't use function '" + func + "' in text mode", token);
     } else if (this.mode === "math" && funcData.allowedInMath === false) {
-      throw new ParseError2("Can't use function '" + func + "' in math mode", token);
+      throw new ParseError("Can't use function '" + func + "' in math mode", token);
     }
     var {
       args,
@@ -64718,7 +63765,7 @@ var Parser3 = class _Parser {
     if (func && func.handler) {
       return func.handler(context, args, optArgs);
     } else {
-      throw new ParseError2("No function handler for " + name);
+      throw new ParseError("No function handler for " + name);
     }
   }
   /**
@@ -64747,7 +63794,7 @@ var Parser3 = class _Parser {
       } else if (arg != null) {
         args.push(arg);
       } else {
-        throw new ParseError2("Null argument, please report this as a bug");
+        throw new ParseError("Null argument, please report this as a bug");
       }
     }
     return {
@@ -64790,11 +63837,11 @@ var Parser3 = class _Parser {
       }
       case "primitive": {
         if (optional2) {
-          throw new ParseError2("A primitive argument cannot be optional");
+          throw new ParseError("A primitive argument cannot be optional");
         }
         var _group2 = this.parseGroup(name);
         if (_group2 == null) {
-          throw new ParseError2("Expected group as " + name, this.fetch());
+          throw new ParseError("Expected group as " + name, this.fetch());
         }
         return _group2;
       }
@@ -64803,7 +63850,7 @@ var Parser3 = class _Parser {
       case void 0:
         return this.parseArgumentGroup(optional2);
       default:
-        throw new ParseError2("Unknown group type as " + name, this.fetch());
+        throw new ParseError("Unknown group type as " + name, this.fetch());
     }
   }
   /**
@@ -64849,7 +63896,7 @@ var Parser3 = class _Parser {
       this.consume();
     }
     if (str === "") {
-      throw new ParseError2("Invalid " + modeName + ": '" + firstToken.text + "'", firstToken);
+      throw new ParseError("Invalid " + modeName + ": '" + firstToken.text + "'", firstToken);
     }
     return firstToken.range(lastToken, str);
   }
@@ -64863,7 +63910,7 @@ var Parser3 = class _Parser {
     }
     var match = /^(#[a-f0-9]{3,4}|#[a-f0-9]{6}|#[a-f0-9]{8}|[a-f0-9]{6}|[a-z]+)$/i.exec(res.text);
     if (!match) {
-      throw new ParseError2("Invalid color: '" + res.text + "'", res);
+      throw new ParseError("Invalid color: '" + res.text + "'", res);
     }
     var color = match[0];
     if (/^[0-9a-f]{6}$/i.test(color)) {
@@ -64896,7 +63943,7 @@ var Parser3 = class _Parser {
     }
     var match = /([-+]?) *(\d+(?:\.\d*)?|\.\d+) *([a-z]{2})/.exec(res.text);
     if (!match) {
-      throw new ParseError2("Invalid size: '" + res.text + "'", res);
+      throw new ParseError("Invalid size: '" + res.text + "'", res);
     }
     var data = {
       number: +(match[1] + match[2]),
@@ -64904,7 +63951,7 @@ var Parser3 = class _Parser {
       unit: match[3]
     };
     if (!validUnit(data)) {
-      throw new ParseError2("Invalid unit: '" + data.unit + "'", res);
+      throw new ParseError("Invalid unit: '" + data.unit + "'", res);
     }
     return {
       type: "size",
@@ -64993,7 +64040,7 @@ var Parser3 = class _Parser {
       result = this.parseFunction(breakOnTokenText, name) || this.parseSymbol();
       if (result == null && text3[0] === "\\" && !implicitCommands.hasOwnProperty(text3)) {
         if (this.settings.throwOnError) {
-          throw new ParseError2("Undefined control sequence: " + text3, firstToken);
+          throw new ParseError("Undefined control sequence: " + text3, firstToken);
         }
         result = this.formatUnsupportedCmd(text3);
         this.consume();
@@ -65067,7 +64114,7 @@ var Parser3 = class _Parser {
         arg = arg.slice(1);
       }
       if (arg.length < 2 || arg.charAt(0) !== arg.slice(-1)) {
-        throw new ParseError2("\\verb assertion failed --\n                    please report what input caused this bug");
+        throw new ParseError("\\verb assertion failed --\n                    please report what input caused this bug");
       }
       arg = arg.slice(1, -1);
       return {
@@ -65139,11 +64186,11 @@ var Parser3 = class _Parser {
       for (var i2 = 0; i2 < match[0].length; i2++) {
         var accent2 = match[0][i2];
         if (!unicodeAccents[accent2]) {
-          throw new ParseError2("Unknown accent ' " + accent2 + "'", nucleus);
+          throw new ParseError("Unknown accent ' " + accent2 + "'", nucleus);
         }
         var command = unicodeAccents[accent2][this.mode] || unicodeAccents[accent2].text;
         if (!command) {
-          throw new ParseError2("Accent " + accent2 + " unsupported in " + this.mode + " mode", nucleus);
+          throw new ParseError("Accent " + accent2 + " unsupported in " + this.mode + " mode", nucleus);
         }
         symbol2 = {
           type: "accent",
@@ -65171,7 +64218,7 @@ var parseTree = function parseTree2(toParse, settings) {
   delete parser.gullet.macros.current["\\color"];
   if (parser.gullet.macros.get("\\df@tag")) {
     if (!settings.displayMode) {
-      throw new ParseError2("\\tag works only in display equations");
+      throw new ParseError("\\tag works only in display equations");
     }
     tree = [{
       type: "tag",
@@ -65191,7 +64238,7 @@ if (typeof document !== "undefined") {
   if (document.compatMode !== "CSS1Compat") {
     typeof console !== "undefined" && console.warn("Warning: KaTeX doesn't work in quirks mode. Make sure your website has a suitable doctype.");
     render3 = function render6() {
-      throw new ParseError2("KaTeX doesn't work in quirks mode.");
+      throw new ParseError("KaTeX doesn't work in quirks mode.");
     };
   }
 }
@@ -65204,7 +64251,7 @@ var generateParseTree = function generateParseTree2(expression, options) {
   return parseTree(expression, settings);
 };
 var renderError = function renderError2(error62, expression, options) {
-  if (options.throwOnError || !(error62 instanceof ParseError2)) {
+  if (options.throwOnError || !(error62 instanceof ParseError)) {
     throw error62;
   }
   var node2 = makeSpan(["katex-error"], [new SymbolNode(expression)]);
@@ -65257,7 +64304,7 @@ var katex = {
   /**
    * KaTeX error, usually during parsing.
    */
-  ParseError: ParseError2,
+  ParseError,
   /**
    * The schema of Settings
    */
@@ -65660,13 +64707,13 @@ function heldAfterMet(wordplay, held, ids) {
 }
 var MAX_EVENTS = 300;
 var repliesIn = (turns) => turns.filter((turn) => turn.role === "assistant").length;
-function turnsBeforeEdit(turns, replaces, letGo2 = 0) {
+function turnsBeforeEdit(turns, replaces, letGo = 0) {
   const at = turns.map((turn) => turn.role).lastIndexOf("user");
   if (at < 0 || typeof replaces !== "number") return turns;
-  return replaces === placeOf(turns, at, letGo2) ? turns.slice(0, at) : turns;
+  return replaces === placeOf(turns, at, letGo) ? turns.slice(0, at) : turns;
 }
-function placeOf(turns, at, letGo2 = 0) {
-  let place = letGo2;
+function placeOf(turns, at, letGo = 0) {
+  let place = letGo;
   for (let one = 0; one < at; one++)
     if (turns[one].role === "user" && turns[one + 1]?.role === "assistant") {
       if (turns[one + 1].content.trim()) place++;
@@ -66199,9 +65246,9 @@ function localRoutes({ source, meta: meta4, trials: trials2, ask, folder }) {
       init?.signal
     );
     if (!response.ok || !response.body) return response;
-    let letGo2 = () => {
+    let letGo = () => {
     };
-    answering.set(id, new Promise((done) => letGo2 = done));
+    answering.set(id, new Promise((done) => letGo = done));
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let text3 = "";
@@ -66211,7 +65258,7 @@ function localRoutes({ source, meta: meta4, trials: trials2, ask, folder }) {
       kept = true;
       queueMicrotask(() => {
         answering.delete(id);
-        letGo2();
+        letGo();
       });
       const answer = stoppedIn(text3).text;
       if (!answer.trim()) return;
@@ -66568,18 +65615,30 @@ const engine = createRequire(workerData.from)("node-tikzjax");
 const loaded = engine.load();
 loaded.catch(() => {});
 parentPort.on("message", async (input) => {
+  try {
+    await loaded;
+  } catch (error) {
+    parentPort.postMessage({ failed: "The diagram engine did not load (" + String(error && error.message || error) + ")." });
+    return;
+  }
+  parentPort.postMessage({ started: true });
   const log = [];
   const print = console.log;
   console.log = (...parts) => void log.push(parts.map(String).join(" "));
+  let dvi;
   try {
-    await loaded;
-    parentPort.postMessage({ started: true });
-    const dvi = await engine.tex(input, { showConsole: true });
-    parentPort.postMessage({ svg: await engine.dvi2svg(dvi) });
+    dvi = await engine.tex(input, { showConsole: true });
   } catch {
+    // TeX stopped on the writer's source: its log says why.
     parentPort.postMessage({ log });
+    return;
   } finally {
     console.log = print;
+  }
+  try {
+    parentPort.postMessage({ svg: await engine.dvi2svg(dvi) });
+  } catch (error) {
+    parentPort.postMessage({ failed: "The diagram engine could not convert it (" + String(error && error.message || error) + ")." });
   }
 });
 `;
@@ -66616,7 +65675,8 @@ function engineInWorker(from, timeoutMs) {
         }
         settle2();
         if (typeof reply.svg === "string") resolve4(reply.svg);
-        else reject(new Error(texError(reply.log ?? [])));
+        else if (typeof reply.failed === "string") reject(new Error(reply.failed));
+        else reject(new TexError(texError(reply.log ?? [])));
       };
       const onError = (error62) => kill(new Error(`The diagram engine stopped (${error62.message}).`));
       const onExit = () => kill(new Error("The diagram engine stopped."));
@@ -66632,6 +65692,12 @@ function engineInWorker(from, timeoutMs) {
     return run2;
   };
 }
+var TexError = class extends Error {
+  constructor() {
+    super(...arguments);
+    this.name = "TexError";
+  }
+};
 var LINES_BEFORE_SOURCE = 2;
 function texError(log) {
   const at = log.findIndex((line2) => line2.startsWith("! "));
@@ -66655,6 +65721,7 @@ function dressTikzSvg(svg) {
   ).join("");
   return themed.replace(/^(<svg[^>]*>)/, `$1<style>${faces}</style>`);
 }
+var UNSAFE = "The drawing could not be made safe to show.";
 function tikzDrawer(deps) {
   const render6 = engineInWorker(deps.engineFrom, deps.timeoutMs ?? RENDER_TIMEOUT_MS);
   const failed2 = /* @__PURE__ */ new Map();
@@ -66670,23 +65737,31 @@ function tikzDrawer(deps) {
         clean2 = await deps.sanitize(cached2);
         if (recleaned.size >= MAX_REMEMBERED_FAILURES) recleaned.clear();
         recleaned.set(hash2, clean2);
+        if (clean2 === null) deps.onEngineFailure?.(new Error(UNSAFE));
       }
     }
     if (clean2) return { svg: dressTikzSvg(clean2) };
-    if (clean2 === null) return { error: "The drawing could not be made safe to show." };
+    if (clean2 === null) return { error: UNSAFE };
     try {
       const svg = await render6(`\\begin{document}
 ${source}
 \\end{document}`);
       const drawn = await deps.sanitize(svg);
-      if (!drawn) return { error: "The drawing could not be made safe to show." };
-      await deps.store.put(hash2, drawn);
+      if (!drawn) {
+        deps.onEngineFailure?.(new Error(UNSAFE));
+        return { error: UNSAFE };
+      }
+      await deps.store.put(hash2, drawn).catch((error62) => {
+        console.warn("[tikz] a drawing was not kept:", String(error62));
+      });
       return { svg: dressTikzSvg(drawn) };
     } catch (error62) {
       const reason = error62.message;
       if (failed2.size >= MAX_REMEMBERED_FAILURES) failed2.clear();
       failed2.set(hash2, reason);
-      console.warn("[tikz] render failed:", reason);
+      if (error62 instanceof TexError || !deps.onEngineFailure)
+        console.warn("[tikz] render failed:", reason);
+      else deps.onEngineFailure(error62);
       return { error: reason };
     }
   };
@@ -67873,12 +66948,7 @@ function said(response, words2) {
   );
 }
 function replyOn(settings, turn) {
-  return settings.backend === "key" ? keyReply(settings, {
-    system: turn.system,
-    messages: turn.messages,
-    ...turn.role ? { role: turn.role } : {},
-    ...turn.maxTokens ? { maxTokens: turn.maxTokens } : {}
-  }) : tutorReply(settings, {
+  return tutorReply(settings, {
     system: turn.system.join(""),
     message: turn.message ?? replayed(turn.messages, turn.names),
     session: turn.session ?? randomUUID(),
