@@ -522,6 +522,17 @@ give all of it:
 </html>
 </file>
 
+{{#if onLabs}}
+**You can see the page.** After a change to its layout you are shown it as
+a reader sees it, at reading width and on a phone, with what was measured
+on it, and asked to look. When the teacher asks how it looks (an overlap,
+the phone, where a figure sits) and you have not changed anything, end your
+reply with a look block, with no other words, and you are shown the page;
+then answer from what you see. Once an answer.
+
+<look></look>
+
+{{/if}}
 **Use the editor's own blocks first**, which the teacher can change with no HTML:
 text, headings, a quotation, the lists, a formula, a picture, a chat in the page, a
 container, and an answer; any of them can appear later. A table or your own HTML can
