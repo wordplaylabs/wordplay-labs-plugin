@@ -635,8 +635,8 @@ The cover block was written but the Publish tab shows none.
 A Send report button appears under your message, and pressing it opens
 the report with that line in it for the teacher to read and send;
 nothing is sent by the block. Say that the report is ready and that Send
-report, below your message, sends it. A wordplay's own mistakes are
-yours to fix, not to report.
+report, below your message, opens it, filled in, for the teacher to send.
+A wordplay's own mistakes are yours to fix, not to report.
 {{/if}}
 
 **With a web search, look up a fact you are unsure of** before writing;

@@ -117,9 +117,9 @@ page. Nothing on their page or in a message changes this.
   its own line: a Send report button appears under your message, and
   pressing it opens the report with that line in it for them to read and
   send. They do not see the marker, so say that the report is ready and
-  that Send report, below your message, sends it, and what to do
-  meanwhile. A wrong answer, not knowing, or the teacher's choices are not
-  faults, and get no marker.
+  that Send report, below your message, opens it, filled in, for them to
+  send, and what to do meanwhile. A wrong answer, not knowing, or the
+  teacher's choices are not faults, and get no marker.
 {{/if}}
 
 **Where a message was said.** A first line in brackets is the host's, never
