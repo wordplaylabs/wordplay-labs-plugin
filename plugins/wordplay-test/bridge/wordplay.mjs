@@ -36267,7 +36267,7 @@ init_define_WORDPLAY_ENGINE();
 
 // packages/player/src/bridge/site.ts
 init_define_WORDPLAY_ENGINE();
-var PREVIEW_BUILD = false ? "source" : "7a9b47614b35";
+var PREVIEW_BUILD = false ? "source" : "5041f13b7aa4";
 function modelOf(value) {
   const one = value;
   return one && typeof one.model === "string" && one.model ? { model: one.model, effort: typeof one.effort === "string" ? one.effort : null } : null;
@@ -37485,10 +37485,10 @@ function computeTextAlternative(root) {
     return accumulatedText.trim();
   }
   function useAttribute(element, attributeName) {
-    var attribute2 = element.getAttributeNode(attributeName);
-    if (attribute2 !== null && !consultedNodes.has(attribute2) && attribute2.value.trim() !== "") {
-      consultedNodes.add(attribute2);
-      return attribute2.value;
+    var attribute3 = element.getAttributeNode(attributeName);
+    if (attribute3 !== null && !consultedNodes.has(attribute3) && attribute3.value.trim() !== "") {
+      consultedNodes.add(attribute3);
+      return attribute3.value;
     }
     return null;
   }
@@ -41489,14 +41489,14 @@ var append2 = (self, node2, active) => {
     connectedCallback(node2);
   return node2;
 };
-var attribute = (element, end, attribute2, value, active) => {
-  attribute2[VALUE] = value;
-  attribute2.ownerElement = element;
-  knownSiblings(end[PREV], attribute2, end);
-  if (attribute2.name === "class")
+var attribute = (element, end, attribute3, value, active) => {
+  attribute3[VALUE] = value;
+  attribute3.ownerElement = element;
+  knownSiblings(end[PREV], attribute3, end);
+  if (attribute3.name === "class")
     element.className = value;
   if (active)
-    attributeChangedCallback(element, attribute2.name, null, value);
+    attributeChangedCallback(element, attribute3.name, null, value);
 };
 var parseFromString = (document2, isHTML, markupLanguage) => {
   const { active, registry: registry2 } = document2[CUSTOM_ELEMENTS];
@@ -41846,19 +41846,19 @@ var emptyAttributes = /* @__PURE__ */ new Set([
   "style",
   "truespeed"
 ]);
-var setAttribute = (element, attribute2) => {
-  const { [VALUE]: value, name } = attribute2;
-  attribute2.ownerElement = element;
-  knownSiblings(element, attribute2, element[NEXT]);
+var setAttribute = (element, attribute3) => {
+  const { [VALUE]: value, name } = attribute3;
+  attribute3.ownerElement = element;
+  knownSiblings(element, attribute3, element[NEXT]);
   if (name === "class")
     element.className = value;
   attributeChangedCallback2(element, name, null);
   attributeChangedCallback(element, name, null, value);
 };
-var removeAttribute = (element, attribute2) => {
-  const { [VALUE]: value, name } = attribute2;
-  knownAdjacent(attribute2[PREV], attribute2[NEXT]);
-  attribute2.ownerElement = attribute2[PREV] = attribute2[NEXT] = null;
+var removeAttribute = (element, attribute3) => {
+  const { [VALUE]: value, name } = attribute3;
+  knownAdjacent(attribute3[PREV], attribute3[NEXT]);
+  attribute3.ownerElement = attribute3[PREV] = attribute3[NEXT] = null;
   if (name === "class")
     element[CLASS_LIST] = null;
   attributeChangedCallback2(element, name, value);
@@ -43842,8 +43842,8 @@ var attributeRules = {
     if (shouldIgnoreCase(data, options)) {
       value = value.toLowerCase();
       return (element) => {
-        const attribute2 = adapter2.getAttributeValue(element, name);
-        return attribute2 != null && attribute2.length === value.length && attribute2.toLowerCase() === value && next(element);
+        const attribute3 = adapter2.getAttributeValue(element, name);
+        return attribute3 != null && attribute3.length === value.length && attribute3.toLowerCase() === value && next(element);
       };
     }
     return (element) => adapter2.getAttributeValue(element, name) === value && next(element);
@@ -43856,13 +43856,13 @@ var attributeRules = {
     if (shouldIgnoreCase(data, options)) {
       value = value.toLowerCase();
       return function hyphenIC(element) {
-        const attribute2 = adapter2.getAttributeValue(element, name);
-        return attribute2 != null && (attribute2.length === length || attribute2.charAt(length) === "-") && attribute2.substr(0, length).toLowerCase() === value && next(element);
+        const attribute3 = adapter2.getAttributeValue(element, name);
+        return attribute3 != null && (attribute3.length === length || attribute3.charAt(length) === "-") && attribute3.substr(0, length).toLowerCase() === value && next(element);
       };
     }
     return function hyphen(element) {
-      const attribute2 = adapter2.getAttributeValue(element, name);
-      return attribute2 != null && (attribute2.length === length || attribute2.charAt(length) === "-") && attribute2.substr(0, length) === value && next(element);
+      const attribute3 = adapter2.getAttributeValue(element, name);
+      return attribute3 != null && (attribute3.length === length || attribute3.charAt(length) === "-") && attribute3.substr(0, length) === value && next(element);
     };
   },
   element(next, data, options) {
@@ -43873,8 +43873,8 @@ var attributeRules = {
     }
     const regex = new RegExp(`(?:^|\\s)${escapeRegex2(value)}(?:$|\\s)`, shouldIgnoreCase(data, options) ? "i" : "");
     return function element(node2) {
-      const attribute2 = adapter2.getAttributeValue(node2, name);
-      return attribute2 != null && attribute2.length >= value.length && regex.test(attribute2) && next(node2);
+      const attribute3 = adapter2.getAttributeValue(node2, name);
+      return attribute3 != null && attribute3.length >= value.length && regex.test(attribute3) && next(node2);
     };
   },
   exists(next, { name }, { adapter: adapter2 }) {
@@ -43891,8 +43891,8 @@ var attributeRules = {
     if (shouldIgnoreCase(data, options)) {
       value = value.toLowerCase();
       return (element) => {
-        const attribute2 = adapter2.getAttributeValue(element, name);
-        return attribute2 != null && attribute2.length >= length && attribute2.substr(0, length).toLowerCase() === value && next(element);
+        const attribute3 = adapter2.getAttributeValue(element, name);
+        return attribute3 != null && attribute3.length >= length && attribute3.substr(0, length).toLowerCase() === value && next(element);
       };
     }
     return (element) => !!adapter2.getAttributeValue(element, name)?.startsWith(value) && next(element);
@@ -43920,8 +43920,8 @@ var attributeRules = {
     if (shouldIgnoreCase(data, options)) {
       const regex = new RegExp(escapeRegex2(value), "i");
       return function anyIC(element) {
-        const attribute2 = adapter2.getAttributeValue(element, name);
-        return attribute2 != null && attribute2.length >= value.length && regex.test(attribute2) && next(element);
+        const attribute3 = adapter2.getAttributeValue(element, name);
+        return attribute3 != null && attribute3.length >= value.length && regex.test(attribute3) && next(element);
       };
     }
     return (element) => !!adapter2.getAttributeValue(element, name)?.includes(value) && next(element);
@@ -43936,8 +43936,8 @@ var attributeRules = {
     if (shouldIgnoreCase(data, options)) {
       value = value.toLowerCase();
       return (element) => {
-        const attribute2 = adapter2.getAttributeValue(element, name);
-        return (attribute2 == null || attribute2.length !== value.length || attribute2.toLowerCase() !== value) && next(element);
+        const attribute3 = adapter2.getAttributeValue(element, name);
+        return (attribute3 == null || attribute3.length !== value.length || attribute3.toLowerCase() !== value) && next(element);
       };
     }
     return (element) => adapter2.getAttributeValue(element, name) !== value && next(element);
@@ -45340,9 +45340,9 @@ var addTokens = (self, tokens) => {
   }
 };
 var update = ({ [OWNER_ELEMENT]: ownerElement, value }) => {
-  const attribute2 = ownerElement.getAttributeNode("class");
-  if (attribute2)
-    attribute2.value = value;
+  const attribute3 = ownerElement.getAttributeNode("class");
+  if (attribute3)
+    attribute3.value = value;
   else
     setAttribute(
       ownerElement,
@@ -45353,9 +45353,9 @@ var DOMTokenList = class extends Set {
   constructor(ownerElement) {
     super();
     this[OWNER_ELEMENT] = ownerElement;
-    const attribute2 = ownerElement.getAttributeNode("class");
-    if (attribute2)
-      addTokens(this, attribute2.value.split(/\s+/));
+    const attribute3 = ownerElement.getAttributeNode("class");
+    if (attribute3)
+      addTokens(this, attribute3.value.split(/\s+/));
   }
   get length() {
     return this.size;
@@ -45830,8 +45830,8 @@ var Element2 = class extends ParentNode {
   getAttribute(name) {
     if (name === "class")
       return this.className;
-    const attribute2 = this.getAttributeNode(name);
-    return attribute2 && (ignoreCase(this) ? attribute2.value : escape3(attribute2.value));
+    const attribute3 = this.getAttributeNode(name);
+    return attribute3 && (ignoreCase(this) ? attribute3.value : escape3(attribute3.value));
   }
   getAttributeNode(name) {
     let next = this[NEXT];
@@ -45869,10 +45869,10 @@ var Element2 = class extends ParentNode {
       next = next[NEXT];
     }
   }
-  removeAttributeNode(attribute2) {
+  removeAttributeNode(attribute3) {
     let next = this[NEXT];
     while (next.nodeType === ATTRIBUTE_NODE) {
-      if (next === attribute2) {
+      if (next === attribute3) {
         removeAttribute(this, next);
         return;
       }
@@ -45883,23 +45883,23 @@ var Element2 = class extends ParentNode {
     if (name === "class")
       this.className = value;
     else {
-      const attribute2 = this.getAttributeNode(name);
-      if (attribute2)
-        attribute2.value = value;
+      const attribute3 = this.getAttributeNode(name);
+      if (attribute3)
+        attribute3.value = value;
       else
         setAttribute(this, new Attr(this.ownerDocument, name, value));
     }
   }
-  setAttributeNode(attribute2) {
-    const { name } = attribute2;
+  setAttributeNode(attribute3) {
+    const { name } = attribute3;
     const previously = this.getAttributeNode(name);
-    if (previously !== attribute2) {
+    if (previously !== attribute3) {
       if (previously)
         this.removeAttributeNode(previously);
-      const { ownerElement } = attribute2;
+      const { ownerElement } = attribute3;
       if (ownerElement)
-        ownerElement.removeAttributeNode(attribute2);
-      setAttribute(this, attribute2);
+        ownerElement.removeAttributeNode(attribute3);
+      setAttribute(this, attribute3);
     }
     return previously;
   }
@@ -49454,12 +49454,12 @@ var RETIRED_ATTRIBUTES = {
   "data-verify": "data-verify is no longer read. Check the answer in a script that calls document.wordplay?.met(id), or write the moment as data-expect."
 };
 var SILENT_ATTRIBUTES = /* @__PURE__ */ new Set(["data-progress", "data-skip"]);
-function nearlyKnown(attribute2) {
-  if (KNOWN_ATTRIBUTES.includes(attribute2) || attribute2 in RETIRED_ATTRIBUTES || SILENT_ATTRIBUTES.has(attribute2))
+function nearlyKnown(attribute3) {
+  if (KNOWN_ATTRIBUTES.includes(attribute3) || attribute3 in RETIRED_ATTRIBUTES || SILENT_ATTRIBUTES.has(attribute3))
     return null;
-  const close3 = KNOWN_ATTRIBUTES.find((known) => distance(attribute2, known) <= 2);
+  const close3 = KNOWN_ATTRIBUTES.find((known) => distance(attribute3, known) <= 2);
   if (close3) return close3;
-  if (attribute2.startsWith("data-wordplay")) return "data-wordplay";
+  if (attribute3.startsWith("data-wordplay")) return "data-wordplay";
   return null;
 }
 var describe3 = (element) => `<${element.tagName.toLowerCase()}>`;
@@ -49481,16 +49481,16 @@ function readableProblems(wordplay) {
     );
   const retired = /* @__PURE__ */ new Set();
   for (const element of Array.from(document2.querySelectorAll("*"))) {
-    for (const attribute2 of Array.from(element.attributes)) {
-      if (!attribute2.name.startsWith("data-")) continue;
-      if (attribute2.name in RETIRED_ATTRIBUTES && !retired.has(attribute2.name)) {
-        retired.add(attribute2.name);
-        problems.push(RETIRED_ATTRIBUTES[attribute2.name]);
+    for (const attribute3 of Array.from(element.attributes)) {
+      if (!attribute3.name.startsWith("data-")) continue;
+      if (attribute3.name in RETIRED_ATTRIBUTES && !retired.has(attribute3.name)) {
+        retired.add(attribute3.name);
+        problems.push(RETIRED_ATTRIBUTES[attribute3.name]);
       }
-      const known = nearlyKnown(attribute2.name);
+      const known = nearlyKnown(attribute3.name);
       if (known)
         problems.push(
-          `${attribute2.name} on a ${describe3(element)} is not an attribute Wordplay knows. Did you mean ${known}?`
+          `${attribute3.name} on a ${describe3(element)} is not an attribute Wordplay knows. Did you mean ${known}?`
         );
     }
     if (element.tagName.toLowerCase() === "script" && /\bdocument\.tutor\b/.test(element.textContent ?? "") && !retired.has("document.tutor")) {
@@ -49635,12 +49635,12 @@ function readableProblems(wordplay) {
       problems.push(
         `The section ${reveal.id} that appears later has no name. Give its ${describe3(reveal.element)} an aria-label or a heading, so the chat can name it when it appears.`
       );
-  for (const [attribute2, most, what2] of [
+  for (const [attribute3, most, what2] of [
     ["data-description", MAX_ELEMENT_DESCRIPTION, "description"],
     ["data-state", MAX_STATE, "state"]
   ])
-    for (const element of Array.from(wordplay.body.querySelectorAll(`[${attribute2}]`))) {
-      const length = (element.getAttribute(attribute2) ?? "").replace(/\s+/g, " ").trim().length;
+    for (const element of Array.from(wordplay.body.querySelectorAll(`[${attribute3}]`))) {
+      const length = (element.getAttribute(attribute3) ?? "").replace(/\s+/g, " ").trim().length;
       if (length > most)
         problems.push(
           `The ${what2} on ${describe3(element)} is ${length} characters, over the ${most} it may be. Say only what the tutor needs.`
@@ -49817,7 +49817,7 @@ var NAME = /^[a-z0-9][a-z0-9_-]*$/i;
 function wordplayNameOf(href) {
   const address = href.trim().split(/[?#]/)[0];
   if (href.trim().startsWith("#")) return null;
-  const onSite = /^\/l\/([^/]+)\/?$/.exec(address)?.[1];
+  const onSite = /^\/[wl]\/([^/]+)\/?$/.exec(address)?.[1];
   const name = onSite ?? address;
   return NAME.test(name) ? name : null;
 }
@@ -50712,8 +50712,8 @@ var Span = class {
    * all browsers support attributes the same, and having too many custom
    * attributes is probably bad.
    */
-  setAttribute(attribute2, value) {
-    this.attributes[attribute2] = value;
+  setAttribute(attribute3, value) {
+    this.attributes[attribute3] = value;
   }
   hasClass(className) {
     return this.classes.includes(className);
@@ -50738,8 +50738,8 @@ var Anchor = class {
     this.children = children || [];
     this.setAttribute("href", href);
   }
-  setAttribute(attribute2, value) {
-    this.attributes[attribute2] = value;
+  setAttribute(attribute3, value) {
+    this.attributes[attribute3] = value;
   }
   hasClass(className) {
     return this.classes.includes(className);
@@ -64403,11 +64403,11 @@ function rewriteReferences(document2, change) {
     const next = swap(url2);
     return next === url2 ? whole : `url(${quote}${next}${quote})`;
   });
-  for (const [selector, attribute2, link] of ATTRIBUTES)
+  for (const [selector, attribute3, link] of ATTRIBUTES)
     for (const element of Array.from(document2.querySelectorAll(selector))) {
-      const value = element.getAttribute(attribute2) ?? "";
+      const value = element.getAttribute(attribute3) ?? "";
       const next = swap(value, link);
-      if (next !== value) element.setAttribute(attribute2, next);
+      if (next !== value) element.setAttribute(attribute3, next);
     }
   for (const element of Array.from(document2.querySelectorAll("[srcset]"))) {
     const value = element.getAttribute("srcset") ?? "";
@@ -64499,13 +64499,13 @@ function standInOf(element, id) {
   );
   for (const sheet of sheets) {
     const css = scrubbedCss(sheet.textContent ?? "");
-    for (const attribute2 of Array.from(sheet.attributes)) sheet.removeAttribute(attribute2.name);
+    for (const attribute3 of Array.from(sheet.attributes)) sheet.removeAttribute(attribute3.name);
     sheet.textContent = css;
   }
   for (const one of [copy, ...Array.from(copy.querySelectorAll("*"))]) {
     if (one.tagName.toLowerCase() === "style") continue;
-    for (const attribute2 of Array.from(one.attributes))
-      if (!LAYOUT.has(attribute2.name)) one.removeAttribute(attribute2.name);
+    for (const attribute3 of Array.from(one.attributes))
+      if (!LAYOUT.has(attribute3.name)) one.removeAttribute(attribute3.name);
     const style = one.getAttribute("style");
     if (style) one.setAttribute("style", scrubbedCss(style));
   }
@@ -64584,6 +64584,60 @@ function partHtml(source, ids, held) {
   return out;
 }
 
+// packages/player/src/lib/author-layer.ts
+init_define_WORDPLAY_ENGINE();
+var AUTHOR_LAYER = "wordplay-author";
+var URL2 = String.raw`url\(\s*(?:"[^"]*"|'[^']*'|[^)]*)\s*\)|"[^"]*"|'[^']*'`;
+var IMPORT = new RegExp(
+  String.raw`^@import\s+(${URL2})\s*(layer\(([^)]*)\)|layer\b)?([^;]*);`,
+  "i"
+);
+var STATEMENT = /^@(layer|namespace)\s+([^;{]*);/i;
+var SPACE = /^(\s+|\/\*[\s\S]*?\*\/)+/;
+var nested = (name) => name.trim() ? `${AUTHOR_LAYER}.${name.trim()}` : AUTHOR_LAYER;
+function layered(css) {
+  const lead = [];
+  let rest = css.replace(/^\s*@charset\s+[^;]*;/i, "");
+  for (; ; ) {
+    rest = rest.replace(SPACE, "");
+    const imported = IMPORT.exec(rest);
+    const statement = imported ? null : STATEMENT.exec(rest);
+    if (imported) {
+      const after2 = imported[4].trim();
+      lead.push(
+        `@import ${imported[1]} layer(${nested(imported[3] ?? "")})${after2 ? ` ${after2}` : ""};`
+      );
+      rest = rest.slice(imported[0].length);
+    } else if (statement?.[1].toLowerCase() === "layer") {
+      lead.push(`@layer ${statement[2].split(",").map(nested).join(", ")};`);
+      rest = rest.slice(statement[0].length);
+    } else if (statement) {
+      lead.push(statement[0]);
+      rest = rest.slice(statement[0].length);
+    } else break;
+  }
+  return `${lead.join("")}@layer ${AUTHOR_LAYER}{${rest}}`;
+}
+function attribute2(tag, name) {
+  const found = new RegExp(String.raw`\s${name}\s*=\s*("([^"]*)"|'([^']*)'|([^\s>]+))`, "i").exec(
+    tag
+  );
+  return found ? found[2] ?? found[3] ?? found[4] : null;
+}
+function authorLayered(html) {
+  return html.split(/(<script\b[\s\S]*?<\/script>|<textarea\b[\s\S]*?<\/textarea>|<!--[\s\S]*?-->)/i).map(
+    (part, at) => at % 2 ? part : part.replace(
+      /(<style\b[^>]*>)([\s\S]*?)(<\/style>)/gi,
+      (_, open4, css, close3) => `${open4}${layered(css)}${close3}`
+    ).replace(/<link\b[^>]*>/gi, (tag) => {
+      const href = attribute2(tag, "href");
+      if (!href || !/^stylesheet$/i.test(attribute2(tag, "rel") ?? "")) return tag;
+      const media = attribute2(tag, "media");
+      return `<style>@import url(${JSON.stringify(href)}) layer(${AUTHOR_LAYER})${media ? ` ${media}` : ""};</style>`;
+    })
+  ).join("");
+}
+
 // packages/player/src/lib/frame-document.ts
 var NOT_MATH = /* @__PURE__ */ new Set(["script", "style", "code", "pre", "textarea", "template", "kbd", "samp"]);
 function draw(tex, display) {
@@ -64638,7 +64692,7 @@ function givenHtml(source, ids, held, folder) {
     const document2 = documentOf(`<html><body>${html}</body></html>`);
     drawMath(document2.body);
     if (folder) inFolder(document2, folder);
-    return { id, html: document2.body.innerHTML };
+    return { id, html: authorLayered(document2.body.innerHTML) };
   });
 }
 function inFolder(document2, folder) {
@@ -65574,9 +65628,9 @@ function svgSanitizer(make, window2, options = {}) {
     if (purifier) return purifier;
     purifier = make(window2());
     purifier.addHook("afterSanitizeAttributes", (node2) => {
-      for (const attribute2 of ["href", "xlink:href", "src"]) {
-        const value = node2.getAttribute?.(attribute2);
-        if (value && /^(https?:)?\/\//i.test(value.trim())) node2.removeAttribute(attribute2);
+      for (const attribute3 of ["href", "xlink:href", "src"]) {
+        const value = node2.getAttribute?.(attribute3);
+        if (value && /^(https?:)?\/\//i.test(value.trim())) node2.removeAttribute(attribute3);
       }
       for (const { name, value } of Array.from(node2.attributes ?? [])) {
         if (/url\(\s*(?!['"]?#)/i.test(value)) node2.removeAttribute(name);
