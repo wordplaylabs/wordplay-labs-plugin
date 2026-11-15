@@ -36267,7 +36267,7 @@ init_define_WORDPLAY_ENGINE();
 
 // packages/player/src/bridge/site.ts
 init_define_WORDPLAY_ENGINE();
-var PREVIEW_BUILD = false ? "source" : "5041f13b7aa4";
+var PREVIEW_BUILD = false ? "source" : "977032fe5c90";
 function modelOf(value) {
   const one = value;
   return one && typeof one.model === "string" && one.model ? { model: one.model, effort: typeof one.effort === "string" ? one.effort : null } : null;
@@ -64919,6 +64919,7 @@ function tutorEnvelope(wordplay, source, title, view) {
     calculations: (view.calculations ?? []).slice(-MAX_CALCULATIONS),
     pictures: view.pictures ?? 0,
     share: wordplay.shared?.tutor ? fieldsInWords(wordplay.shared.fields) : null,
+    report: view.report ?? false,
     openings: [
       ...openingOf(wordplay) ? [`In your chat: ${openingOf(wordplay)}`] : [],
       ...Object.entries(chatOpenings(wordplay)).map(
@@ -64975,6 +64976,7 @@ function envelopeBindings(envelope) {
     told: envelope.told.map((line) => `- ${asLine(line)}`),
     calculations: envelope.calculations.map((one) => asLine(calculationLine(one))),
     share: envelope.share,
+    report: envelope.report,
     openings: envelope.openings.map((line) => `- ${line}`)
   };
 }
