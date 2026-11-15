@@ -26293,9 +26293,9 @@ var Protocol = class {
   * `Server` instances never receive `input_required` responses on their
   * outbound legs and leave the base behavior in place.
   */
-  _resolveNonCompleteResult(decoded, flow) {
-    return Promise.reject(new SdkError(SdkErrorCode.UnsupportedResultType, `Unsupported result type '${decoded.kind}' for ${flow.request.method}`, {
-      resultType: decoded.kind,
+  _resolveNonCompleteResult(decoded2, flow) {
+    return Promise.reject(new SdkError(SdkErrorCode.UnsupportedResultType, `Unsupported result type '${decoded2.kind}' for ${flow.request.method}`, {
+      resultType: decoded2.kind,
       method: flow.request.method
     }));
   }
@@ -26731,15 +26731,15 @@ var Protocol = class {
         if (options?.signal?.aborted) return;
         responseReceived = true;
         if (response instanceof Error) return reject(response);
-        let decoded;
+        let decoded2;
         try {
-          decoded = codec2.decodeResult(request.method, response.result);
+          decoded2 = codec2.decodeResult(request.method, response.result);
         } catch (error62) {
           return reject(error62 instanceof Error ? error62 : new Error(String(error62)));
         }
-        if (decoded.kind === "invalid") return reject(decoded.error);
-        if (decoded.kind === "input_required") {
-          if (options?.allowInputRequired === true) return resolve4(manualInputRequiredValue(decoded));
+        if (decoded2.kind === "invalid") return reject(decoded2.error);
+        if (decoded2.kind === "input_required") {
+          if (options?.allowInputRequired === true) return resolve4(manualInputRequiredValue(decoded2));
           const flow = {
             codec: codec2,
             request,
@@ -26751,9 +26751,9 @@ var Protocol = class {
               params
             }, resultSchema, legOptions)
           };
-          return resolve4(this._resolveNonCompleteResult(decoded, flow));
+          return resolve4(this._resolveNonCompleteResult(decoded2, flow));
         }
-        const result = decoded.result;
+        const result = decoded2.result;
         validateStandardSchema(resultSchema, result).then((parseResult) => {
           if (parseResult.success) resolve4(parseResult.data);
           else reject(new SdkError(SdkErrorCode.InvalidResult, `Invalid result for ${request.method}: ${parseResult.error}`));
@@ -26942,12 +26942,12 @@ function partitionInputResponses(inputResponses) {
     droppedKeys
   };
 }
-function manualInputRequiredValue(decoded) {
+function manualInputRequiredValue(decoded2) {
   return {
     resultType: "input_required",
-    inputRequests: decoded.inputRequests,
-    ...decoded.requestState !== void 0 && { requestState: decoded.requestState },
-    ...decoded._meta !== void 0 && { _meta: decoded._meta }
+    inputRequests: decoded2.inputRequests,
+    ...decoded2.requestState !== void 0 && { requestState: decoded2.requestState },
+    ...decoded2._meta !== void 0 && { _meta: decoded2._meta }
   };
 }
 /*!
@@ -30034,8 +30034,8 @@ var require_utils = /* @__PURE__ */ __commonJSMin(((exports, module) => {
         const hex3 = input2.slice(i2 + 1, i2 + 3);
         if (isHexPair(hex3)) {
           const normalizedHex = hex3.toUpperCase();
-          const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
-          if (decodeUnreserved && isUnreserved(decoded)) output2 += decoded;
+          const decoded2 = String.fromCharCode(parseInt(normalizedHex, 16));
+          if (decodeUnreserved && isUnreserved(decoded2)) output2 += decoded2;
           else output2 += "%" + normalizedHex;
           i2 += 2;
           continue;
@@ -30053,8 +30053,8 @@ var require_utils = /* @__PURE__ */ __commonJSMin(((exports, module) => {
         const hex3 = input2.slice(i2 + 1, i2 + 3);
         if (isHexPair(hex3)) {
           const normalizedHex = hex3.toUpperCase();
-          const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
-          if (decoded !== "." && isUnreserved(decoded)) output2 += decoded;
+          const decoded2 = String.fromCharCode(parseInt(normalizedHex, 16));
+          if (decoded2 !== "." && isUnreserved(decoded2)) output2 += decoded2;
           else output2 += "%" + normalizedHex;
           i2 += 2;
           continue;
@@ -30154,8 +30154,8 @@ var require_utils = /* @__PURE__ */ __commonJSMin(((exports, module) => {
         const hex3 = input2.slice(i2 + 1, i2 + 3);
         if (isHexPair(hex3)) {
           const normalizedHex = hex3.toUpperCase();
-          const decoded = String.fromCharCode(parseInt(normalizedHex, 16));
-          if (isUnreserved(decoded)) output2 += decoded;
+          const decoded2 = String.fromCharCode(parseInt(normalizedHex, 16));
+          if (isUnreserved(decoded2)) output2 += decoded2;
           else output2 += "%" + normalizedHex;
           i2 += 2;
           continue;
@@ -34817,8 +34817,8 @@ var LegacyInputRequiredShim = class {
         }
       };
       if (requestState !== void 0) {
-        const decoded = await this._host.verifyRequestState(requestState, ctxNext, method);
-        if (decoded !== void 0) ctxNext = withRequestStateValue(ctxNext, decoded);
+        const decoded2 = await this._host.verifyRequestState(requestState, ctxNext, method);
+        if (decoded2 !== void 0) ctxNext = withRequestStateValue(ctxNext, decoded2);
       }
       const next = await handler4(request, ctxNext);
       if (!isInputRequiredResult(next)) return next;
@@ -35070,8 +35070,8 @@ var Server = class extends Protocol {
     if (rawRequestState !== void 0 && typeof rawRequestState !== "string") throw new ProtocolError(ProtocolErrorCode.InvalidParams, "Invalid or expired requestState", { reason: "invalid_request_state" });
     let ctxForHandler = ctx;
     if (typeof rawRequestState === "string") {
-      const decoded = await this._verifyRequestState(rawRequestState, ctx, method);
-      if (decoded !== void 0) ctxForHandler = withRequestStateValue(ctx, decoded);
+      const decoded2 = await this._verifyRequestState(rawRequestState, ctx, method);
+      if (decoded2 !== void 0) ctxForHandler = withRequestStateValue(ctx, decoded2);
     }
     let result;
     try {
@@ -36275,7 +36275,7 @@ init_define_WORDPLAY_ENGINE();
 
 // packages/player/src/bridge/site.ts
 init_define_WORDPLAY_ENGINE();
-var PREVIEW_BUILD = false ? "source" : "83f5867a455b";
+var PREVIEW_BUILD = false ? "source" : "3aec8f0fec8b";
 function modelOf(value) {
   const one = value;
   return one && typeof one.model === "string" && one.model ? { model: one.model, effort: typeof one.effort === "string" ? one.effort : null } : null;
@@ -40570,14 +40570,14 @@ var unencodedElements = /* @__PURE__ */ new Set([
 function replaceQuotes(value) {
   return value.replace(/"/g, "&quot;");
 }
-function formatAttributes(attributes, opts) {
+function formatAttributes(attributes2, opts) {
   var _a5;
-  if (!attributes)
+  if (!attributes2)
     return;
   const encode3 = ((_a5 = opts.encodeEntities) !== null && _a5 !== void 0 ? _a5 : opts.decodeEntities) === false ? replaceQuotes : opts.xmlMode || opts.encodeEntities !== "utf8" ? encodeXML : escapeAttribute;
-  return Object.keys(attributes).map((key3) => {
+  return Object.keys(attributes2).map((key3) => {
     var _a6, _b;
-    const value = (_a6 = attributes[key3]) !== null && _a6 !== void 0 ? _a6 : "";
+    const value = (_a6 = attributes2[key3]) !== null && _a6 !== void 0 ? _a6 : "";
     if (opts.xmlMode === "foreign") {
       key3 = (_b = attributeNames.get(key3)) !== null && _b !== void 0 ? _b : key3;
     }
@@ -41433,8 +41433,8 @@ var CustomElementRegistry = class {
     if (registry2.has(ce)) {
       const { Class: Class2, check: check2 } = registry2.get(ce);
       if (check2(element)) {
-        const { attributes, isConnected: isConnected2 } = element;
-        for (const attr of attributes)
+        const { attributes: attributes2, isConnected: isConnected2 } = element;
+        for (const attr of attributes2)
           element.removeAttributeNode(attr);
         const values = entries(element);
         for (const [key3] of values)
@@ -41443,7 +41443,7 @@ var CustomElementRegistry = class {
         ownerDocument[UPGRADE] = { element, values };
         new Class2(ownerDocument, ce);
         customElements.set(element, { connected: isConnected2 });
-        for (const attr of attributes)
+        for (const attr of attributes2)
           element.setAttributeNode(attr);
         if (isConnected2 && element.connectedCallback)
           element.connectedCallback();
@@ -41519,7 +41519,7 @@ var parseFromString = (document2, isHTML, markupLanguage) => {
         document2.doctype = data.slice(name.length).trim();
     },
     // <tagName>
-    onopentag(name, attributes) {
+    onopentag(name, attributes2) {
       let create3 = true;
       if (isHTML) {
         if (ownerSVGElement) {
@@ -41531,11 +41531,11 @@ var parseFromString = (document2, isHTML, markupLanguage) => {
           node2 = append2(node2, ownerSVGElement, active);
           create3 = false;
         } else if (active) {
-          const ce = name.includes("-") ? name : attributes.is || "";
+          const ce = name.includes("-") ? name : attributes2.is || "";
           if (ce && registry2.has(ce)) {
             const { Class: Class2 } = registry2.get(ce);
             node2 = append2(node2, new Class2(), active);
-            delete attributes.is;
+            delete attributes2.is;
             create3 = false;
           }
         }
@@ -41543,8 +41543,8 @@ var parseFromString = (document2, isHTML, markupLanguage) => {
       if (create3)
         node2 = append2(node2, document2.createElement(name), false);
       let end = node2[END];
-      for (const name2 of keys(attributes))
-        attribute(node2, end, document2.createAttribute(name2), attributes[name2], active);
+      for (const name2 of keys(attributes2))
+        attribute(node2, end, document2.createAttribute(name2), attributes2[name2], active);
     },
     // #text, #comment
     oncomment(data) {
@@ -41706,7 +41706,7 @@ var attributeChangedCallback2 = (element, attributeName, oldValue) => {
         {
           childList,
           subtree,
-          attributes,
+          attributes: attributes2,
           attributeFilter,
           attributeOldValue
         }
@@ -41723,7 +41723,7 @@ var attributeChangedCallback2 = (element, attributeName, oldValue) => {
             );
             break;
           }
-        } else if (attributes && target === element) {
+        } else if (attributes2 && target === element) {
           queueAttribute(
             observer,
             element,
@@ -43377,17 +43377,17 @@ function renderTag2(element, options, xmlMode) {
 function replaceQuotes2(value) {
   return value.replaceAll('"', "&quot;");
 }
-function formatAttributes2(attributes, options, xmlMode) {
-  if (!attributes)
+function formatAttributes2(attributes2, options, xmlMode) {
+  if (!attributes2)
     return "";
   const encode3 = (options.encodeEntities ?? options.decodeEntities) === false ? replaceQuotes2 : xmlMode || options.encodeEntities !== "utf8" ? encodeXML2 : escapeAttribute2;
   const isForeign = xmlMode === "foreign";
   const showEmpty = !!(options.emptyAttrs ?? xmlMode);
   let result = "";
-  for (const key3 in attributes) {
-    if (!Object.hasOwn(attributes, key3))
+  for (const key3 in attributes2) {
+    if (!Object.hasOwn(attributes2, key3))
       continue;
-    const value = attributes[key3];
+    const value = attributes2[key3];
     const k = isForeign ? attributeNames2.get(key3) ?? key3 : key3;
     result += !showEmpty && (value == null || value === "") ? ` ${k}` : ` ${k}="${encode3(value == null ? "" : String(value))}"`;
   }
@@ -45824,13 +45824,13 @@ var Element2 = class extends ParentNode {
   // </contentRelated>
   // <attributes>
   get attributes() {
-    const attributes = new NamedNodeMap(this);
+    const attributes2 = new NamedNodeMap(this);
     let next = this[NEXT];
     while (next.nodeType === ATTRIBUTE_NODE) {
-      attributes.push(next);
+      attributes2.push(next);
       next = next[NEXT];
     }
-    return new Proxy(attributes, attributesHandler);
+    return new Proxy(attributes2, attributesHandler);
   }
   focus() {
     this.dispatchEvent(new GlobalEvent("focus"));
@@ -45851,13 +45851,13 @@ var Element2 = class extends ParentNode {
     return null;
   }
   getAttributeNames() {
-    const attributes = new NodeList();
+    const attributes2 = new NodeList();
     let next = this[NEXT];
     while (next.nodeType === ATTRIBUTE_NODE) {
-      attributes.push(next.name);
+      attributes2.push(next.name);
       next = next[NEXT];
     }
-    return attributes;
+    return attributes2;
   }
   hasAttribute(name) {
     return !!this.getAttributeNode(name);
@@ -51072,11 +51072,11 @@ var SymbolNode = class {
   }
 };
 var SvgNode = class {
-  constructor(children, attributes) {
+  constructor(children, attributes2) {
     this.children = void 0;
     this.attributes = void 0;
     this.children = children || [];
-    this.attributes = attributes || {};
+    this.attributes = attributes2 || {};
   }
   toNode() {
     var svgNS = "http://www.w3.org/2000/svg";
@@ -51128,9 +51128,9 @@ var PathNode = class {
   }
 };
 var LineNode = class {
-  constructor(attributes) {
+  constructor(attributes2) {
     this.attributes = void 0;
-    this.attributes = attributes || {};
+    this.attributes = attributes2 || {};
   }
   toNode() {
     var svgNS = "http://www.w3.org/2000/svg";
@@ -59960,24 +59960,24 @@ defineFunction({
       parser.settings.reportNonstrict("htmlExtension", "HTML extension is disabled on strict mode");
     }
     var trustContext;
-    var attributes = {};
+    var attributes2 = {};
     switch (funcName) {
       case "\\htmlClass":
-        attributes.class = value;
+        attributes2.class = value;
         trustContext = {
           command: "\\htmlClass",
           class: value
         };
         break;
       case "\\htmlId":
-        attributes.id = value;
+        attributes2.id = value;
         trustContext = {
           command: "\\htmlId",
           id: value
         };
         break;
       case "\\htmlStyle":
-        attributes.style = value;
+        attributes2.style = value;
         trustContext = {
           command: "\\htmlStyle",
           style: value
@@ -59993,11 +59993,11 @@ defineFunction({
           }
           var key3 = item.slice(0, firstEquals);
           var _value = item.slice(firstEquals + 1);
-          attributes["data-" + key3.trim()] = _value;
+          attributes2["data-" + key3.trim()] = _value;
         }
         trustContext = {
           command: "\\htmlData",
-          attributes
+          attributes: attributes2
         };
         break;
       }
@@ -60010,7 +60010,7 @@ defineFunction({
     return {
       type: "html",
       mode: parser.mode,
-      attributes,
+      attributes: attributes2,
       body: ordargument(body2)
     };
   },
@@ -60109,9 +60109,9 @@ defineFunction({
     var alt = "";
     if (optArgs[0]) {
       var attributeStr = assertNodeType(optArgs[0], "raw").string;
-      var attributes = attributeStr.split(",");
-      for (var i2 = 0; i2 < attributes.length; i2++) {
-        var keyVal = attributes[i2].split("=");
+      var attributes2 = attributeStr.split(",");
+      for (var i2 = 0; i2 < attributes2.length; i2++) {
+        var keyVal = attributes2[i2].split("=");
         if (keyVal.length === 2) {
           var str = keyVal[1].trim();
           switch (keyVal[0].trim()) {
@@ -64804,22 +64804,43 @@ function layered(css) {
   }
   return `${lead.join("")}@layer ${AUTHOR_LAYER}{${rest}}`;
 }
+var ATTRIBUTES2 = String.raw`(?:=\s*"[^"]*"|=\s*'[^']*'|[^>])*`;
+function attributes(tag) {
+  const found = /* @__PURE__ */ new Map();
+  const body2 = tag.replace(/^<[^\s>]+/, "");
+  for (const one of body2.matchAll(/([^\s"'>/=]+)(?:\s*=\s*("([^"]*)"|'([^']*)'|([^\s>]+)))?/g)) {
+    const name = one[1].toLowerCase();
+    if (!found.has(name)) found.set(name, one[3] ?? one[4] ?? one[5] ?? "");
+  }
+  return found;
+}
 function attribute2(tag, name) {
-  const found = new RegExp(String.raw`\s${name}\s*=\s*("([^"]*)"|'([^']*)'|([^\s>]+))`, "i").exec(
-    tag
-  );
-  return found ? found[2] ?? found[3] ?? found[4] : null;
+  return attributes(tag).get(name) ?? null;
+}
+function decoded(text3) {
+  return text3.replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (whole, name) => {
+    const lower = name.toLowerCase();
+    const code = lower.startsWith("#x") ? parseInt(lower.slice(2), 16) : lower.startsWith("#") ? parseInt(lower.slice(1), 10) : null;
+    if (code !== null) return code <= 1114111 ? String.fromCodePoint(code) : whole;
+    return { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'" }[lower] ?? whole;
+  });
 }
 function authorLayered(html) {
   return html.split(/(<script\b[\s\S]*?<\/script>|<textarea\b[\s\S]*?<\/textarea>|<!--[\s\S]*?-->)/i).map(
     (part, at) => at % 2 ? part : part.replace(
-      /(<style\b[^>]*>)([\s\S]*?)(<\/style>)/gi,
+      new RegExp(String.raw`(<style\b${ATTRIBUTES2}>)([\s\S]*?)(<\/style>)`, "gi"),
       (_, open4, css, close3) => `${open4}${layered(css)}${close3}`
-    ).replace(/<link\b[^>]*>/gi, (tag) => {
+    ).replace(new RegExp(String.raw`<link\b${ATTRIBUTES2}>`, "gi"), (tag) => {
       const href = attribute2(tag, "href");
       if (!href || !/^stylesheet$/i.test(attribute2(tag, "rel") ?? "")) return tag;
-      const media = attribute2(tag, "media");
-      return `<style>@import url(${JSON.stringify(href)}) layer(${AUTHOR_LAYER})${media ? ` ${media}` : ""};</style>`;
+      const all = attributes(tag);
+      const media = all.has("disabled") ? "not all" : all.get("media");
+      const address = decoded(href).replace(/[\t\n\r]/g, "");
+      if (/<\/style/i.test(address)) return tag;
+      const kept = [...all].filter(([name]) => /^(id|class|title|data-[\w-]+)$/.test(name)).concat(media ? [["media", media]] : []).map(
+        ([name, value]) => ` ${name}="${value.replace(/"/g, "&quot;").replace(/</g, "&lt;")}"`
+      ).join("");
+      return `<style${kept}>@import url(${JSON.stringify(address)}) layer(${AUTHOR_LAYER});</style>`;
     })
   ).join("");
 }

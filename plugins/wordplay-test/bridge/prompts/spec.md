@@ -79,6 +79,11 @@ document's does. A relative URL resolves against the file's own address,
 so a picture or a sound sits beside the file. A host must ignore an
 attribute it does not know and show the element as HTML.
 
+A stylesheet the page switches on or off as it runs is switched by its
+`media` or by a class its rules name, never by `disabled` or by setting a
+link's `href`: a host may hold the teacher's sheets apart from what it
+draws itself, and keeps a sheet a script switches where the teacher put it.
+
 The reader talks to the tutor in a chat the host draws; where it draws
 it, and how many, is the host's.
 
