@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "wordplay-test",
-  "version": "2026.1115.202901",
+  "version": "2026.1115.210437",
   "description": "Write and publish wordplays from your own material.",
   "author": {
     "name": "Wordplay Labs",

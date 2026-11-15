@@ -321,13 +321,21 @@ How to write it:
      chats on the page, or that asks none; an opening line then goes on a
      chat in the page, not the body. Leave `data-pages` off a page that
      draws its own navigation or reads as one scroll.
-   - **Words the tutor says on the page**, a character's line, a caption, a
-     verdict, go in an `<output>` the tutor writes (`data-tutor`), named for
-     who or what it is. Characters talking with the student are a chat the
-     teacher draws, its buttons calling `document.wordplay.say` with each
-     choice's words.
-   - **A case the tutor can show** is a named field the page's script draws
-     from; the tutor sets it by name.
+   - **Something the tutor does on the page**, a case to show, a length
+     to set, a line for a character to say, is a command of its block (the
+     format's Acting on the page), whatever the block is, a paragraph or
+     a picture as much as an element of your own: the block gets an `id`,
+     a `data-name` the chat calls it by ("The tutor changed Diagram"), an
+     empty
+     `<data data-command="setLength(m)">` inside it, its `title` what it
+     does and its `data-when` when the tutor calls it, in the teacher's
+     words; the block's script does it on `wordplay:command`, writes the
+     block's `data-state`, and keeps what changed in
+     `document.wordplay.store(id)`, drawing from it on load. The tutor does
+     nothing else on the page: a button is the student's. Characters
+     talking with the student are a chat the teacher draws, marked
+     `data-no-box` so it has no box, its buttons calling
+     `document.wordplay.say` with each choice's words and the chat's name.
    - **What the class did**, how everyone chose, a wall of attempts, the
      fastest times, is shared (the format's Sharing): the script shares
      the student's entry and draws the wall in a part revealed once they
@@ -385,7 +393,9 @@ How to write it:
    the moment, about what the student says or shows, never a word they must
    use; when the page itself can tell, its script says so. Nothing counts:
    a part appears when its moment comes. Name each part that appears by
-   what it is, never by what it gives away. A long wordplay is in pages of a screen
+   what it is, never by what it gives away, with an `id` the tutor can call:
+   a letter, then letters, numbers, `-` and `_` (`far-side`, never `2b`).
+   A long wordplay is in pages of a screen
    or two each; a short one is one page. A link to another wordplay on
    the site is its name, `<a href="sodium-2">`; the reader goes there and
    has the way back. Outside links open in a new tab.

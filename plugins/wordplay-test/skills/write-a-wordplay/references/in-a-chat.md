@@ -72,17 +72,20 @@ requirements.
 
 ## The file
 
-A `.wplay` file is an HTML document. Four attributes make it a wordplay, and
-two describe what the host cannot read itself:
+A `.wplay` file is an HTML document. Three attributes make it a wordplay,
+two describe what the host cannot read itself, two declare what the tutor
+can do on a block, and one names a block:
 
 | Attribute | Where | Value | Means |
 |---|---|---|---|
 | `data-wordplay` | `<body>` | `"1"`, the version | This document is a wordplay. |
 | `data-context` | A `<div>` directly in the `<body>` | None | The teacher's notes for the tutor. The reader never sees it. |
 | `data-expect` | Any element the reader sees, or a calculator's key | The condition, in prose | The element is given once the condition holds. |
-| `data-tutor` | An `<output>` | None | The tutor writes it. |
 | `data-description` | The outermost element of a block the host cannot read itself: an element of the teacher's own, a drawing, a game, a control with a script | What it is and how it can change, by the reader, its script or the tutor, in prose | All the tutor reads of the element. At most 300 characters. |
 | `data-state` | The same element | What it shows now, in prose | Its script rewrites it whenever that changes; the file's value is where it starts. At most 150 characters. |
+| `data-command` | An empty `<data>` inside a block with an `id` | A name and its parameters' names: `setLength(m)` | A command of that block the tutor may call; its `title` says what it does, at most 200 characters. |
+| `data-when` | The same `<data>` | When the tutor calls it, in prose | Read by the tutor with the command. At most 200 characters. |
+| `data-name` | Any block | A few words | What the chat calls the block, before its accessible name: "The tutor changed Diagram". At most 40 characters. |
 
 Everything else is HTML, shown as HTML, written so that a screen reader
 can read it: every control has an accessible name, and what changes while
@@ -157,19 +160,39 @@ announced. Nothing about how the page is drawn reaches it, and nothing is
 cut midway: a description or a state over its limit is a mistake the
 checks say, and a state a script writes over it is not sent.
 
-**Acting on the page.** Anything a block's commands list, the tutor can do
-by its accessible name: press a button, set a field, choose an option.
+**Acting on the page.** The tutor acts on the page only by calling a
+command: one a block declares, by the block's `id`
+(`pendulum.setLength(2.5)`), and `show` on a reveal waiting
+(`r3.show()`), which gives it as its condition holding does. Each
+command comes to it as its call, what it does and when to call it; a
+block's controls come too, which the reader works and the tutor never
+does. Its calls come after what it says, and the page makes them once
+its reply has ended, in order, at most 8, each one's
+arguments JSON values. A call the page cannot make (no such block or
+command on the page as it is, a script that fails or never answers) is
+silent to the reader, and the tutor is told of it at its next turn.
 
-**Writing on the page.** The tutor writes only in an `<output>` marked
-`data-tutor`, by its accessible name, when its notes tell it to. What it
-writes becomes the element's text, plain, replacing what was there, at
-most 400 characters. How it is drawn is the teacher's.
+**Any block may have commands**: a paragraph, a list, a picture or a box
+as much as an element of the teacher's own, the script that does them
+inside it with the declarations. A block with commands that hid itself,
+its own `hidden` or `aria-hidden`, is still the tutor's: it reads the block
+as hidden by the page and may call its commands, so one can show it again.
+
+**A command is the page's script's to do.** The host fires
+`wordplay:command` on the block, `event.detail` holding `name`, `args`
+and `reply`; the script that does it calls `event.preventDefault()`, and
+`reply(value)` with what came of it, a promise or a value, or throws. One
+no script takes, or that has not answered in 5 seconds,
+failed. What the command changed, the script writes in the block's
+`data-state`, and keeps in the block's store (Scripts), so a page drawn
+again shows it.
 
 **What the tutor reads at each turn.** The blocks of what is given and its
 announcements; what the page told it since its last turn (`tell`); what
 the reader worked out on a calculator, where the page has one
-(`data-calculator`, under What Wordplay adds); the context; and each
-waiting reveal and calculator key, by id and condition, a reveal with its
+(`data-calculator`, under What Wordplay adds); the calls of its own that
+failed since, at most 5; the context; and each waiting
+reveal and calculator key, by id and condition, a reveal with its
 blocks, so the tutor knows what it holds back. Where a reader is
 in the wordplay is never in the file: it follows from the conversation.
 With no conversation, where there is no tutor to give anything, a host
@@ -194,35 +217,45 @@ the body is read, the host puts one frozen object on the document,
 | `met(id)` | Says that reveal's condition holds: the host gives it. An id not waiting is ignored. A reveal `met` gives is the browser's report, kept apart from what the tutor gave. | |
 | `tell(text)` | Gives the tutor the text at its next turn. A live region is read to the reader too; this is not. | 200 characters |
 | `say(text, chat?)` | Sends a message as the reader, in the host's chat; a host with more than one takes `chat`, a chat's accessible name. The tutor answers now and is told the page sent it. Returns a promise of the reply's text, once it ends; refused, it rejects with an error saying why. | 2,000 characters, 20 a minute |
-| `keep(value)` | Keeps one JSON value, the page's own state, with the conversation; each call replaces the last. A larger value is dropped, with a warning in the console. | 65,536 bytes of its JSON, as UTF-8 |
-| `kept` | The value last kept in this conversation, or `undefined`. There before the first script runs. | |
+| `store(id)` | The block's own store, kept with the conversation: `get(key)` the value kept, or `undefined`, there before the first script runs; `set(key, value)` keeps a JSON value; `delete(key)`. A `set` past the page's limit is dropped, with a warning in the console. | 65,536 bytes of JSON, as UTF-8, for every store of the page |
 
 **`wordplay:met`** fires on a reveal as it is given, bubbling, with its id
 in `event.detail.id`, and again for each reveal already given when the
-page is drawn, in document order.
+page is drawn, in document order. **`wordplay:command`** fires on a block
+when the tutor calls one of its commands (Acting on the page).
 
 **The page's state is the conversation's.** The host keeps which reveals
 have been given, each control's value, typed, checked or chosen, by its
 `id`, else its `name`, else its accessible name, and, with `data-pages`,
 which page is open. Drawing the page again, it sets them back and fires
-`input` and `change` on each. What lives only in a script's variables is
-kept with `keep` and read back from `kept`:
+`input` and `change` on each. What lives only in a script's variables,
+the script keeps in its block's store, a key a value, and draws from on
+load, whether the reader changed it or the tutor's command did:
 
 ```js
-// A pile drawn in <output id="pile">, taken from by <button id="take">.
-const game = document.wordplay?.kept ?? { pile: 21 };
-const draw = () => (document.querySelector("#pile").textContent = game.pile);
-document.querySelector("#take").onclick = () => {
-  game.pile -= 1;
-  document.wordplay?.keep(game);
-  draw();
-  if (game.pile === 0) document.wordplay?.met("emptied");
+// A pile, the block <div id="pile">, taken from by its button or by the tutor.
+const store = document.wordplay?.store("pile");
+let left = store?.get("left") ?? 21;
+const pile = document.querySelector("#pile");
+const take = (n) => {
+  left = Math.max(0, left - n);
+  store?.set("left", left);
+  pile.querySelector("output").textContent = left;
+  pile.dataset.state = `${left} left`;
+  if (left === 0) document.wordplay?.met("emptied");
 };
-draw();
+pile.querySelector("button").onclick = () => take(1);
+pile.addEventListener("wordplay:command", (event) => {
+  if (event.detail.name !== "take") return;
+  event.preventDefault();
+  take(event.detail.args[0]);
+  event.detail.reply(left);
+});
+take(0);
 ```
 
-The kept value belongs to one conversation: starting over starts from the
-file. The tutor never reads it; it reads the page as drawn.
+The stores belong to one conversation: starting over starts from the
+file. The tutor never reads them; it reads the page's blocks.
 
 Opened as plain HTML, a page has no `document.wordplay`, so a script
 writes `document.wordplay?.met("solved")`. A host may add members of its
@@ -344,8 +377,11 @@ where there is one, shows it as a thread. Context directly in a chat is
 about that chat, and the tutor reads it from the start. `say(text, chat)`
 says the message in the chat named `chat`; with none, or a name no chat
 has, in the chat beside the page; with no chat beside the page, the tutor
-reads it and answers, and the reader sees neither. A chat holding an
-`<output data-tutor>` is drawn by the teacher: Wordplay draws no box in it.
+reads it and answers, and the reader sees neither. Every chat has its box
+to write in, whatever blocks it holds, unless it is marked `data-no-box`:
+that chat is drawn by the teacher, with no bar, no messages and no box of
+Wordplay's in it, and what the reader says there is said by the teacher's
+own controls, through `say(text, chat)`.
 
 **Math.** `$…$` in text is a formula and `$$…$$` one on its own line, drawn
 with KaTeX, except inside `code`, `pre`, `script`, `style` and fields. The
@@ -362,6 +398,7 @@ Its attributes:
 |---|---|---|
 | `data-chat` | The `<body>` | The tutor's chat beside the page. |
 | | A `<div>` | A chat with the tutor drawn in it ("Chats in the page"). |
+| `data-no-box` | A chat in the page | The teacher draws this chat: no box of Wordplay's in it ("Chats in the page"). |
 | `data-pages` | The `<body>` | The sections directly in it are pages, one shown at a time. |
 | `data-calculator` | An `<input>` | The box has a calculator in its place; the box's value is what it works out (`86.4 s`). Its accessible name is its label. Its keys are the `data-key` elements in its `<label>`. The tutor reads what it works out. |
 | | A chat | A calculator under the chat, `=` adding to the message. Its keys are the `data-key` elements in the chat. |
@@ -379,7 +416,8 @@ its `height`. In a `stack` or `reserved` container, what has no condition
 comes first, then the reveals in the order they were given.
 
 **The name of a reveal**, in the chat and in the creator, is its
-accessible name: its `aria-label`, else its first heading, else its id.
+`data-name`, else its accessible name: its `aria-label`, else its first
+heading, else its id.
 
 **The calculator's library**, the keys a `function` key may name:
 
@@ -478,17 +516,26 @@ unnamed, named as another, named for the box ("Chat about …"), or inside
 context; a link to `#chat` with no chat beside the page; an element with
 the id `chat`; an opening line on the body with no chat beside the page,
 `data-opening` on anything but the body or a chat, or over 400
-characters. The tutor's outputs: `data-tutor` on anything but an
-`<output>`; an `<output data-tutor>` unnamed, named as another, named with
-a colon or inside context. Calculators and keys: `data-calculator` on
+characters; `data-no-box` on anything but a chat in the page, or with a
+value; a chat with no box that has a calculator or an opening line, or in
+a file whose scripts never call `say`. Commands: `data-command` on anything but a `<data>`, in no
+block with an `id`, not a name and its parameters, named `show`, or
+named twice on a block; one with no `title` or `data-when`, or either
+over its limit; more than 4 parameters, or more than
+8 commands on a block; a block with commands whose scripts
+keep nothing in its store; a store named for no block's `id`; a block
+with commands, or a reveal, whose `id` a call cannot name, one that does
+not start with a letter or `_` or holds anything but letters, digits, `-`
+and `_`.
+Calculators and keys: `data-calculator` on
 anything but an `<input>` or a chat; `data-key` on anything but a `<data>`,
 or of an unknown kind; a key with no text, outside a calculator, or a
 constant with no value; a calculator with more than 12 keys of
 one kind. Containers: `data-container` on anything but a `<div>` or of an
 unknown kind; `data-group` on anything but a `<div>`. Ids and attributes:
 an id used twice by reveals, keys or context; an attribute within two
-letters of one of these, or one no longer read; `document.tutor`, the
-object's old name, in a script. Elements of the teacher's own: one with no
+letters of one of these, or one no longer read; `document.tutor`, the object's old name, or `keep` and `kept`, in
+a script. Elements of the teacher's own: one with no
 `data-description`, or whose code never writes its `data-state`; a
 description or a state over its limit. And a shared block it cannot read.
 
@@ -508,10 +555,12 @@ them as one more.
 | A description (`data-description`) | 300 characters |
 | A state (`data-state`) | 150 characters |
 | One live announcement, or one `tell` | 200 characters |
-| One line the tutor writes | 400 characters |
+| What a command does (`title`), when it is called (`data-when`) | 200, 200 characters |
+| A command's parameters; commands on a block | 4; 8 |
+| One call's arguments; calls in one reply | 1,000 characters; 8 |
 | One `say` | 2,000 characters |
 | An opening line (`data-opening`) | 400 characters |
-| What a page keeps (`keep`) | 65,536 bytes |
+| What a page's stores keep (`store`) | 65,536 bytes |
 | One entry shared (`share`) | 4,096 bytes, 60 a minute |
 | A shared text field | 280 characters |
 | Entries sent | 1,000 |
@@ -660,13 +709,21 @@ How to write it:
      chats on the page, or that asks none; an opening line then goes on a
      chat in the page, not the body. Leave `data-pages` off a page that
      draws its own navigation or reads as one scroll.
-   - **Words the tutor says on the page**, a character's line, a caption, a
-     verdict, go in an `<output>` the tutor writes (`data-tutor`), named for
-     who or what it is. Characters talking with the student are a chat the
-     teacher draws, its buttons calling `document.wordplay.say` with each
-     choice's words.
-   - **A case the tutor can show** is a named field the page's script draws
-     from; the tutor sets it by name.
+   - **Something the tutor does on the page**, a case to show, a length
+     to set, a line for a character to say, is a command of its block (the
+     format's Acting on the page), whatever the block is, a paragraph or
+     a picture as much as an element of your own: the block gets an `id`,
+     a `data-name` the chat calls it by ("The tutor changed Diagram"), an
+     empty
+     `<data data-command="setLength(m)">` inside it, its `title` what it
+     does and its `data-when` when the tutor calls it, in the teacher's
+     words; the block's script does it on `wordplay:command`, writes the
+     block's `data-state`, and keeps what changed in
+     `document.wordplay.store(id)`, drawing from it on load. The tutor does
+     nothing else on the page: a button is the student's. Characters
+     talking with the student are a chat the teacher draws, marked
+     `data-no-box` so it has no box, its buttons calling
+     `document.wordplay.say` with each choice's words and the chat's name.
    - **What the class did**, how everyone chose, a wall of attempts, the
      fastest times, is shared (the format's Sharing): the script shares
      the student's entry and draws the wall in a part revealed once they
@@ -711,7 +768,9 @@ How to write it:
    the moment, about what the student says or shows, never a word they must
    use; when the page itself can tell, its script says so. Nothing counts:
    a part appears when its moment comes. Name each part that appears by
-   what it is, never by what it gives away. A long wordplay is in pages of a screen
+   what it is, never by what it gives away, with an `id` the tutor can call:
+   a letter, then letters, numbers, `-` and `_` (`far-side`, never `2b`).
+   A long wordplay is in pages of a screen
    or two each; a short one is one page. A link to another wordplay on
    the site is its name, `<a href="sodium-2">`; the reader goes there and
    has the way back. Outside links open in a new tab.
