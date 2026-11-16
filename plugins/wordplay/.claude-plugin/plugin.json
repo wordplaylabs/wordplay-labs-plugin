@@ -1,15 +1,15 @@
 {
   "name": "wordplay",
   "displayName": "Wordplay",
-  "version": "2026.1024.120123",
-  "description": "Write wordplays from your own material as .wplay files in your folder, try them with the tutor and simulated students on your own Claude plan, and publish them on Wordplay when you say so.",
+  "version": "2026.1116.215",
+  "description": "Write wordplays from your own material as .wplay files in your folder, try them with the tutor and simulated readers on your own Claude plan, and publish them on Wordplay when you say so.",
   "author": {
     "name": "Wordplay Labs",
     "url": "https://wordplaylabs.com"
   },
   "homepage": "https://creator.wordplaylabs.com/ai",
-  "repository": "https://github.com/JavierMNieto/wordplay-labs-plugin",
-  "license": "MIT",
+  "repository": "https://github.com/wordplaylabs/wordplay-labs",
+  "license": "Apache-2.0",
   "keywords": [
     "wordplay",
     "tutor",
@@ -19,6 +19,6 @@
   ],
   "icon": "./logo.png",
   "documentationUrl": "https://creator.wordplaylabs.com/ai",
-  "supportUrl": "https://github.com/JavierMNieto/wordplay-labs-plugin/issues",
+  "supportUrl": "https://github.com/wordplaylabs/wordplay-labs/issues",
   "privacyPolicyUrl": "https://wordplaylabs.com/privacy"
 }

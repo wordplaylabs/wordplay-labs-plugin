@@ -13,11 +13,11 @@ custom MCP servers. Writing uses your AI app's available usage. Wordplay's
 hosted tutor runs separately.
 
 For Codex, open a checkout of the
-[plugin distribution repository](https://github.com/JavierMNieto/wordplay-labs-plugin)
+[plugin distribution repository](https://github.com/wordplaylabs/wordplay-labs-plugin)
 and install Wordplay from its repository marketplace. In Codex CLI:
 
 ```sh
-codex plugin marketplace add JavierMNieto/wordplay-labs-plugin --ref main
+codex plugin marketplace add wordplaylabs/wordplay-labs-plugin --ref main
 codex plugin add wordplay@wordplay-openai
 ```
 

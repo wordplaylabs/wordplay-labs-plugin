@@ -30,8 +30,8 @@ You are given the wordplay's path and who you are.
 4. Keep to the student you were given. If you get stuck, stay stuck until
    something the tutor says actually helps. If you ask for the answer, ask
    again when the tutor declines. If you work straight through, do.
-5. Stop when the page says the wordplay is complete, after twelve messages,
-   or when a student like you would give up.
+5. Stop after twelve messages, when nothing new has appeared for three, or
+   when a student like you would give up.
 
 **When you stop**, reply with the trial's id from `start_trial`, then two or
 three sentences on what happened from where you sat: where you got stuck,

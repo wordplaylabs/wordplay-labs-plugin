@@ -26,9 +26,9 @@ Run an automated trial of the wordplay at: $ARGUMENTS
    and the effort, which `start_trial` lists, to start its trial with. To
    compare tutors, run the same students once on each.
 3. Each student answers with its trial's id. Call `trial_report` with each.
-4. Tell the teacher, student by student: which tutor answered, whether they
-   completed the wordplay and after how many exchanges, what they said happened, and every flag the
-   report raised, quoted. Put the flags first: a tutor that said a step's
+4. Tell the teacher, student by student: which tutor answered, how many
+   exchanges there were, what they said happened, and every flag the
+   report raised, quoted. Put the flags first: a tutor that said a part's
    words before it was given is the finding that matters most. Then say in one line
    that the report is mechanical and does not judge the teaching, and that
    each transcript is a file in `.trials` beside the wordplay, which

@@ -10,7 +10,7 @@ will not give it.
 ## Install
 
 ```
-claude plugin install wordplay --marketplace JavierMNieto/wordplay-labs-plugin
+claude plugin install wordplay --marketplace wordplaylabs/wordplay-labs-plugin
 ```
 
 It needs Node 20 or later. Installed inside a session, `/reload-plugins`
@@ -61,7 +61,7 @@ from this repository's `test` branch. Try a change there before the site's
 plugin has it:
 
 ```
-claude plugin install wordplay-test --marketplace JavierMNieto/wordplay-labs-plugin#test
+claude plugin install wordplay-test --marketplace wordplaylabs/wordplay-labs-plugin#test
 ```
 
 ## Update
@@ -72,4 +72,5 @@ claude plugin update wordplay@wordplay
 
 ## License
 
-MIT. Questions and problems: https://github.com/JavierMNieto/wordplay-labs-plugin/issues
+Apache-2.0, as the packages it is built from. Questions and problems:
+https://github.com/wordplaylabs/wordplay-labs/issues (the source).

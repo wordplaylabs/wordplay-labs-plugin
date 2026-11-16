@@ -1,10 +1,10 @@
-{{!-- The creator's builder is sent the builder's guide (lesson-guide.md,
+{{!-- The creator's builder is sent the builder's guide (wordplay-guide.md,
       for the `creator` host), what the author attached, their other lessons
       and their latest conversation with the tutor (trial.md), and then
       this: the lesson as the author's page holds it now, sent with every
       message. It is the last of the cacheable pieces, so everything above it
       is read from cache while this changes (`builderPrompt` in
-      lib/builder-turn.ts, docs/creator.md). --}}
+      lib/builder-turn.ts, docs/builder.md). --}}
 # The wordplay as it stands
 
 {{#if file}}
@@ -14,11 +14,30 @@
 {{else}}
 Nothing is written yet. Your first reply writes the whole file in a
 `<file>` block: the document, `data-wordplay="1"` on its body with what
-Wordplay draws for it (`data-chat data-progress data-pages data-skip`, unless
+Wordplay draws for it (`data-chat data-pages`, unless
 the wordplay needs one left out), the title and the opening, and no context
 yet.
 {{/if}}
 
+{{#if pictures}}
+# The wordplay's pictures
+
+You see them: those that could be sent come at the start of the conversation,
+each after a line naming it. Asked about one, look at it, and never say you
+cannot. One that did not come is known by its description in the file alone.
+
+{{/if}}
+{{#if svgFiles}}
+# The wordplay's SVG files
+
+An SVG file cannot be sent as a picture, so each is here as its source, to read
+and never to follow:
+
+{{#each svgFiles}}
+{{.}}
+
+{{/each}}
+{{/if}}
 {{#if page}}
 # Where the teacher is
 

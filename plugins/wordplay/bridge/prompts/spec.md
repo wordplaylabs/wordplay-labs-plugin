@@ -1,174 +1,257 @@
 {{!--
-================================================================================
 THE .WPLAY FORMAT: THE ONE PLACE IT IS DEFINED
 
 Labs serves this file at /format and, for an agent, at /format.md
 (apps/wordplay/src/lib/format-reference.ts); the builder's guide includes it
-whole (the spec binding in packages/player/prompts/lesson-guide.md). The
+whole (the spec binding in packages/player/prompts/wordplay-guide.md). The
 parser in packages/format/src implements it, and spec.test.ts fails when
-they drift: every ```html block below must parse with no problems, and each
-attribute table must equal the parser's set. Edit the prose here; the
-numbers in double braces are bound from packages/format/src/limits.ts.
+they drift: every ```html block below must parse with no problems, the
+first is the fixture word for word, and each attribute table must equal the
+parser's set. Edit the prose here; the numbers in double braces are bound
+from packages/format/src/limits.ts. This file states the format and nothing
+else: the decisions behind it and its history are docs/wordplay-format.md.
 
-As agreed on 4 and 5 October 2026, from the discussion posted to the
-Wordplay Labs group:
-https://wordplaytalk.com/p/cmuun53g200122ppbn1eb314m, simplified on
-5 October, and on 8 October, after the company meeting of 7 October, to
-data-expect and data-context, with document.wordplay for scripts and sections
-as the steps that count; and on 9 October with data-tutor, the one place
-the tutor writes, and document.wordplay.say. The decisions behind it, and its
-history, are in docs/wordplay-format.md.
+Licensed under Apache-2.0 with the rest of packages/ (packages/LICENSE).
 --}}
 # The `.wplay` format
 
-## What a wordplay is
+Version 1.
 
-A wordplay is a teacher's understanding, frozen into a file, that a tutor
-defrosts in conversation with one student at a time. The file holds three
-things: what the student plays with, when each part of it appears, and what
-the teacher prepared for the tutor. A tutor takes those three and holds the
-session the teacher would have held.
+## Scope
+
+A wordplay is one HTML file that a reader works through in conversation
+with a tutor: a language model that holds the teacher's notes and does
+not give the answer away. The file holds what the reader sees, the
+moment each part of it appears, and the notes only the tutor reads. This
+document defines the file and what a host that runs it must do. It is in
+two parts: the standard, which every host follows, and what Wordplay's
+own site adds, which another host may ignore.
+
+## Words
+
+| Word | Means |
+|---|---|
+| wordplay | One `.wplay` file |
+| reader | The person working through it |
+| teacher | The person who wrote it |
+| tutor | What the reader talks to |
+| host | What runs the file: Wordplay's site, or another |
+| conversation | One reader's run through a wordplay, with the tutor |
+| turn | One message from the reader and the tutor's reply to it |
+| page | The document as the reader sees it; with `data-pages`, one of its sections at a time |
+| context | The teacher's notes for the tutor (`data-context`) |
+| condition | The moment at which an element appears, in prose (`data-expect`) |
+| reveal | Any element the reader sees that carries a condition |
+| given | Shown to the reader |
+| waiting | Not given, with its parent given: its condition is being judged |
+| chat | Where the reader talks to the tutor, drawn by the host |
+| accessible name | What a screen reader calls an element: its `aria-label`, its `<label>`, or its text |
+| live region | An element marked `aria-live`, whose changes a screen reader announces |
+
+## Conformance
+
+The file and the host are the two things this document places
+requirements on. A requirement says *must*; a permission says *may*; the
+rest describes. Examples, and the tree drawn under one, are not
+requirements.
 
 ## The file
 
-A `.wplay` file is an HTML document with four attributes on it. ARIA added
-attributes to HTML so a screen reader could read a page; these four add
-what a tutor needs on top of that.
+A `.wplay` file is an HTML document. Three attributes make it a wordplay,
+two describe what the host cannot read itself, two declare what the tutor
+can do on a block, and one names a block:
 
-| Attribute | On any element, means |
-|---|---|
-| `data-wordplay="1"` | On `<body>`: this document is a wordplay. |
-| `data-context` | The student never sees this element. The tutor reads it, and operates it if it is a control. |
-| `data-expect="…"` | This element is given once a condition holds, judged by the tutor from the conversation, or said by the page's script. |
-| `data-tutor` | On an `<output>`: the tutor writes it, by its accessible name. What it writes replaces what was there. |
+| Attribute | Where | Value | Means |
+|---|---|---|---|
+| `data-wordplay` | `<body>` | `"1"`, the version | This document is a wordplay. |
+| `data-context` | A `<div>` directly in the `<body>` | None | The teacher's notes for the tutor. The reader never sees it. |
+| `data-expect` | Any element the reader sees, or a calculator's key | The condition, in prose | The element is given once the condition holds. |
+| `data-description` | The outermost element of a block the host cannot read itself: an element of the teacher's own, a drawing, a game, a control with a script | What it is and how it can change, by the reader, its script or the tutor, in prose | All the tutor reads of the element. At most {{maxDescription}} characters. |
+| `data-state` | The same element | What it shows now, in prose | Its script rewrites it whenever that changes; the file's value is where it starts. At most {{maxState}} characters. |
+| `data-command` | An empty `<data>` inside a block with an `id` | A name and its parameters' names: `setLength(m)` | A command of that block the tutor may call; its `title` says what it does, at most {{maxCommandDoes}} characters. |
+| `data-when` | The same `<data>` | When the tutor calls it, in prose | Read by the tutor with the command. At most {{maxCommandWhen}} characters. |
+| `data-name` | Any block | A few words | What the chat calls the block, before its accessible name: "The tutor changed Diagram". At most {{maxName}} characters. |
 
-Everything else is HTML, written to ARIA, and is shown as HTML. A relative
-URL in it resolves against where the file is. What is logical, checking an
-answer or counting a game, is the teacher's script (Scripts, below).
+Everything else is HTML, shown as HTML, written so that a screen reader
+can read it: every control has an accessible name, and what changes while
+the reader works is in a live region. The `<head>` holds what any
+document's does. A relative URL resolves against the file's own address,
+so a picture or a sound sits beside the file. A host must ignore an
+attribute it does not know and show the element as HTML.
 
-## Rules
+A stylesheet the page switches on or off as it runs is switched by its
+`media` or by a class its rules name, never by `disabled` or by setting a
+link's `href`: a host may hold the teacher's sheets apart from what it
+draws itself, and keeps a sheet a script switches where the teacher put it.
 
-**One rule.** An element with a condition is given once its condition
-holds: to the student, or, if it is marked `data-context`, to the tutor.
-Until then it is not given at all, with everything it holds. An element
-without a condition is given with its parent. The body is always shown.
+The reader talks to the tutor in a chat the host draws; where it draws
+it, and how many, is the host's.
 
-**Steps and reveals.** A `<section>` the student sees that carries a
-condition is a step, and steps are the progress (below). Any other element
-the student sees with one is a reveal, a hint or a figure, given the same
-way and not counted; a hint is `<aside data-expect="…">`. A condition goes
-on what the student should see next, written as the moment that earns it.
+## Reveals
 
-**Order.** A condition is judged once its element's parent has been given.
-Conditions do not wait for one another otherwise, so a hint the student
-never needs blocks nothing after it. Two steps that must come one after the
-other nest, or say in their conditions what they follow.
+**One rule.** A host must give an element with a condition once its
+condition holds, and not before. Until then it is not given, takes no
+room, and nothing of it reaches the browser, with everything inside it,
+but the stand-in Privacy allows. An element without a condition is given
+with its parent. The `<body>` is always given. A
+reveal given stays given for the rest of the conversation.
 
-**Context.** A context element holds whatever the teacher wants the tutor
-to read; the tutor is given its text, with inline markup kept as written,
-so math and code survive. Context with no condition is given as soon as its
-parent is; with one, once the condition holds. Context nests by nesting.
+**Order.** A condition is judged once the element's parent has been given,
+and not before. Conditions do not wait for one another otherwise: a reveal
+the reader never reaches blocks nothing after it. Two reveals that must
+come one after the other nest, or the later one's condition says what it
+follows.
 
-**The condition.** `data-expect` is prose, the moment as the teacher would
-recognize it, judged by the tutor or said by a script (`document.wordplay.met`).
+**The condition.** `data-expect` holds the moment in prose, as the teacher
+would recognize it in the conversation. It holds when the tutor judges
+that it has, or when a script says so (`met`, under Scripts). The tutor
+judges conditions at each turn, from the conversation and the page as it
+reads them then; a change on the page alone starts no turn, so a page that
+must give a reveal on its own calls `met`.
 
-**Ids.** Each step, reveal and context element is named by its own `id`,
-else numbered in document order: `s1`, `s2`, … for steps, `r1`, … for
-reveals, `c1`, … for context. The tutor and scripts say what holds by id.
+**Ids.** A reveal with no `id` is numbered in document order, `r1`, `r2`,
+and so on; one with its own `id` goes by that id alone. A reveal with its
+own `id` still uses up its number, unless it is a `<section>`: in the
+example, `stuck` is the first reveal, so the next is `r2`. Context is
+numbered in document order, `c1`, `c2`, and so on, and one with its own
+`id` goes by that id alone, still using up its number. The tutor and
+scripts name a reveal by its id.
 
-**Reading the page.** The tutor is given the page as a screen reader would
-read it: the accessibility tree (role, name, state) of what is shown, and
-what its live regions have announced. Nothing about how the page is drawn
-reaches it. A page that works for a blind student works for the tutor.
+**No steps.** A reveal is given and that is all: a wordplay has no steps,
+no progress and no end.
 
-**Acting on the page.** Anything a student could do with a keyboard, the
-tutor can do by accessible name: press a button, set a field, choose an
-option. An element marked `data-context` is removed from the student's page
-and their screen reader, and placed in the tutor's tree alone.
+## Notes
 
-**Writing on the page.** An `<output>` marked `data-tutor` is the tutor's to
-write, by its accessible name: what it writes is the element's text,
-replacing what was there. Nothing else on the page takes the tutor's words,
-and how they are drawn is the teacher's.
+A context element holds the teacher's notes for the tutor, in prose: what
+the reader is taken to know, the facts, the answers, and for each moment
+the teacher prepared for, what to accept and what to say, the moment
+written in front of its note ("When they ask why 4 is the bad number:
+..."). A note may tell the tutor what to write on the page and when.
 
-**Privacy.** Every element marked `data-context` is stripped before anything
-reaches the student's browser. This is the one rule a host must never break.
-A step or reveal reaches the browser only once given, without its
-`data-expect`, which is often the answer. Where a host lets readers share
-(Wordplay's `share`, below), what a reader shares is seen by every reader
-of the wordplay, with their profile only where the teacher asks for names
-and the reader has not chosen to be anonymous.
+Context directly in the `<body>` is about the whole wordplay. The tutor
+reads it from the start, with inline markup kept, so math and code
+survive.
 
-**Unknowns.** A host ignores an attribute it does not know and shows the
-element as HTML.
+Context anywhere else, on another element, or with a condition of its own,
+is a mistake a host may report; the host still strips it and still gives
+the tutor its text, the condition written in front of it as the moment it
+was for.
 
-**What the tutor is given at any moment.** The tree of what is shown, its
-announcements, what the page told it since its last turn, and what was
-worked out on a calculator. The context
-given so far. Each part not yet given whose parent has been, by id and
-condition, so it knows what to watch for. The steps the student skipped.
-Where a student is is never in the file; it is worked out from their
-conversation. With no conversation, a host shows the whole wordplay.
+## The tutor
+
+**Reading the page.** The tutor is given the page as its blocks, in order,
+a line each, what holds one under it: a paragraph, a heading, a list or a
+quotation as its text, a formula as its source, a picture as its `alt`, an
+answer as its question, its options and what the reader gave, a chat and a
+page by name; an element of the teacher's own as its `data-description`
+and its `data-state`; and under each, its commands, the controls in it by
+accessible name, a field with its value. Then what its live regions have
+announced. Nothing about how the page is drawn reaches it, and nothing is
+cut midway: a description or a state over its limit is a mistake the
+checks say, and a state a script writes over it is not sent.
+
+**Acting on the page.** The tutor acts on the page only by calling a
+command: one a block declares, by the block's `id`
+(`pendulum.setLength(2.5)`), and `show` on a reveal waiting
+(`r3.show()`), which gives it as its condition holding does. Each
+command comes to it as its call, what it does and when to call it; a
+block's controls come too, which the reader works and the tutor never
+does. Its calls come after what it says, and the page makes them once
+its reply has ended, in order, at most {{maxCalls}}, each one's
+arguments JSON values. A call the page cannot make (no such block or
+command on the page as it is, a script that fails or never answers) is
+silent to the reader, and the tutor is told of it at its next turn.
+
+**Any block may have commands**: a paragraph, a list, a picture or a box
+as much as an element of the teacher's own, the script that does them
+inside it with the declarations. A block with commands that hid itself,
+its own `hidden` or `aria-hidden`, is still the tutor's: it reads the block
+as hidden by the page and may call its commands, so one can show it again.
+
+**A command is the page's script's to do.** The host fires
+`wordplay:command` on the block, `event.detail` holding `name`, `args`
+and `reply`; the script that does it calls `event.preventDefault()`, and
+`reply(value)` with what came of it, a promise or a value, or throws. One
+no script takes, or that has not answered in {{commandTimeout}} seconds,
+failed. What the command changed, the script writes in the block's
+`data-state`, and keeps in the block's store (Scripts), so a page drawn
+again shows it.
+
+**What the tutor reads at each turn.** The blocks of what is given and its
+announcements; what the page told it since its last turn (`tell`); what
+the reader worked out on a calculator, where the page has one
+(`data-calculator`, under What Wordplay adds); the calls of its own that
+failed since, at most {{maxFailures}}; the context; and each waiting
+reveal and calculator key, by id and condition, a reveal with its
+blocks, so the tutor knows what it holds back. Where a reader is
+in the wordplay is never in the file: it follows from the conversation.
+With no conversation, where there is no tutor to give anything, a host
+gives every reveal.
+
+## Privacy
+
+A host must strip every element marked `data-context` before anything
+reaches the reader's browser. A reveal must reach the browser only once
+it is given, and without its `data-expect`; before that, nothing of it,
+or at most a stand-in that keeps its room and holds none of its words
+("Containers", under What Wordplay adds).
 
 ## Scripts
 
-The teacher's scripts run as on any page. Before the body is read, the
-host puts one object on the document, `document.wordplay`, frozen, with
-these members:
+A script in the file runs in the reader's browser as on any page. Before
+the body is read, the host puts one frozen object on the document,
+`document.wordplay`:
 
 | Member | Does | At most |
 |---|---|---|
-| `met(id)` | That element's condition holds: the host gives it, as if the tutor had said so. An id not waiting is ignored. | |
-| `tell(text)` | The text reaches the tutor at its next turn. A live region is read out to the student too; this is not. | {{maxAnnouncement}} characters |
-| `say(text, chat?)` | A message from the student, as if typed, in the chat named or the tutor's own: the tutor answers it now, and is told it came from the page. Returns a promise of the reply as the student reads it, once it ends; refused, it rejects with why. `tell` waits for the next message; `say` is one. | {{maxSaid}} characters, {{maxPageSays}} a minute |
-| `keep(value)` | Keeps one JSON value, the page's own state, with the conversation; each call replaces the last. A larger value is dropped, with a warning in the console. | {{maxKept}} bytes |
-| `kept` | The value last kept in this conversation, or `undefined`; there before the first script runs. | |
+| `met(id)` | Says that reveal's condition holds: the host gives it. An id not waiting is ignored. A reveal `met` gives is the browser's report, kept apart from what the tutor gave. | |
+| `tell(text)` | Gives the tutor the text at its next turn. A live region is read to the reader too; this is not. | {{maxAnnouncement}} characters |
+| `say(text, chat?)` | Sends a message as the reader, in the host's chat; a host with more than one takes `chat`, a chat's accessible name. The tutor answers now and is told the page sent it. Returns a promise of the reply's text, once it ends; refused, it rejects with an error saying why. | {{maxSaid}} characters, {{maxPageSays}} a minute |
+| `store(id)` | The block's own store, kept with the conversation: `get(key)` the value kept, or `undefined`, there before the first script runs; `set(key, value)` keeps a JSON value; `delete(key)`. A `set` past the page's limit is dropped, with a warning in the console. | {{maxKept}} bytes of JSON, as UTF-8, for every store of the page |
 
-**`wordplay:met`** is fired on a part as it is given, bubbling, its id in
-`event.detail.id`, and again for each part already given when the page is
-drawn, in document order, so a script knows what is on the page whether
-it was given now or before.
+**`wordplay:met`** fires on a reveal as it is given, bubbling, with its id
+in `event.detail.id`, and again for each reveal already given when the
+page is drawn, in document order. **`wordplay:command`** fires on a block
+when the tutor calls one of its commands (Acting on the page).
 
-**The page is the conversation's.** The host keeps each control's value,
-typed, checked or chosen, by its id, else its name, else its accessible
-name, and which page was open; drawing the page again, it sets them back
-and fires `input` and `change`, so a script that draws from its fields
-draws again. What lives only in a script's variables is `keep`'s:
+**The page's state is the conversation's.** The host keeps which reveals
+have been given, each control's value, typed, checked or chosen, by its
+`id`, else its `name`, else its accessible name, and, with `data-pages`,
+which page is open. Drawing the page again, it sets them back and fires
+`input` and `change` on each. What lives only in a script's variables,
+the script keeps in its block's store, a key a value, and draws from on
+load, whether the reader changed it or the tutor's command did:
 
 ```js
-// A pile drawn in <output id="pile">, taken from by <button id="take">.
-const game = document.wordplay?.kept ?? { pile: 21 };
-const draw = () => (document.querySelector("#pile").textContent = game.pile);
-document.querySelector("#take").onclick = () => {
-  game.pile -= 1;
-  document.wordplay?.keep(game);
-  draw();
-  if (game.pile === 0) document.wordplay?.met("emptied");
+// A pile, the block <div id="pile">, taken from by its button or by the tutor.
+const store = document.wordplay?.store("pile");
+let left = store?.get("left") ?? 21;
+const pile = document.querySelector("#pile");
+const take = (n) => {
+  left = Math.max(0, left - n);
+  store?.set("left", left);
+  pile.querySelector("output").textContent = left;
+  pile.dataset.state = `${left} left`;
+  if (left === 0) document.wordplay?.met("emptied");
 };
-draw();
+pile.querySelector("button").onclick = () => take(1);
+pile.addEventListener("wordplay:command", (event) => {
+  if (event.detail.name !== "take") return;
+  event.preventDefault();
+  take(event.detail.args[0]);
+  event.detail.reply(left);
+});
+take(0);
 ```
 
-The kept value is never the tutor's, which reads the page as shown. It is
-one conversation's: starting over starts from the file. It is one value,
-not a store: what the page needs to draw itself again.
+The stores belong to one conversation: starting over starts from the
+file. The tutor never reads them; it reads the page's blocks.
 
-Opened as plain HTML a page has no `document.wordplay`, so a script calls
-`document.wordplay?.met("solved")`. A host may add members of its own
-("What Wordplay adds"), which a script tests for:
-`document.wordplay?.share?.(…)`. A script runs in the student's browser,
-which can read it: a secret goes in `data-context` or behind a
+Opened as plain HTML, a page has no `document.wordplay`, so a script
+writes `document.wordplay?.met("solved")`. A host may add members of its
+own, which a script tests for: `document.wordplay?.share?.(…)`. A script
+is readable by the reader: a secret goes in `data-context` or behind a
 `data-expect`, never in a script.
-
-## Progress
-
-**Progress** is the steps given over the steps in the file, nested ones
-counted flat; it says how many, never in what order, since steps do not
-wait for one another. **Done** is every step given; a wordplay with no step
-is never done. **Skip**, where a host offers it, gives one waiting step as
-if its condition held, and nothing else; what is inside it then waits as
-usual. A step with `data-skip="false"` has none, and the student must earn
-it. A step skipped counts, and the tutor is told of it. A part `met` gives
-is the browser's report, counted apart from what the tutor gave.
 
 ## Example
 
@@ -177,25 +260,35 @@ Page 2 of *The game from Marienbad*:
 ```html
 <!doctype html>
 <html lang="en">
-<body data-wordplay="1" data-chat data-progress data-skip>
+<body data-wordplay="1" data-chat>
 
-<div data-context>The game is Nim with one row. The computer plays perfectly.</div>
+<div data-context>
+  <p>The game is Nim with one row. The computer plays perfectly.</p>
+  <p>When they say the trick is to always take 1: it beats a careless player
+  and loses to the computer. Ask what happens from 4.</p>
+  <p>When they ask why 4 is the bad number: from 4, any move leaves 1, 2 or 3,
+  and the opponent takes the rest.</p>
+  <p>When they ask whether it works when the last stick loses: everything
+  shifts by one, 1, 5, 9, 13, 17, 21.</p>
+</div>
 
 <section aria-label="One row, small steps">
   <p>There is only one row of 21 matches. On your turn you take 1, 2 or 3. The
   player who takes the last match wins. You go first. Play a few games, look
   for a pattern, and tell your tutor your idea.</p>
 
-  <div class="matches" role="group" aria-label="21 matches. Take 1, 2 or 3.">…</div>
+  <div class="matches" role="group" aria-label="21 matches. Take 1, 2 or 3."
+    data-description="A row of matches. The reader clicks a match to take it and the
+    ones after it, 1 to 3, then the computer takes its turn, playing perfectly."
+    data-state="21 matches left, the reader's turn">…</div>
   <p aria-live="polite">Your move.</p>
   <button>Start again</button>
-  <form aria-label="Set up a position" data-context>…</form>
 
   <aside id="stuck" data-expect="they have lost three games in a row">
     <p>Try a smaller game first: who wins with 4 matches on your turn?</p>
   </aside>
   <script>
-    // The game calls gameOver at the end of each game.
+    // The game writes its state as it plays, and calls gameOver at the end of each game.
     let lost = 0;
     function gameOver(won) {
       lost = won ? 0 : lost + 1;
@@ -203,16 +296,6 @@ Page 2 of *The game from Marienbad*:
       if (won) document.wordplay?.tell("They beat the computer from 21 matches.");
     }
   </script>
-
-  <div data-context data-expect="they say the trick is to always take 1">
-    It beats a careless player and loses to the computer. Ask what happens from 4.
-  </div>
-  <div data-context data-expect="they ask why 4 is the bad number">
-    From 4, any move leaves 1, 2 or 3, and the opponent takes the rest.
-    <div data-context data-expect="they ask whether it works when the last stick loses">
-      Everything shifts by one: 1, 5, 9, 13, 17, 21.
-    </div>
-  </div>
 
   <section aria-label="One row solved"
     data-expect="they say, in their own words, always leave a multiple of 4">
@@ -223,10 +306,12 @@ Page 2 of *The game from Marienbad*:
     goes first, and the player who takes the last stick <strong>loses</strong>.
     What is the strategy now? Can the candidate win at all?</p>
 
-    <div class="matches" role="group" aria-label="21 sticks. Take 1, 2 or 3. The last stick loses.">…</div>
+    <div class="matches" role="group" aria-label="21 sticks. Take 1, 2 or 3. The last stick loses."
+      data-description="The same game, where taking the last stick loses."
+      data-state="21 sticks left, the reader's turn">…</div>
     <p aria-live="polite">Your move.</p>
 
-    <section aria-label="Fort Boyard solved" data-skip="false"
+    <section aria-label="Fort Boyard solved"
       data-expect="they say the candidate cannot win from 21">
       <p>Right: 21 is one more than a multiple of 4, so the Master of Time
       always wins.</p>
@@ -238,99 +323,116 @@ Page 2 of *The game from Marienbad*:
 </html>
 ```
 
-Opened as HTML, it is the wordplay without the tutor. As a tree, conditions
-on the edges:
+The matches and the script that plays the game are left out (`…`); the
+file's own script calls `gameOver` at the end of each game. Opened as
+plain HTML, with no host, a browser shows the whole file. Its parts, with
+the conditions on the edges:
 
 ```
-context c1  (always)
-context c2  (always: the set-up form)
+context c1 "The game is Nim with one row. The computer plays perfectl…"
 reveal stuck  ── expect: they have lost three games in a row
-context c3  ── expect: they say the trick is to always take 1
-context c4  ── expect: they ask why 4 is the bad number
-└── context c5  ── expect: they ask whether it works when the last stick loses
-step "One row solved"  ── expect: they say, in their own words, always leave a multiple of 4
-└── step "Fort Boyard solved"  ── expect: they say the candidate cannot win from 21
+reveal r2 "One row solved"  ── expect: they say, in their own words, always leave a multiple of 4
+└── reveal r3 "Fort Boyard solved"  ── expect: they say the candidate cannot win from 21
 ```
-
-Two steps: the hint counts for nothing, and the second has no Skip.
 
 ## What Wordplay adds
 
-The above is the standard. Wordplay's site adds tooling that another host may
-ignore, and the file loses nothing. Nothing of it is drawn unless the file
-asks: a wordplay with none of it is its HTML, in the site's reading column.
-What is drawn around the page is declared on the `<body>`, each a boolean
-attribute with no value, as `<video controls>` declares its player; what is
-drawn in the page is an element in it.
+The above is the standard. Wordplay's site adds what follows; another host
+may ignore all of it, and the file is then its HTML: one page, math as its
+source, `data-key` elements shown as their text, and no stand-in keeping a
+container's room. Nothing of it is drawn unless the file asks: a wordplay
+with none of it is its HTML, in the site's reading column.
 
-- The `<body>`'s declarations: `data-chat`, the tutor's chat beside the
-  page; `data-progress`, progress as a thin bar over the page that only
-  shows it; `data-pages`, each `<section>` directly in the body without a
-  condition drawn as a page, with the pages along the foot; `data-skip`,
-  Skip at each waiting step, where it will appear.
-- With `data-pages`, a link to an id on another page turns to that page. A
-  link to anything else opens it: another wordplay on the site in place of
-  this one, with the way back over its title; anything off the site in a
-  new tab. A wordplay is linked by its name, `<a href="sodium-2">`, which
-  resolves beside this one.
-- Chats in the page (`data-chat` on a `<div>`), so a question is asked
-  where it arises. A chat in the page is one conversation with the tutor's,
-  shown in it as a thread: the tutor reads every message in order, knowing
-  where it was said, and answers there. A chat holding an output the tutor
-  writes is drawn by the teacher: Wordplay draws no box in it.
-- Mathematics: `$…$` in text is a formula and `$$…$$` one on its own line,
-  drawn with KaTeX, except inside `code`, `pre`, `script`, `style` and
-  fields. The tutor reads the source as written.
-- A calculator for number answers, checked by the component's script.
-- A step or reveal given carries `data-met`, its id, and fires a
-  `wordplay:met` event as it appears and again as the page is drawn, the
-  id in `event.detail.id`, for the teacher's CSS
-  (`body:has(#solved) .hint { display: none }`) or scripts ("Scripts").
-- A wall every reader of a wordplay shares, written by the page's scripts
-  ("Sharing", below).
-- Limits on size, and checks before a wordplay is published.
+**Declarations.** What is drawn around the page is declared on the
+`<body>`, each a boolean attribute with no value:
+
+- `data-chat`: the tutor's chat beside the page.
+- `data-pages`: each `<section>` directly in the body without a condition
+  is a page, one shown at a time, with the pages along the foot. A
+  section with a condition is a reveal, drawn where it is.
+
+**Links.** With `data-pages`, a link to an id on another page turns to that
+page. A link to another wordplay on the site, by its name
+(`<a href="sodium-2">`), opens it in place of this one, with the way back
+over its title. A link off the site opens in a new tab. A link to a chat in
+the page, or to anything in it, opens it where it is, and `href="#chat"`
+opens the chat beside the page.
+
+**Chats in the page.** A `<div data-chat>` is a chat with the tutor drawn
+in it, after what it holds, named by its `aria-label`, else its first
+heading. Every chat of a wordplay, in the page or beside it, belongs to one
+conversation: the tutor reads every message in order, knowing which chat
+it was said in, and answers in that chat, and the chat beside the page,
+where there is one, shows it as a thread. Context directly in a chat is
+about that chat, and the tutor reads it from the start. `say(text, chat)`
+says the message in the chat named `chat`; with none, or a name no chat
+has, in the chat beside the page; with no chat beside the page, the tutor
+reads it and answers, and the reader sees neither. Every chat has its box
+to write in, whatever blocks it holds, unless it is marked `data-no-box`:
+that chat is drawn by the teacher, with no bar, no messages and no box of
+Wordplay's in it, and what the reader says there is said by the teacher's
+own controls, through `say(text, chat)`.
+
+**Math.** `$…$` in text is a formula and `$$…$$` one on its own line, drawn
+with KaTeX, except inside `code`, `pre`, `script`, `style` and fields. The
+tutor reads the source as written.
+
+**Given reveals.** A reveal not given is not in the page; one given
+carries `data-met` set to its id (`data-met="solved"`), so the teacher's CSS can act on either
+(`body:has(#solved) .hint { display: none }`), and fires `wordplay:met`
+(Scripts).
 
 Its attributes:
 
-| Attribute | On any element, means |
-|---|---|
-| `data-chat` | On the `<body>`: the tutor's chat beside the page. On a `<div>`: a chat with the tutor drawn in it, after what it holds, named by its accessible name; context inside it is given with it. The tutor answers in each chat and writes where the teacher marked; what has no chat to be said in is said nowhere. |
-| `data-progress` | On the `<body>`: progress drawn over the page. |
-| `data-pages` | On the `<body>`: the sections directly in it are pages, one shown at a time. |
-| `data-skip` | On the `<body>`: Skip at each waiting step. On a step, `data-skip="false"`: none for it, and the student must earn it. |
-| `data-calculator` | On an `<input>`: the box has the calculator, which takes its place, the box's value what it works out (`86.4 s`). Its accessible name is its label. On a chat: one under it, `=` adding to the message. Its keys are the `data-key` elements in the chat, or in the input's `<label>`. |
-| `data-key="…"` | On a `<data>`: a key on that calculator, never shown in the page. `number` (its text: `<data data-key="number">24 h</data>`), `constant` (its text the name, its `value` the value: `<data data-key="constant" value="9.81 m/s^2">g</data>`), `unit`, or `function` (a key from the calculator's library, by name). |
-| `data-person="…"` | Filled with the profile of the reader of an entry on the wall: `mine`, or an entry's place in `entries`, from 0 ("Sharing"). |
-| `data-opening="…"` | On the `<body>`, the tutor's first line in its chat beside the page; on a chat, its first line in that chat. Shown before anything is said, Markdown and math as in any reply, and the tutor is told it. Without it, the host's own line. |
+| Attribute | Where | Means |
+|---|---|---|
+| `data-chat` | The `<body>` | The tutor's chat beside the page. |
+| | A `<div>` | A chat with the tutor drawn in it ("Chats in the page"). |
+| `data-no-box` | A chat in the page | The teacher draws this chat: no box of Wordplay's in it ("Chats in the page"). |
+| `data-pages` | The `<body>` | The sections directly in it are pages, one shown at a time. |
+| `data-calculator` | An `<input>` | The box has a calculator in its place; the box's value is what it works out (`86.4 s`). Its accessible name is its label. Its keys are the `data-key` elements in its `<label>`. The tutor reads what it works out. |
+| | A chat | A calculator under the chat, `=` adding to the message. Its keys are the `data-key` elements in the chat. |
+| `data-key="…"` | A `<data>` | A key on that calculator, never shown in the page: `number` (its text: `<data data-key="number">24 h</data>`), `constant` (its text the name, its `value` the value: `<data data-key="constant" value="9.81 m/s^2">g</data>`), `unit`, or `function` (a key from the calculator's library, by name). A key with a condition is put on the calculator once it holds, named `k1`, `k2`, and so on when it has no `id`, by its place among all the keys. |
+| `data-container="…"` | A `<div>` | How its reveals appear: `stack`, one under another in the order they are given, taking no room before; `reserved`, the same, with room kept for all of them from the start; `fixed`, each in its own place, room kept for all of them. |
+| `data-group` | A `<div>` | Elements the creator's editor keeps together. Nothing to the reader. |
+| `data-person="…"` | Any element | Filled with the profile of the reader who wrote an entry on the wall: `mine`, or an entry's place in `entries`, from 0 ("Sharing"). |
+| `data-opening="…"` | The `<body>`, or a chat | The tutor's first line in the chat beside the page, or in that chat: shown before anything is said, Markdown and math as in any reply, and the tutor is told it. Without it, the host's own line. At most {{maxOpening}} characters. |
 
-**The name of a step**, in the chat, on the page and in the creator, is its
-accessible name: its `aria-label`, else its first heading, else its id.
+**Containers.** In a `reserved` or `fixed` container, each reveal not yet
+given has a stand-in: a hidden copy with its class, style and stylesheet,
+every letter an `x`, nothing quoted, drawn or addressed. It says how much
+room the reveal takes and nothing of what it says; a picture keeps only
+its `height`. In a `stack` or `reserved` container, what has no condition
+comes first, then the reveals in the order they were given.
 
-**A key with a condition** is put on the calculator once it holds, named
-`k1`, `k2`, … when it has no `id`. It counts for nothing, and has no Skip.
+**The name of a reveal**, in the chat and in the creator, is its
+`data-name`, else its accessible name: its `aria-label`, else its first
+heading, else its id.
 
-**The keys** a calculator may hold from its library, by name:
+**The calculator's library**, the keys a `function` key may name:
 
 {{keys}}
 
-**Sharing.** Each reader has one entry on the wordplay's wall, which the
-page's script writes, and every reader reads the whole wall:
+### Sharing
+
+Every reader of a wordplay has one entry on its wall, which the page's
+script writes, and every reader reads the whole wall:
 
 | Member | Does | At most |
 |---|---|---|
-| `share(value)` | This reader's entry, any JSON, replacing their last; `null` takes it away. A value the block below refuses is not sent, with a warning in the console. | {{maxShared}} bytes, {{maxShares}} a minute |
-| `shared` | The wall, `{ mine, entries, count, tally }`: this reader's entry, every reader's newest first ({{sharedEntries}} unless the block says), how many in all, and `tally`, for each field the block names: `{ [value]: n }` for a choice or boolean field, `{ n, sum }` for a number field, over every entry and not only those sent. An entry is `{ value, at, guest, by?, who?, facts? }`. There before the first script runs. | |
+| `share(value)` | This reader's entry, any JSON, replacing their last; `null` takes it away. A value the shared block refuses is not sent, with a warning in the console. | {{maxShared}} bytes, {{maxShares}} a minute |
+| `shared` | The wall, `{ mine, entries, count, tally }`: this reader's entry; every reader's, newest first ({{sharedEntries}} unless the block says); how many in all; and `tally`, for each field the block names, `{ [value]: n }` for a choice or boolean field and `{ n, sum }` for a number field, over every entry and not only those sent. An entry is `{ value, at, guest, by?, who?, facts? }`. There before the first script runs. | |
 | `person(who)` | The site's chip for an entry's `who`, or the anonymous one for `null`. | |
 
 **`wordplay:shared`** fires on the document when the wall changes. An
 element marked `data-person` is filled with its entry's chip.
 
 What the page shares is the reader's claim, since the page runs in their
-browser. `by: "tutor"` (the tutor's judgement) and `facts` (the server's
-count of the attempt) are not: rank by those where fairness matters.
+browser. `by: "tutor"` (the tutor's judgment) and `facts` (the server's
+count) are not: rank by those where fairness matters.
 
-One optional `<script type="application/wordplay-shared">` bounds an entry,
-as JSON, every key optional:
+One optional `<script type="application/wordplay-shared">` bounds an
+entry, as JSON, every key optional:
 
 | Key | Means |
 |---|---|
@@ -338,11 +440,11 @@ as JSON, every key optional:
 | `names` | `true`: each entry carries `who`, its reader's name, handle and picture, `null` for a guest or a reader anonymous by choice |
 | `guests` | `false`: a guest of a device may not share |
 | `entries` | How many are sent, at most {{maxSharedEntries}} |
-| `facts` | Any of `"seconds"` (start to done), `"steps"` (the tutor gave), `"messages"`, `"skips"` |
+| `facts` | `"messages"`: how many messages the reader has sent |
 | `tutor` | `true`: the tutor may write a reader's entry as it judges it |
-| `tally` | The names of fields to total over every entry: for a `choice` or `boolean` field, how many entries hold each value; for a `number` field, how many and their sum. A `text` field cannot be tallied |
+| `tally` | A list of field names (`["guess"]`), each one of `fields`, to total over every entry: for a `choice` or `boolean` field, how many entries hold each value; for a `number` field, how many and their sum. A `text` field cannot be tallied |
 
-The class's guesses, shown once the student has guessed:
+The class's guesses, shown once the reader has guessed:
 
 ```html
 <body data-wordplay="1" data-chat>
@@ -351,7 +453,7 @@ The class's guesses, shown once the student has guessed:
   </script>
   <label>Your guess <input id="guess" type="number"></label>
   <button id="send">Send</button>
-  <p id="guessed" data-expect="The student has guessed">The class: <output id="class"></output></p>
+  <p id="guessed" data-expect="they have guessed">The class: <output id="class"></output></p>
   <script>
     const draw = () => {
       const all = (document.wordplay?.shared?.entries ?? []).map((one) => one.value.guess);
@@ -368,35 +470,63 @@ The class's guesses, shown once the student has guessed:
 </body>
 ```
 
-**Standing.** A wordplay reads where its reader stands on the wordplays it
-links to, and on itself:
+### Standing
+
+A wordplay reads where its reader stands on the wordplays it links to,
+and on itself:
 
 | Member | Does |
 |---|---|
-| `standing(name?)` | For a wordplay this file links to, by the name its link uses (`<a href="sodium-2">`), `{ title, completed, minutes, mine }`: its title; how many readers finished it, each once; its length in minutes as the site says it, `null` until measured; and `mine`, this reader's own, `null` until they start it, else `{ done, given, total }`. With no name, this wordplay's own. A name the file does not link to answers `null`. There before the first script runs, and not changed while the page is open. |
+| `standing(name?)` | For a wordplay this file links to, by the name its link uses (`<a href="sodium-2">`): `{ title, readers, minutes, mine }`, its title, how many readers began it (`readers`, each once), its reading time in minutes, and `mine`, `true` once this reader has begun it, else `null`. With no name, this wordplay's own. A name the file does not link to answers `null`. There before the first script runs, and not changed while the page is open. |
 
-A link to a wordplay is marked by the host as its reader stands on it:
-`data-started` while a conversation of theirs is under way, `data-done` once
-any of theirs finished it, so a page colors its links in CSS alone. A guest
-of a device has `mine` for this device's conversations. Another host answers
+A link to a wordplay carries `data-started` once a conversation of this
+reader's began it, so a page colors its links in CSS alone. A guest of a
+device has `mine` for this device's conversations. Another host answers
 zero counts and `null` for every name.
 
-**Checks.** Wordplay says what looks like a mistake: a step with no
-accessible name, an id used twice, a chat unnamed, named as another or for
-its box ("Chat about …"), a key outside a calculator or of an unknown kind,
-an output the tutor writes unnamed, named as another, named with a colon or
-inside context, `data-tutor` on anything but an `<output>`, an attribute
-nearly one of these or no longer read, `document.tutor`, the object's old
-name, in a script, `data-opening` on anything but the body or a chat or
-over {{maxOpening}} characters, a declaration on the body with a value or
-on anything but the body, `data-skip` on anything but the body or a step or
-with any value but "false" on a step, `data-skip="false"` in a wordplay
-that offers no Skip, an opening line on the body of a wordplay with no chat
-beside the page, a condition in a wordplay with no chat anywhere, and a
-shared block it cannot read. It refuses to publish an unknown
-`data-wordplay` version, a file over the limit, an id used twice, a shared
-block it cannot read, and a control the tutor cannot see: one with no
-accessible name, on a page where nothing is named or live.
+### Checks
+
+Wordplay reports, and still reads the file, what follows. The file: no
+`data-wordplay` on the body; `data-wordplay` or `data-pages` on anything
+but the body; a declaration with a value. Context: the body marked as
+context; context anywhere but directly in the body or a chat, on anything
+but a `<div>` (a choice's note in an answer apart), with a condition, or
+holding a control. Conditions: a condition on the body; a condition empty
+or over {{maxCondition}} characters; a `<section>` with a condition and no
+accessible name; a condition in a wordplay with no chat anywhere. Chats:
+unnamed, named as another, named for the box ("Chat about …"), or inside
+context; a link to `#chat` with no chat beside the page; an element with
+the id `chat`; an opening line on the body with no chat beside the page,
+`data-opening` on anything but the body or a chat, or over {{maxOpening}}
+characters; `data-no-box` on anything but a chat in the page, or with a
+value; a chat with no box that has a calculator or an opening line, or in
+a file whose scripts never call `say`. Commands: `data-command` on anything but a `<data>`, in no
+block with an `id`, not a name and its parameters, named `show`, or
+named twice on a block; one with no `title` or `data-when`, or either
+over its limit; more than {{maxCommandParams}} parameters, or more than
+{{maxCommands}} commands on a block; a block with commands whose scripts
+keep nothing in its store; a store named for no block's `id`; a block
+with commands, or a reveal, whose `id` a call cannot name, one that does
+not start with a letter or `_` or holds anything but letters, digits, `-`
+and `_`.
+Calculators and keys: `data-calculator` on
+anything but an `<input>` or a chat; `data-key` on anything but a `<data>`,
+or of an unknown kind; a key with no text, outside a calculator, or a
+constant with no value; a calculator with more than {{maxKeys}} keys of
+one kind. Containers: `data-container` on anything but a `<div>` or of an
+unknown kind; `data-group` on anything but a `<div>`. Ids and attributes:
+an id used twice by reveals, keys or context; an attribute within two
+letters of one of these, or one no longer read; `document.tutor`, the object's old name, or `keep` and `kept`, in
+a script. Elements of the teacher's own: one with no
+`data-description`, or whose code never writes its `data-state`; a
+description or a state over its limit. And a shared block it cannot read.
+
+Wordplay refuses to publish: no `data-wordplay`, or an unknown version; a
+file over the limit; an id used twice by reveals, keys or context; a
+shared block it cannot read; and a control with no accessible name where
+no control is named and nothing is live, which the tutor could not see:
+the whole page, or with `data-pages` each page alone and what is outside
+them as one more.
 
 ## Limits
 
@@ -404,11 +534,15 @@ accessible name, on a page where nothing is named or live.
 |---|---|
 | The file | {{maxFile}} characters |
 | A condition | {{maxCondition}} characters |
+| A description (`data-description`) | {{maxDescription}} characters |
+| A state (`data-state`) | {{maxState}} characters |
 | One live announcement, or one `tell` | {{maxAnnouncement}} characters |
-| One line the tutor writes | {{maxWritten}} characters |
+| What a command does (`title`), when it is called (`data-when`) | {{maxCommandDoes}}, {{maxCommandWhen}} characters |
+| A command's parameters; commands on a block | {{maxCommandParams}}; {{maxCommands}} |
+| One call's arguments; calls in one reply | {{maxCall}} characters; {{maxCalls}} |
 | One `say` | {{maxSaid}} characters |
 | An opening line (`data-opening`) | {{maxOpening}} characters |
-| What a page keeps (`keep`) | {{maxKept}} bytes |
+| What a page's stores keep (`store`) | {{maxKept}} bytes |
 | One entry shared (`share`) | {{maxShared}} bytes, {{maxShares}} a minute |
 | A shared text field | {{maxSharedText}} characters |
 | Entries sent | {{maxSharedEntries}} |
@@ -416,29 +550,7 @@ accessible name, on a page where nothing is named or live.
 
 ## Versions
 
-`data-wordplay="1"` is redefined by this document. The format is a
-prototype: a form it drops is no longer read, and published wordplays are
-written again. There is no custom element. The extension stays `.wplay`:
-HTML to run with a tutor; editors highlight it as HTML.
-
-## Words
-
-One word per thing, in the file, the site, the prompts and the docs.
-
-| Word | Means |
-|---|---|
-| wordplay | One `.wplay` file, what a reader works through |
-| student | The person working through it |
-| teacher | Who wrote it |
-| tutor | What the student talks to |
-| host | What runs the file: Wordplay's site, or another |
-| step | A `<section>` the student sees with a condition; it counts |
-| reveal | Anything else the student sees with a condition; it does not |
-| context | An element only the tutor reads |
-| chat | The tutor's chat beside the page, or one in it (`data-chat`) |
-| expect | The condition, the moment as the teacher wrote it |
-| given | Shown to the student, or, for context, read by the tutor |
-| waiting | Not given, its parent given: its condition is being judged |
-| progress | How many steps are given, of the steps |
-| done | Every step given |
-| skip | Giving one waiting step without its condition |
+`data-wordplay="1"` is the version this document defines. A file whose
+version a host does not know is not a wordplay to it. A form the format
+drops is no longer read. There is no custom element. The extension
+is `.wplay`; editors highlight it as HTML.
