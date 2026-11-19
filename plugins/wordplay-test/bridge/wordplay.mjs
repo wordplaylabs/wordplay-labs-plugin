@@ -36275,7 +36275,7 @@ init_define_WORDPLAY_ENGINE();
 
 // packages/player/src/bridge/site.ts
 init_define_WORDPLAY_ENGINE();
-var PREVIEW_BUILD = false ? "source" : "9d6356978e61";
+var PREVIEW_BUILD = false ? "source" : "da0e49235edd";
 function modelOf(value) {
   const one = value;
   return one && typeof one.model === "string" && one.model ? { model: one.model, effort: typeof one.effort === "string" ? one.effort : null } : null;
@@ -36672,6 +36672,8 @@ init_define_WORDPLAY_ENGINE();
 var SLOT = "data-wordplay-slot";
 var CONTAINER = "data-container";
 var CONTAINER_KINDS = ["stack", "reserved", "fixed"];
+var BLOCK_GROUP = "group";
+var CONTAINER_VALUES = [...CONTAINER_KINDS, BLOCK_GROUP];
 function containerKind(element) {
   if (!element || element.tagName.toLowerCase() !== "div") return null;
   const kind = element.getAttribute(CONTAINER);
@@ -49674,8 +49676,8 @@ function readableProblems(wordplay) {
     const container = element.getAttribute("data-container");
     if (container !== null && element.tagName.toLowerCase() !== "div")
       problems.push(`data-container goes on a <div>, not on a ${describe3(element)}.`);
-    else if (container !== null && !CONTAINER_KINDS.includes(container))
-      problems.push(`data-container is ${CONTAINER_KINDS.join(", ")}, not "${container}".`);
+    else if (container !== null && !CONTAINER_VALUES.includes(container))
+      problems.push(`data-container is ${CONTAINER_VALUES.join(", ")}, not "${container}".`);
     if (element.hasAttribute("data-group") && element.tagName.toLowerCase() !== "div")
       problems.push(`data-group goes on a <div>, not on a ${describe3(element)}.`);
     if (element !== body2 && isContext(element) && element.tagName.toLowerCase() !== "div" && !isAnswerNote(element))

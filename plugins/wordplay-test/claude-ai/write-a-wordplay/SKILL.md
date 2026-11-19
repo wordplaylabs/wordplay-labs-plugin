@@ -413,8 +413,8 @@ Its attributes:
 | `data-calculator` | An `<input>` | The box has a calculator in its place; the box's value is what it works out (`86.4 s`). Its accessible name is its label. Its keys are the `data-key` elements in its `<label>`. The tutor reads what it works out. |
 | | A chat | A calculator under the chat, `=` adding to the message. Its keys are the `data-key` elements in the chat. |
 | `data-key="…"` | A `<data>` | A key on that calculator, never shown in the page: `number` (its text: `<data data-key="number">24 h</data>`), `constant` (its text the name, its `value` the value: `<data data-key="constant" value="9.81 m/s^2">g</data>`), `unit`, or `function` (a key from the calculator's library, by name). A key with a condition is put on the calculator once it holds, named `k1`, `k2`, and so on when it has no `id`, by its place among all the keys. |
-| `data-container="…"` | A `<div>` | How its reveals appear: `stack`, one under another in the order they are given, taking no room before; `reserved`, the same, with room kept for all of them from the start; `fixed`, each in its own place, room kept for all of them. |
-| `data-group` | A `<div>` | Elements the creator's editor keeps together. Nothing to the reader. |
+| `data-container="…"` | A `<div>` | How its reveals appear: `stack`, one under another in the order they are given, taking no room before; `reserved`, the same, with room kept for all of them from the start; `fixed`, each in its own place, room kept for all of them; `group`, blocks kept together to share a condition, nothing to the reader. |
+| `data-group` | A `<div>` | The same as `data-container="group"`. |
 | `data-person="…"` | Any element | Filled with the profile of the reader who wrote an entry on the wall: `mine`, or an entry's place in `entries`, from 0 ("Sharing"). |
 | `data-opening="…"` | The `<body>`, or a chat | The tutor's first line in the chat beside the page, or in that chat: shown before anything is said, Markdown and math as in any reply, and the tutor is told it. Without it, the host's own line. At most 400 characters. |
 
