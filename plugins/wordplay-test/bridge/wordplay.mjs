@@ -36275,7 +36275,7 @@ init_define_WORDPLAY_ENGINE();
 
 // packages/player/src/bridge/site.ts
 init_define_WORDPLAY_ENGINE();
-var PREVIEW_BUILD = false ? "source" : "da0e49235edd";
+var PREVIEW_BUILD = false ? "source" : "eef264150acc";
 function modelOf(value) {
   const one = value;
   return one && typeof one.model === "string" && one.model ? { model: one.model, effort: typeof one.effort === "string" ? one.effort : null } : null;
@@ -66834,9 +66834,9 @@ function partText(part) {
 }
 var partName = (part) => part.kind === "reveal" ? `the part "${part.name}"` : `the key "${part.label}"`;
 var isWithheld = (part) => part.kind === "reveal";
-function readerView(source, held) {
+function readerView(source, held, current = 0) {
   const wordplay = parseWordplay(source);
-  const page2 = blocksText(pageBlocks(readerDocument(source, held).body)).join("\n");
+  const page2 = blocksText(pageBlocks(readerDocument(source, held).body, current)).join("\n");
   const title = titleOf(wordplay);
   return `${title ? `# ${title}
 
@@ -66888,16 +66888,45 @@ async function simulate(source, persona, id, host) {
   const wordplay = parseWordplay(source);
   const title = titleOf(wordplay);
   const turns = [];
-  let held = [];
+  const place = host.place;
+  const placeChat = place && "chat" in place ? wordplay.chats.find((one) => one.name === place.chat) : void 0;
+  let held = placeChat ? wordplay.parts.filter((part) => part.element.contains(placeChat.element)).map((part) => part.id) : [];
   const chats = wordplay.chats.map((chat) => chat.name);
+  const pages = pagesOf(wordplay.body).length ? wordplay.pages : [];
+  const chatPage = new Map(
+    wordplay.chats.map((chat) => {
+      const at = pages.findIndex((page2) => page2.element.contains(chat.element));
+      return [chat.name, at < 0 ? 1 : at + 1];
+    })
+  );
+  let onPage = placeChat ? chatPage.get(placeChat.name) ?? 1 : place && "page" in place ? Math.min(Math.max(1, place.page), Math.max(1, pages.length)) : 1;
   const inTheirChat = (typed2) => {
     const found = /^\s*\[([^\]\n]{1,200})\]\s*/.exec(typed2);
+    if (place) {
+      const text3 = found ? typed2.slice(found[0].length) : typed2;
+      return { content: placeChat ? inChat(placeChat.name, text3) : text3, page: onPage };
+    }
     const name = found ? chats.find((one) => one.trim().toLowerCase() === found[1].trim().toLowerCase()) : void 0;
-    return name && found ? inChat(name, typed2.slice(found[0].length)) : typed2;
+    if (name && found) {
+      onPage = chatPage.get(name) ?? onPage;
+      return { content: inChat(name, typed2.slice(found[0].length)), page: onPage };
+    }
+    const page2 = found ? /^page\s+(\d{1,3})$/i.exec(found[1].trim()) : null;
+    if (page2 && found) {
+      const n = Number(page2[1]);
+      if (n >= 1 && n <= Math.max(1, pages.length)) onPage = n;
+      return { content: typed2.slice(found[0].length), page: onPage };
+    }
+    return { content: typed2, page: onPage };
   };
-  const typed = (content) => {
+  const most = host.most ?? MAX_SAID2;
+  const placeWords = placeChat ? `the chat \u201C${placeChat.name}\u201D${pages.length > 1 ? `, on page ${onPage}` : ""}. Everything you write goes in it` : place ? `${pages.length > 1 ? `page ${onPage}, \u201C${pages[onPage - 1]?.name ?? ""}\u201D, and ` : ""}the tutor's general chat. Everything you write goes there, about what is on ${pages.length > 1 ? "that page" : "the page"}` : "";
+  const pageOf = /* @__PURE__ */ new Map();
+  const typed = (content, at) => {
     const { chat, text: text3 } = chatOfMessage(content);
-    return chat ? `[${chat}] ${text3}` : content;
+    if (chat) return `[${chat}] ${text3}`;
+    const page2 = pageOf.get(at);
+    return !place && pages.length > 1 && page2 ? `[Page ${page2}] ${content}` : content;
   };
   const theirs = () => [
     {
@@ -66905,20 +66934,26 @@ async function simulate(source, persona, id, host) {
       content: "The wordplay is open in front of you. Write your first message to the tutor."
     },
     ...turns.map(
-      (turn) => turn.role === "user" ? { role: "assistant", content: typed(turn.content) } : { role: "user", content: readMarkers(turn.content).text }
+      (turn, at) => turn.role === "user" ? { role: "assistant", content: typed(turn.content, at) } : { role: "user", content: readMarkers(turn.content).text }
     )
   ];
   let ended = "the reader stopped";
   try {
-    for (let said2 = 0; said2 < MAX_SAID2; said2++) {
+    for (let said2 = 0; said2 < most; said2++) {
       const spent2 = await host.spend?.() ?? null;
       if (spent2) {
         ended = spent2;
         break;
       }
-      const page2 = readerView(source, held);
-      const learner = prompt("learner", { persona, page: page2 });
-      const viewChars = learner.length - prompt("learner", { persona, page: "" }).length;
+      const page2 = readerView(source, held, onPage - 1);
+      const bound = {
+        persona,
+        pages: !place && pages.length > 1 ? "yes" : "",
+        place: placeWords,
+        most: String(most)
+      };
+      const learner = prompt("learner", { ...bound, page: page2 });
+      const viewChars = learner.length - prompt("learner", { ...bound, page: "" }).length;
       const reader = (await host.ask({
         who: "learner",
         system: [learner],
@@ -66927,11 +66962,13 @@ async function simulate(source, persona, id, host) {
         measure: { rules: learner.length - viewChars, page: viewChars }
       })).trim();
       if (!reader || DONE.test(reader)) break;
-      const message = inTheirChat(reader.slice(0, MAX_TUTOR_MESSAGE));
+      const { content: message, page: where } = inTheirChat(reader.slice(0, MAX_TUTOR_MESSAGE));
+      pageOf.set(turns.length, where);
       turns.push({ role: "user", content: message });
-      host.send({ role: "user", content: message });
+      host.send({ role: "user", content: message, page: where });
       const pictures = await host.pictures?.(held) ?? [];
-      const promptFor = (count2) => tutorTurn(wordplay, source, title, { held, pictures: count2 });
+      const blocks = pageBlocks(readerDocument(source, held).body, onPage - 1);
+      const promptFor = (count2) => tutorTurn(wordplay, source, title, { held, blocks, pictures: count2 });
       const { parts, measure } = promptFor(pictures.length);
       const tutor = await host.ask({
         who: "tutor",
@@ -66950,7 +66987,7 @@ async function simulate(source, persona, id, host) {
         return part && "name" in part && part.name || one;
       });
       host.send({ role: "assistant", content: tutor, ...given.length ? { given } : {} });
-      if (said2 === MAX_SAID2 - 1) ended = `the reader had said ${MAX_SAID2} things`;
+      if (said2 === most - 1) ended = `the reader had said ${most} things`;
     }
     host.send({ done: true, id, ended });
   } catch (error62) {
