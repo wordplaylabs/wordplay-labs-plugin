@@ -89,7 +89,12 @@ the wordplay's `id`, its `version` and its address in the creator. Pass the
 id and the version back to `save_wordplay` the next time, so it changes the
 same one.
 Publish, in the creator, puts it on Wordplay and asks what Wordplay lists
-it by; only the teacher presses it, so never say it is published.
+it by. When the teacher asks you to publish it, `publish_wordplay` does,
+under their name: suggest the title and the sentence or two Wordplay lists
+it by first, and ask whether it is public, on Wordplay's shelves and in its
+search, or unlisted, reached only by its address (`visibility`). Never say
+it is published until the teacher has published it in the creator or
+`publish_wordplay` has answered that it is.
 {{/if}}
 
 {{#if claudeCode}}
