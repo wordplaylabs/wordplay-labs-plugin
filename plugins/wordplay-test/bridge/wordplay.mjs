@@ -36275,7 +36275,7 @@ init_define_WORDPLAY_ENGINE();
 
 // packages/player/src/bridge/site.ts
 init_define_WORDPLAY_ENGINE();
-var PREVIEW_BUILD = false ? "source" : "569f706f48a8";
+var PREVIEW_BUILD = false ? "source" : "0dc0b0cd0fdc";
 function modelOf(value) {
   const one = value;
   return one && typeof one.model === "string" && one.model ? { model: one.model, effort: typeof one.effort === "string" ? one.effort : null } : null;
@@ -49305,6 +49305,11 @@ function blocksText(blocks, depth = 0) {
 
 // packages/format/src/wordplay.ts
 init_define_WORDPLAY_ENGINE();
+
+// packages/format/src/rich.ts
+init_define_WORDPLAY_ENGINE();
+
+// packages/format/src/wordplay.ts
 var STANDARD_ATTRIBUTES = [
   "data-wordplay",
   "data-context",
@@ -49457,7 +49462,7 @@ function waitingParts(wordplay, held) {
     (part) => !given.has(part.id) && (!part.parent || given.has(part.parent.id))
   );
 }
-var INLINE = /* @__PURE__ */ new Set([
+var INLINE2 = /* @__PURE__ */ new Set([
   "a",
   "abbr",
   "b",
@@ -49506,7 +49511,7 @@ function contextText(element) {
       if (isContext(one) || hasCondition(one)) continue;
       const tag = one.tagName.toLowerCase();
       if (NOT_READ.has(tag)) continue;
-      if (INLINE.has(tag)) {
+      if (INLINE2.has(tag)) {
         line += tag === "br" ? " " : one.outerHTML;
         continue;
       }
