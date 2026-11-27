@@ -36275,7 +36275,7 @@ init_define_WORDPLAY_ENGINE();
 
 // packages/player/src/bridge/site.ts
 init_define_WORDPLAY_ENGINE();
-var PREVIEW_BUILD = false ? "source" : "0dc0b0cd0fdc";
+var PREVIEW_BUILD = false ? "source" : "b89a28935c89";
 function modelOf(value) {
   const one = value;
   return one && typeof one.model === "string" && one.model ? { model: one.model, effort: typeof one.effort === "string" ? one.effort : null } : null;
@@ -49308,6 +49308,7 @@ init_define_WORDPLAY_ENGINE();
 
 // packages/format/src/rich.ts
 init_define_WORDPLAY_ENGINE();
+var BEHAVIOR_PARTS = `${COMMAND}, script`;
 
 // packages/format/src/wordplay.ts
 var STANDARD_ATTRIBUTES = [
